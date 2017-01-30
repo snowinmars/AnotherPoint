@@ -1,0 +1,3 @@
+﻿@model Type
+
+<h2>@Model.Name</h2>
