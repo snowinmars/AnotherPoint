@@ -6,7 +6,14 @@
 
 namespace @Model.Namespace
 {
-    @{WriteLiteral(Model.IsPublic ? "public" : "private");} class @Model.Name
+@{WriteLiteral(Model.IsPublic ? "public" : "private");}
+@{WriteLiteral(Model.IsSealed ? "sealed" : "");}
+@{WriteLiteral(Model.IsAbstract ? "abstract" : "");} 
+    class @Model.Name
     {
+        @foreach (var field in @Model.GetFields())
+        {
+            WriteLiteral(field.Name);
+        }
     }
 }
