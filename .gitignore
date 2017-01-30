@@ -11,6 +11,7 @@ $RECYCLE.BIN/
 TestResults
 
 TmpConsoleApplication
+TmpWebApplication
 
 # Windows Installer files
 *.cab
