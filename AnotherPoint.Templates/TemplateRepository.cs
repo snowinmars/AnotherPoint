@@ -68,14 +68,12 @@ namespace AnotherPoint.Templates
 
         public static string Compile(string name, object model)
         {
-            var b = TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(name,
+            return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(name,
                                                                                 ResolveType.Layout, 
                                                                                 context: null),
                                                         modelType: null, 
                                                         model: model, 
                                                         viewBag: null);
-            return b;
-
         }
     }
 }
