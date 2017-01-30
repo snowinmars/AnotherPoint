@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
 using SandS.Algorithm.Extensions.EnumerableExtensionNamespace;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using IRazorEngineService = RazorEngine.Templating.IRazorEngineService;
 using NameOnlyTemplateKey = RazorEngine.Templating.NameOnlyTemplateKey;
 using RazorEngineService = RazorEngine.Templating.RazorEngineService;
@@ -48,7 +46,6 @@ namespace AnotherPoint.Templates
                                                                     ResolveType.Layout,
                                                                     context: null);
 
-                
                 ITemplateSource templateSource = new LoadedTemplateSource(File.ReadAllText(pair.Value), pair.Value);
 
                 TemplateRepository.razorService.AddTemplate(templateKey,
@@ -70,10 +67,10 @@ namespace AnotherPoint.Templates
         public static string Compile(TemplateType template, object model)
         {
             return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(template.AsString(),
-                                                                                ResolveType.Layout, 
+                                                                                ResolveType.Layout,
                                                                                 context: null),
-                                                        modelType: null, 
-                                                        model: model, 
+                                                        modelType: null,
+                                                        model: model,
                                                         viewBag: null);
         }
     }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnotherPoint.Common
 {
@@ -20,8 +16,10 @@ namespace AnotherPoint.Common
             {
                 case TemplateType.None:
                     return "None";
+
                 case TemplateType.Class:
                     return "class";
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(t), t, null);
             }
