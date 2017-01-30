@@ -1,3 +1,12 @@
 ﻿@model Type
 
-<h2>@Model.Name</h2>
+@{
+    Layout = null;
+}
+
+namespace @Model.Namespace
+{
+    @{WriteLiteral(Model.IsPublic ? "public" : "private");} class @Model.Name
+    {
+    }
+}

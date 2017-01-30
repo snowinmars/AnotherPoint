@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherPoint.Common", "Anot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmpConsoleApplication", "TmpConsoleApplication\TmpConsoleApplication.csproj", "{61EF4A4C-E320-4CE4-A6BA-536C9D4A6376}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmpWebApplication", "TmpWebApplication\TmpWebApplication.csproj", "{8005DB04-BF56-4AD5-BD27-54C4C197B657}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{61EF4A4C-E320-4CE4-A6BA-536C9D4A6376}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61EF4A4C-E320-4CE4-A6BA-536C9D4A6376}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61EF4A4C-E320-4CE4-A6BA-536C9D4A6376}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8005DB04-BF56-4AD5-BD27-54C4C197B657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8005DB04-BF56-4AD5-BD27-54C4C197B657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8005DB04-BF56-4AD5-BD27-54C4C197B657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8005DB04-BF56-4AD5-BD27-54C4C197B657}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
