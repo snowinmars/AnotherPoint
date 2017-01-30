@@ -1,0 +1,2 @@
+# AnotherPoint
+Scaffolding project
