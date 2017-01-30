@@ -10,6 +10,8 @@ $RECYCLE.BIN/
 
 TestResults
 
+TmpConsoleApplication
+
 # Windows Installer files
 *.cab
 *.msi

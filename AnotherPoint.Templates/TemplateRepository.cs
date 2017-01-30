@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using AnotherPoint.Common;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
@@ -18,15 +19,15 @@ namespace AnotherPoint.Templates
     {
         private static readonly string RootFolder = Directory.GetCurrentDirectory();
 
-        private static readonly IDictionary<string, string> NameFileBinding;
+        private static readonly IDictionary<TemplateType, string> NameFileBinding;
 
         private static IRazorEngineService razorService;
 
         static TemplateRepository()
         {
-            TemplateRepository.NameFileBinding = new Dictionary<string, string>
+            TemplateRepository.NameFileBinding = new Dictionary<TemplateType, string>
             {
-                {"class", $"{Path.Combine(TemplateRepository.RootFolder, "class.dat")}" }
+                {TemplateType.Class, $"{Path.Combine(TemplateRepository.RootFolder, "class.dat")}" }
             };
 
             TemplateRepository.SelfValidate();
@@ -43,7 +44,7 @@ namespace AnotherPoint.Templates
 
             foreach (var pair in TemplateRepository.NameFileBinding)
             {
-                ITemplateKey templateKey = new NameOnlyTemplateKey(pair.Key,
+                ITemplateKey templateKey = new NameOnlyTemplateKey(pair.Key.AsString(),
                                                                     ResolveType.Layout,
                                                                     context: null);
 
@@ -66,9 +67,9 @@ namespace AnotherPoint.Templates
                 });
         }
 
-        public static string Compile(string name, object model)
+        public static string Compile(TemplateType template, object model)
         {
-            return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(name,
+            return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(template.AsString(),
                                                                                 ResolveType.Layout, 
                                                                                 context: null),
                                                         modelType: null, 
