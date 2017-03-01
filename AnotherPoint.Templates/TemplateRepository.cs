@@ -1,9 +1,11 @@
-﻿using AnotherPoint.Common;
+﻿using System;
+using AnotherPoint.Common;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
 using SandS.Algorithm.Extensions.EnumerableExtensionNamespace;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -19,14 +21,20 @@ namespace AnotherPoint.Templates
 
         static TemplateRepository()
         {
-            TemplateRepository.NameFileBinding = new Dictionary<TemplateType, string>
-            {
-                {TemplateType.Class, $"{Path.Combine(TemplateRepository.RootFolder, "class.dat")}" },
-                {TemplateType.Field, $"{Path.Combine(TemplateRepository.RootFolder, "field.dat")}" },
-				{TemplateType.Property, $"{Path.Combine(TemplateRepository.RootFolder, "property.dat")}" }
-            };
+	        TemplateRepository.NameFileBinding = new Dictionary<TemplateType, string>();
 
-            TemplateRepository.SelfValidate();
+	        foreach (var enumName in Enum.GetNames(typeof(TemplateType)))
+	        {
+		        TemplateType templateType;
+		        if (!Enum.TryParse(enumName, out templateType))
+		        {
+			        throw new InvalidOperationException($"Can't parse enum {nameof(TemplateType)}: string enum value is wrong: it's {enumName}");
+		        }
+
+				NameFileBinding.Add(templateType, $"{Path.Combine(TemplateRepository.RootFolder, $"{enumName}.dat")}");
+	        }
+
+			TemplateRepository.SelfValidate();
 
             var config = new TemplateServiceConfiguration
             {

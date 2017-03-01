@@ -58,5 +58,12 @@ namespace @Model.Namespace
 			WriteLiteral(TemplateRepository.Compile(TemplateType.Property, property));
 		}
 
+		@foreach (var ctor in Model.GetConstructors(BindingFlags.Public |
+		                                            BindingFlags.NonPublic |
+		                                            BindingFlags.Instance))
+		{
+			WriteLiteral(TemplateRepository.Compile(TemplateType.Ctor, ctor));
+		}
+
 	}
 }

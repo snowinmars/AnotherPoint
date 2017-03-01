@@ -104,6 +104,9 @@
     <None Include="class.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ctor.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="field.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

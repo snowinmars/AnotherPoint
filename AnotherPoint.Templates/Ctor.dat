@@ -1,0 +1,65 @@
+﻿@using System.Reflection
+@using System.Text
+@using AnotherPoint.Common
+@using AnotherPoint.Common
+@using AnotherPoint.Templates
+@model ConstructorInfo
+
+@{
+	Layout = null;
+
+	string ctorAccessModificator = Constant.Todo;
+
+	if (Model.IsPublic)
+	{
+		ctorAccessModificator = Constant.Public;
+	}
+
+	if (Model.IsInternal())
+	{
+		ctorAccessModificator = Constant.Internal;
+	}
+
+	if (Model.IsPrivate)
+	{
+		ctorAccessModificator = Constant.Private;
+	}
+
+	if (Model.IsProtected())
+	{
+		ctorAccessModificator = Constant.Protected;
+	}
+
+	if (Model.IsProtectedInternal())
+	{
+		ctorAccessModificator = Constant.ProtectedInternal;
+	}
+
+	////////
+
+	if (Model.IsAbstract)
+	{
+		ctorAccessModificator += Constant.Abstract;
+	}
+
+	////////
+	
+	StringBuilder sb = new StringBuilder(128);
+
+	foreach (var parameter in Model.GetParameters())
+	{
+		sb.Append(parameter.ParameterType.FullName);
+		sb.Append(" ");
+		sb.Append(parameter.Name);
+		sb.Append(", ");
+	}
+
+	if (sb.Length > 0)
+	{
+		sb.Remove(sb.Length - 2, 1);
+	}
+}
+
+@ctorAccessModificator @Model.DeclaringType.Name (@sb.ToString())
+{
+}

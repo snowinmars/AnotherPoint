@@ -4,10 +4,10 @@ namespace AnotherPoint.Common
 {
     public enum TemplateType
     {
-        None = 0,
         Class = 1,
         Field = 2,
 		Property = 3,
+		Ctor = 4,
 	}
 
     public static class TemplateTypeExtension
@@ -16,9 +16,6 @@ namespace AnotherPoint.Common
         {
             switch (t)
             {
-                case TemplateType.None:
-                    return "None";
-
                 case TemplateType.Class:
                     return "class";
 
@@ -27,6 +24,9 @@ namespace AnotherPoint.Common
 
 				case TemplateType.Property:
 		            return "property";
+
+				case TemplateType.Ctor:
+		            return "ctor";
 
 				default:
                     throw new ArgumentOutOfRangeException(nameof(t), t, null);
