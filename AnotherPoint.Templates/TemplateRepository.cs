@@ -6,10 +6,6 @@ using SandS.Algorithm.Extensions.EnumerableExtensionNamespace;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using IRazorEngineService = RazorEngine.Templating.IRazorEngineService;
-using NameOnlyTemplateKey = RazorEngine.Templating.NameOnlyTemplateKey;
-using RazorEngineService = RazorEngine.Templating.RazorEngineService;
-using ResolveType = RazorEngine.Templating.ResolveType;
 
 namespace AnotherPoint.Templates
 {
@@ -25,7 +21,9 @@ namespace AnotherPoint.Templates
         {
             TemplateRepository.NameFileBinding = new Dictionary<TemplateType, string>
             {
-                {TemplateType.Class, $"{Path.Combine(TemplateRepository.RootFolder, "class.dat")}" }
+                {TemplateType.Class, $"{Path.Combine(TemplateRepository.RootFolder, "class.dat")}" },
+                {TemplateType.Field, $"{Path.Combine(TemplateRepository.RootFolder, "field.dat")}" },
+				{TemplateType.Property, $"{Path.Combine(TemplateRepository.RootFolder, "property.dat")}" }
             };
 
             TemplateRepository.SelfValidate();

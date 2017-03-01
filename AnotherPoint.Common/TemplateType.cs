@@ -6,7 +6,9 @@ namespace AnotherPoint.Common
     {
         None = 0,
         Class = 1,
-    }
+        Field = 2,
+		Property = 3,
+	}
 
     public static class TemplateTypeExtension
     {
@@ -20,7 +22,13 @@ namespace AnotherPoint.Common
                 case TemplateType.Class:
                     return "class";
 
-                default:
+                case TemplateType.Field:
+                    return "field";
+
+				case TemplateType.Property:
+		            return "property";
+
+				default:
                     throw new ArgumentOutOfRangeException(nameof(t), t, null);
             }
         }

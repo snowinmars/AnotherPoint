@@ -1,0 +1,33 @@
+﻿@using AnotherPoint.Common
+@model System.Reflection.FieldInfo
+
+@{
+	string fieldAccessModificator = "TODO";
+
+	if (Model.IsPublic)
+	{
+		fieldAccessModificator = Constant.Public;
+	}
+
+	if (Model.IsPrivate)
+	{
+		fieldAccessModificator = Constant.Private;
+	}
+
+	if (Model.IsProtected())
+	{
+		fieldAccessModificator = Constant.Protected;
+	}
+
+	if (Model.IsProtectedInternal())
+	{
+		fieldAccessModificator = Constant.ProtectedInternal;
+	}
+
+	if (Model.IsInternal())
+	{
+		fieldAccessModificator = Constant.Internal;
+	}
+}
+
+@fieldAccessModificator @Model.FieldType.FullName @Model.Name;

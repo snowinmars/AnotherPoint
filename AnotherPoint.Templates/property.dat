@@ -1,0 +1,72 @@
+﻿@using AnotherPoint.Common
+@model System.Reflection.PropertyInfo
+
+@{
+	string getMethodAccessModificator = "TODO";
+	string setMethodAccessModificator = "TODO";
+
+	#region getMethodAccessModificator
+
+	if (Model.GetMethod.IsPublic)
+	{
+		getMethodAccessModificator = Constant.Public;
+	}
+
+	if (Model.GetMethod.IsPrivate)
+	{
+		getMethodAccessModificator = Constant.Private;
+	}
+
+	if (Model.GetMethod.IsInternal())
+	{
+		getMethodAccessModificator = Constant.Internal;
+	}
+
+	if (Model.GetMethod.IsProtected())
+	{
+		getMethodAccessModificator = Constant.Protected;
+	}
+
+	if (Model.GetMethod.IsProtectedInternal())
+	{
+		getMethodAccessModificator = Constant.ProtectedInternal;
+	}
+
+	#endregion
+
+	#region setMethodAccessModificator
+
+	if (Model.SetMethod.IsPublic)
+	{
+		setMethodAccessModificator = Constant.Public;
+	}
+
+	if (Model.SetMethod.IsPrivate)
+	{
+		setMethodAccessModificator = Constant.Private;
+	}
+
+	if (Model.SetMethod.IsInternal())
+	{
+		setMethodAccessModificator = Constant.Internal;
+	}
+
+	if (Model.SetMethod.IsProtected())
+	{
+		setMethodAccessModificator = Constant.Protected;
+	}
+
+	if (Model.SetMethod.IsProtectedInternal())
+	{
+		setMethodAccessModificator = Constant.ProtectedInternal;
+	}
+
+	if (setMethodAccessModificator == getMethodAccessModificator)
+	{
+		setMethodAccessModificator = "";
+	}
+
+	#endregion
+}
+
+@getMethodAccessModificator @Model.PropertyType.FullName @Model.Name { get; @setMethodAccessModificator set; }
