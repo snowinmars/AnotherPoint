@@ -12,10 +12,8 @@ namespace AnotherPoint.Templates
 {
 	public static class TemplateRepository
 	{
-		private static readonly string RootFolder = Directory.GetCurrentDirectory();
-
 		private static readonly IDictionary<TemplateType, string> NameFileBinding;
-
+		private static readonly string RootFolder = Directory.GetCurrentDirectory();
 		private static IRazorEngineService razorService;
 
 		static TemplateRepository()
@@ -58,6 +56,16 @@ namespace AnotherPoint.Templates
 			}
 		}
 
+		public static string Compile(TemplateType template, object model)
+		{
+			return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(template.AsString(),
+																				ResolveType.Layout,
+																				context: null),
+																modelType: null,
+																model: model,
+																viewBag: null);
+		}
+
 		private static void SelfValidate()
 		{
 			TemplateRepository.NameFileBinding
@@ -67,16 +75,6 @@ namespace AnotherPoint.Templates
 				{
 					throw new IOException($"Can't find template file {templatePath}");
 				});
-		}
-
-		public static string Compile(TemplateType template, object model)
-		{
-			return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(template.AsString(),
-																				ResolveType.Layout,
-																				context: null),
-																modelType: null,
-																model: model,
-																viewBag: null);
 		}
 	}
 }
