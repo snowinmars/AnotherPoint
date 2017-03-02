@@ -8,12 +8,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using RazorEngine.Compilation;
+using RazorEngine.Compilation.ReferenceResolver;
 
 namespace AnotherPoint.Templates
 {
     public static class TemplateRepository
     {
-        private static readonly string RootFolder = Directory.GetCurrentDirectory();
+		private static readonly string RootFolder = Directory.GetCurrentDirectory();
 
         private static readonly IDictionary<TemplateType, string> NameFileBinding;
 
@@ -40,7 +42,7 @@ namespace AnotherPoint.Templates
             {
                 Language = Language.CSharp,
 #if DEBUG
-                Debug = true
+                Debug = true,
 #endif
             };
 
@@ -57,6 +59,8 @@ namespace AnotherPoint.Templates
                 TemplateRepository.razorService.AddTemplate(templateKey,
                                                             templateSource);
             }
+
+			
         }
 
         private static void SelfValidate()
@@ -75,9 +79,9 @@ namespace AnotherPoint.Templates
             return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(template.AsString(),
                                                                                 ResolveType.Layout,
                                                                                 context: null),
-                                                        modelType: null,
-                                                        model: model,
-                                                        viewBag: null);
+																modelType: null,
+																model: model,
+																viewBag: null);
         }
     }
 }

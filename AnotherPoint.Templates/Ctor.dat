@@ -1,8 +1,6 @@
 ﻿@using System.Reflection
 @using System.Text
 @using AnotherPoint.Common
-@using AnotherPoint.Common
-@using AnotherPoint.Templates
 @model ConstructorInfo
 
 @{
@@ -43,7 +41,7 @@
 	}
 
 	////////
-	
+
 	StringBuilder sb = new StringBuilder(128);
 
 	foreach (var parameter in Model.GetParameters())
@@ -58,8 +56,35 @@
 	{
 		sb.Remove(sb.Length - 2, 1);
 	}
+
+	////////
+
+	StringBuilder body = new StringBuilder(256);
+
+	IEnumerable<CtorBindAttribute> binds = Model.GetCustomAttributes<CtorBindAttribute>();
+
+	foreach (var bind in binds)
+	{
+		switch (bind.Settings)
+		{
+			case CtorBindSettings.Exact:
+				body.Append("this.");
+				body.Append(bind.Name.FirstLetterToUpper());
+				body.Append(" = ");
+				body.Append(bind.Name.FirstLetterToLower());
+				body.Append(";");
+				break;
+			case CtorBindSettings.New:
+				break;
+			default:
+				throw new ArgumentOutOfRangeException("bind", bind, "Enum CtorBindSettings is out of range");
+		}
+
+		body.AppendLine();
+	}
 }
 
 @ctorAccessModificator @Model.DeclaringType.Name (@sb.ToString())
 {
+	@body.ToString();
 }
