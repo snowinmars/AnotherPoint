@@ -72,7 +72,7 @@ namespace AnotherPoint.Core
 
 						if (Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo).Contains(Constant.Generic))
 						{
-							var v = typeFullName.IndexOf("<");
+							var v = typeFullName.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
 
 							if (v >= 0)
 							{
@@ -85,7 +85,7 @@ namespace AnotherPoint.Core
 					case CtorBindSettings.None:
 						throw new ArgumentException($"Enum {nameof(CtorBindSettings)} can't equals to None");
 					default:
-						throw new ArgumentOutOfRangeException("bind", bind, "Enum CtorBindSettings is out of range");
+						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(CtorBindSettings)} is out of range");
 				}
 
 				body.AppendLine();

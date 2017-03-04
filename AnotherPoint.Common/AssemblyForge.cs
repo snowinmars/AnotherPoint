@@ -9,6 +9,7 @@ namespace AnotherPoint.Common
 			"AnotherPoint.Common",
 			"AnotherPoint.Core",
 			"AnotherPoint.Entities",
+			"AnotherPoint.Extensions",
 			"AnotherPoint.Templates",
 		};
 
@@ -16,7 +17,7 @@ namespace AnotherPoint.Common
 		{
 			foreach (var assemblyName in AssemblyForge.AssemblyNames)
 			{
-				var assembly = Assembly.Load(assemblyName);
+				Assembly.Load(assemblyName);
 			}
 		}
 	}

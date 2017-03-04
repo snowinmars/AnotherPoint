@@ -5,12 +5,12 @@ namespace AnotherPoint.Core
 {
 	public static class Helpers
 	{
-		private static readonly IDictionary<string, string> correctCollectionTypeNaming = new Dictionary<string, string>
+		private static readonly IDictionary<string, string> CorrectCollectionTypeNaming = new Dictionary<string, string>
 		{
 			{"IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
 
-		private static readonly IDictionary<string, string> implementTypeNaming = new Dictionary<string, string>
+		private static readonly IDictionary<string, string> ImplementTypeNaming = new Dictionary<string, string>
 		{
 			{ "System.Collections.Generic.IEnumerable", "System.Collections.Generic.List" },
 		};
@@ -19,7 +19,7 @@ namespace AnotherPoint.Core
 		{
 			string value;
 
-			return Helpers.correctCollectionTypeNaming.TryGetValue(key, out value) ? value : key;
+			return Helpers.CorrectCollectionTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
 
 		public static string GetImplementTypeNaming(string key)
@@ -35,7 +35,7 @@ namespace AnotherPoint.Core
 				key = key.Remove(v);
 			}
 
-			return Helpers.implementTypeNaming.TryGetValue(key, out value) ? value : key;
+			return Helpers.ImplementTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
 	}
 }

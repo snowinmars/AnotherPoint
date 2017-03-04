@@ -20,7 +20,7 @@ namespace AnotherPoint.Entities
 
 		public string FullName { get; set; }
 
-		public IList<string> GenericTypes { get; private set; }
+		public IList<string> GenericTypes { get; }
 
 		public bool IsGeneric { get; set; }
 

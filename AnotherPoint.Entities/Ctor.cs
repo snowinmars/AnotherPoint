@@ -13,7 +13,7 @@ namespace AnotherPoint.Entities
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }
-		public IList<CtorArgument> ArgumentCollection { get; private set; }
+		public IList<CtorArgument> ArgumentCollection { get; }
 		public MyType Type { get; set; }
 
 		public override string ToString()
