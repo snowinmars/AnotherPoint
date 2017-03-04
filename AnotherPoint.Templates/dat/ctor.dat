@@ -7,7 +7,7 @@
 	string body = CtorCore.GetBodyAsString(Model);
 }
 
-@Model.AccessModifyer.AsString() @Model.Type.FullName (@parameters)
+@Model.AccessModifyer.AsString() @Model.Type.Name (@parameters)
 {
 	@body
 }

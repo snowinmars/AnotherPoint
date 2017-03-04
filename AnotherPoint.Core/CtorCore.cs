@@ -16,9 +16,20 @@ namespace AnotherPoint.Core
 
 			foreach (var parameter in ctor.ArgumentCollection)
 			{
-				args.Append(parameter.Type.Name);
+				args.Append(parameter.Type.FullName);
+
+				if (parameter.Type.IsGeneric)
+				{
+					args.Append("<");
+
+					string s = string.Join(",", parameter.Type.GenericTypes);
+					args.Append(s);
+
+					args.Append(">");
+				}
+
 				args.Append(" ");
-				args.Append(parameter.Name);
+				args.Append(parameter.Name.FirstLetterToLower());
 				args.Append(", ");
 			}
 

@@ -21,6 +21,8 @@ namespace AnotherPoint.Common
 				case TemplateType.Ctor:
 					return "ctor";
 
+				case TemplateType.None:
+					return "";
 				default:
 					throw new ArgumentOutOfRangeException(nameof(templateType), templateType, null);
 			}
@@ -68,6 +70,7 @@ namespace AnotherPoint.Common
 					sb.Append(" ");
 					break;
 
+				case AccessModifyer.None:
 				default:
 					throw new ArgumentOutOfRangeException(nameof(accessModifyer), accessModifyer, null);
 			}

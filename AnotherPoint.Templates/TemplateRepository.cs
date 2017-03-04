@@ -62,7 +62,8 @@ namespace AnotherPoint.Templates
 		{
 			TemplateRepository.nameFileBinding = new Dictionary<TemplateType, string>();
 
-			foreach (var enumName in Enum.GetNames(typeof(TemplateType)))
+			foreach (var enumName in Enum.GetNames(typeof(TemplateType))
+											.Where(e => e != TemplateType.None.ToString()))
 			{
 				TemplateType templateType;
 
