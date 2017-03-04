@@ -1,9 +1,10 @@
-﻿using System;
+﻿using AnotherPoint.Common;
+using System;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
 
-namespace AnotherPoint.Common
+namespace AnotherPoint.Extensions
 {
 	public static class Extensions
 	{

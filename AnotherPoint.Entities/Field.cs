@@ -1,5 +1,4 @@
-﻿
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
@@ -7,13 +6,13 @@ namespace AnotherPoint.Entities
 	{
 		public Field(string name, string typeName)
 		{
-			Name = name;
+			this.Name = name;
 
-			Type = new MyType(typeName);
+			this.Type = new MyType(typeName);
 		}
 
+		public AccessModifyer AccessModifyer { get; set; }
 		public string Name { get; set; }
 		public MyType Type { get; set; }
-		public AccessModifyer AccessModifyer { get; set; }
 	}
 }

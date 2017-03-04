@@ -1,9 +1,5 @@
-﻿using System;
+﻿using AnotherPoint.Common;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
@@ -11,14 +7,12 @@ namespace AnotherPoint.Entities
 	{
 		public Ctor(string fullTypeName)
 		{
-			Type = new MyType(fullTypeName);
-			ArgumentCollection = new List<CtorArgument>();
+			this.Type = new MyType(fullTypeName);
+			this.ArgumentCollection = new List<CtorArgument>();
 		}
 
-		public MyType Type { get; set; }
 		public AccessModifyer AccessModifyer { get; set; }
 		public IList<CtorArgument> ArgumentCollection { get; private set; }
-
-		
+		public MyType Type { get; set; }
 	}
 }

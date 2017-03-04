@@ -6,11 +6,11 @@ namespace AnotherPoint.Entities
 	{
 		public Property(string name, string typeName)
 		{
-			Name = name;
+			this.Name = name;
 
-			GetMethod = new Method(Constant.Get);
-			SetMethod = new Method(Constant.Set);
-			Type = new MyType(typeName);
+			this.GetMethod = new Method(Constant.Get);
+			this.SetMethod = new Method(Constant.Set);
+			this.Type = new MyType(typeName);
 		}
 
 		public AccessModifyer AccessModifyer
@@ -20,8 +20,8 @@ namespace AnotherPoint.Entities
 		}
 
 		public Method GetMethod { get; set; }
-		public Method SetMethod { get; set; }
 		public string Name { get; set; }
+		public Method SetMethod { get; set; }
 		public MyType Type { get; set; }
 	}
 }

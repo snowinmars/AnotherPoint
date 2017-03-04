@@ -90,7 +90,6 @@
     <Compile Include="Constant.cs" />
     <Compile Include="CtorBindSettings.cs" />
     <Compile Include="EnumExtensions.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

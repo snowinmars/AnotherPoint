@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
@@ -11,14 +6,14 @@ namespace AnotherPoint.Entities
 	{
 		public CtorArgument(string name, string typeName, CtorBindSettings bindAttribute)
 		{
-			Name = name;
-			BindAttribute = bindAttribute;
+			this.Name = name;
+			this.BindAttribute = bindAttribute;
 
-			Type = new MyType(typeName);
+			this.Type = new MyType(typeName);
 		}
 
-		public MyType Type { get; set; }
-		public string Name { get; set; }
 		public CtorBindSettings BindAttribute { get; set; }
+		public string Name { get; set; }
+		public MyType Type { get; set; }
 	}
 }

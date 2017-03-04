@@ -1,9 +1,5 @@
-﻿using System;
+﻿using AnotherPoint.Common;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
@@ -11,30 +7,34 @@ namespace AnotherPoint.Entities
 	{
 		public Class(string fullTypeName)
 		{
-			Type = new MyType(fullTypeName);
+			this.Type = new MyType(fullTypeName);
 
-			Ctors = new List<Ctor>();
-			Fields = new List<Field>();
-			Properties = new List<Property>();
+			this.Ctors = new List<Ctor>();
+			this.Fields = new List<Field>();
+			this.Properties = new List<Property>();
 
-			AccessModifyer = AccessModifyer.Public;
+			this.AccessModifyer = AccessModifyer.Public;
+		}
+
+		public AccessModifyer AccessModifyer { get; set; }
+
+		public IList<Ctor> Ctors { get; private set; }
+
+		public IList<Field> Fields { get; private set; }
+
+		public string Name
+		{
+			get { return this.Type.Name; }
+			set { this.Type.Name = value; }
 		}
 
 		public string Namespace
 		{
-			get { return Type.Namespace; }
-			set { Type.Namespace = value; }
+			get { return this.Type.Namespace; }
+			set { this.Type.Namespace = value; }
 		}
 
-		public string Name
-		{
-			get { return Type.Name; }
-			set { Type.Name = value; }
-		}
-		public MyType Type { get; set; }
-		public AccessModifyer AccessModifyer { get; set; }
-		public IList<Ctor> Ctors { get; private set; }
-		public IList<Field> Fields { get; private set; }
 		public IList<Property> Properties { get; private set; }
+		public MyType Type { get; set; }
 	}
 }

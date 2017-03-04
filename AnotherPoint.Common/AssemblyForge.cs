@@ -14,7 +14,7 @@ namespace AnotherPoint.Common
 
 		public static void ForgeAll()
 		{
-			foreach (var assemblyName in AssemblyNames)
+			foreach (var assemblyName in AssemblyForge.AssemblyNames)
 			{
 				var assembly = Assembly.Load(assemblyName);
 			}

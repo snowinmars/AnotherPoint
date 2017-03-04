@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D1358C0A-D566-42B6-8242-9F4BE201ADAB}</ProjectGuid>
+    <ProjectGuid>{1E1D5E38-1F40-4728-BDE4-704500F42D01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AnotherPoint.Core</RootNamespace>
-    <AssemblyName>AnotherPoint.Core</AssemblyName>
+    <RootNamespace>AnotherPoint.Extensions</RootNamespace>
+    <AssemblyName>AnotherPoint.Extensions</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -41,26 +41,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bag.cs" />
-    <Compile Include="ClassCore.cs" />
-    <Compile Include="CtorCore.cs" />
-    <Compile Include="FieldCore.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyCore.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnotherPoint.Common\AnotherPoint.Common.csproj">
       <Project>{df3e702e-4a73-48ee-8373-4c4529a15436}</Project>
       <Name>AnotherPoint.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AnotherPoint.Entities\AnotherPoint.Entities.csproj">
-      <Project>{27769E9B-0950-43F3-930C-719ABD457BDB}</Project>
-      <Name>AnotherPoint.Entities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AnotherPoint.Extensions\AnotherPoint.Extensions.csproj">
-      <Project>{1e1d5e38-1f40-4728-bde4-704500f42d01}</Project>
-      <Name>AnotherPoint.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

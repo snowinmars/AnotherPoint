@@ -1,5 +1,6 @@
 ﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
+using AnotherPoint.Extensions;
 using System;
 using System.Linq;
 
@@ -11,14 +12,14 @@ namespace AnotherPoint.Core
 		{
 			Class @class = new Class(type.FullName)
 			{
-				AccessModifyer = GetAccessModifyer(type),
+				AccessModifyer = ClassCore.GetAccessModifyer(type),
 			};
 
-			SetupGeneric(type, @class);
+			ClassCore.SetupGeneric(type, @class);
 
-			SetupFields(type, @class);
-			SetupProperties(type, @class);
-			SetupCtors(type, @class);
+			ClassCore.SetupFields(type, @class);
+			ClassCore.SetupProperties(type, @class);
+			ClassCore.SetupCtors(type, @class);
 
 			return @class;
 		}

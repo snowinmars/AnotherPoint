@@ -6,11 +6,11 @@ namespace AnotherPoint.Entities
 	{
 		public Method(string name)
 		{
-			Name = name;
-			AccessModifyer = AccessModifyer.Public;
+			this.Name = name;
+			this.AccessModifyer = AccessModifyer.Public;
 		}
 
-		public string Name { get; set; }
 		public AccessModifyer AccessModifyer { get; set; }
+		public string Name { get; set; }
 	}
 }

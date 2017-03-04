@@ -12,22 +12,24 @@ namespace AnotherPoint.Templates
 {
 	public static class TemplateRepository
 	{
-		private static readonly DynamicViewBag dynamicViewBag;
-		private static readonly string RootFolder = Directory.GetCurrentDirectory();
+		private static readonly DynamicViewBag DynamicViewBag;
+		private static readonly string RootFolder;
 		private static IDictionary<TemplateType, string> nameFileBinding;
 		private static IRazorEngineService razorService;
 
 		static TemplateRepository()
 		{
-			dynamicViewBag = new DynamicViewBag();
+			TemplateRepository.RootFolder = Directory.GetCurrentDirectory();
+			TemplateRepository.DynamicViewBag = new DynamicViewBag();
 
-			InitializeNameFileBinding();
-
+			TemplateRepository.InitializeNameFileBinding();
 			TemplateRepository.SelfValidate();
-			TemplateServiceConfiguration config = GetDefaultConfig();
+
+			TemplateServiceConfiguration config = TemplateRepository.GetDefaultConfig();
 
 			TemplateRepository.razorService = RazorEngineService.Create(config);
-			InitRazorEngineTemplates();
+
+			TemplateRepository.InitRazorEngineTemplates();
 		}
 
 		public static string Compile(TemplateType template, object model)
@@ -36,14 +38,14 @@ namespace AnotherPoint.Templates
 															ResolveType.Layout,
 															context: null);
 
-			var v = TemplateRepository.razorService.RunCompile(nameOnlyTemplateKey,
+			string str = TemplateRepository.razorService.RunCompile(nameOnlyTemplateKey,
 																modelType: null,
 																model: model,
-																viewBag: dynamicViewBag);
+																viewBag: TemplateRepository.DynamicViewBag);
 
-			v = v.Replace("&gt;", ">").Replace("&lt;", "<");
+			str = str.Replace("&gt;", ">").Replace("&lt;", "<");
 
-			return v;
+			return str;
 		}
 
 		private static TemplateServiceConfiguration GetDefaultConfig()
@@ -51,9 +53,6 @@ namespace AnotherPoint.Templates
 			var config = new TemplateServiceConfiguration
 			{
 				Language = Language.CSharp,
-#if DEBUG
-				Debug = true,
-#endif
 			};
 
 			return config;
@@ -66,12 +65,14 @@ namespace AnotherPoint.Templates
 			foreach (var enumName in Enum.GetNames(typeof(TemplateType)))
 			{
 				TemplateType templateType;
+
 				if (!Enum.TryParse(enumName, out templateType))
 				{
 					throw new InvalidOperationException($"Can't parse enum {nameof(TemplateType)}: string enum value is wrong: it's {enumName}");
 				}
 
-				nameFileBinding.Add(templateType, $"{Path.Combine(TemplateRepository.RootFolder, "dat", $"{enumName}.dat")}");
+				// path is {root}/dat/template.dat
+				TemplateRepository.nameFileBinding.Add(templateType, $"{Path.Combine(TemplateRepository.RootFolder, "dat", $"{enumName}.dat")}");
 			}
 		}
 
@@ -85,8 +86,7 @@ namespace AnotherPoint.Templates
 
 				ITemplateSource templateSource = new LoadedTemplateSource(File.ReadAllText(pair.Value), pair.Value);
 
-				TemplateRepository.razorService.AddTemplate(templateKey,
-															templateSource);
+				TemplateRepository.razorService.AddTemplate(templateKey, templateSource);
 			}
 		}
 

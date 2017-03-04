@@ -1,7 +1,7 @@
-﻿using System;
+﻿using AnotherPoint.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
@@ -9,9 +9,27 @@ namespace AnotherPoint.Entities
 	{
 		public MyType(string fullName)
 		{
-			GenericTypes = new List<string>();
-			
-				// If original type is generic, fullName here is like
+			this.GenericTypes = new List<string>();
+
+			this.FullName = this.ParseFullName(fullName);
+			this.Name = this.ParseName();
+			this.Namespace = this.ParseNamespace();
+			this.IsGeneric = false;
+		}
+
+		public string FullName { get; set; }
+
+		public IList<string> GenericTypes { get; private set; }
+
+		public bool IsGeneric { get; set; }
+
+		public string Name { get; set; }
+
+		public string Namespace { get; set; }
+
+		private string ParseFullName(string fullName)
+		{
+			// If original type is generic, fullName here is like
 			//   System.Collections.Generic.IEnumerable`1[[TmpConsoleApplication.User, TmpConsoleApplication, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
 
 			// fullNameWithoutAssemblyInfo is like
@@ -21,24 +39,20 @@ namespace AnotherPoint.Entities
 
 			// if this type was generic, convert it to the human-readable form like
 			//   System.Collections.Generic.IEnumerable
-			FullName = Constant.binds.TryGetValue(fullNameWithoutAssemblyInfo, out f)
-				? f 
-				: fullName;
-
-			Name = FullName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Last();
-
-			int v = FullName.LastIndexOf(".");
-
-			if (v >= 0)
-			{
-				Namespace = FullName.Substring(0, v);
-			}
+			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullNameWithoutAssemblyInfo, out f) ? f : fullName;
 		}
 
-		public string Namespace { get; set; }
-		public string Name { get; set; }
-		public string FullName { get; set; }
-		public bool IsGeneric { get; set; }
-		public IList<string> GenericTypes { get; private set; }
+		private string ParseName()
+		{
+			return this.FullName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
+							.Last();
+		}
+
+		private string ParseNamespace()
+		{
+			int v = this.FullName.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase);
+
+			return v >= 0 ? this.FullName.Substring(0, v) : this.FullName;
+		}
 	}
 }

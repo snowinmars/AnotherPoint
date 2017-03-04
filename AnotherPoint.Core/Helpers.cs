@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AnotherPoint.Core
 {
@@ -14,25 +15,27 @@ namespace AnotherPoint.Core
 			{ "System.Collections.Generic.IEnumerable", "System.Collections.Generic.List" },
 		};
 
-		public static string GetCorrectCollectionTypeNaming(string key)
+		public static string GetCorrectCollectionTypeNaming(string key) // TODO unify dicts
 		{
 			string value;
 
-			return correctCollectionTypeNaming.TryGetValue(key, out value) ? value : key;
+			return Helpers.correctCollectionTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
 
 		public static string GetImplementTypeNaming(string key)
 		{
 			string value;
 
-			int v = key.IndexOf("<");
+			// removing generic info
+
+			int v = key.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
 
 			if (v >= 0)
 			{
 				key = key.Remove(v);
 			}
 
-			return implementTypeNaming.TryGetValue(key, out value) ? value : key;
+			return Helpers.implementTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
 	}
 }

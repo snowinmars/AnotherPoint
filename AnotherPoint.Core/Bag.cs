@@ -6,7 +6,7 @@ namespace AnotherPoint.Core
 	{
 		static Bag()
 		{
-			Pocket = new Dictionary<string, string>();
+			Bag.Pocket = new Dictionary<string, string>();
 		}
 
 		public static IDictionary<string, string> Pocket { get; private set; }

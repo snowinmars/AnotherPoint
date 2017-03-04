@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
+using AnotherPoint.Extensions;
+using System.Reflection;
 
 namespace AnotherPoint.Core
 {
@@ -18,25 +14,15 @@ namespace AnotherPoint.Core
 
 			Field field = new Field(fieldName, fieldType)
 			{
-				AccessModifyer = GetAccessModifyer(fieldInfo)
+				AccessModifyer = FieldCore.GetAccessModifyer(fieldInfo)
 			};
 
-			SetupGeneric(fieldInfo, field);
+			FieldCore.SetupGeneric(fieldInfo, field);
 
 			// saving field name and type for further appeals from ctor
-
 			Bag.Pocket[fieldName] = fieldType;
 
 			return field;
-		}
-
-		private static void SetupGeneric(FieldInfo fieldInfo, Field field)
-		{
-			field.Type.IsGeneric = fieldInfo.FieldType.IsGenericType;
-			foreach (var genericTypeArgument in fieldInfo.FieldType.GenericTypeArguments)
-			{
-				field.Type.GenericTypes.Add(genericTypeArgument.FullName);
-			}
 		}
 
 		private static AccessModifyer GetAccessModifyer(FieldInfo fieldInfo)
@@ -69,6 +55,16 @@ namespace AnotherPoint.Core
 			}
 
 			return accessModifyer;
+		}
+
+		private static void SetupGeneric(FieldInfo fieldInfo, Field field)
+		{
+			field.Type.IsGeneric = fieldInfo.FieldType.IsGenericType;
+
+			foreach (var genericTypeArgument in fieldInfo.FieldType.GenericTypeArguments)
+			{
+				field.Type.GenericTypes.Add(genericTypeArgument.FullName);
+			}
 		}
 	}
 }

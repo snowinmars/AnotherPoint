@@ -1,6 +1,7 @@
-﻿using AnotherPoint.Entities;
+﻿using AnotherPoint.Common;
+using AnotherPoint.Entities;
+using AnotherPoint.Extensions;
 using System.Reflection;
-using AnotherPoint.Common;
 
 namespace AnotherPoint.Core
 {
@@ -13,14 +14,14 @@ namespace AnotherPoint.Core
 
 			Property property = new Property(propertyName, propertyType)
 			{
-				AccessModifyer = GetGetMethodAccessModifyer(propertyInfo),
+				AccessModifyer = PropertyCore.GetGetMethodAccessModifyer(propertyInfo),
 				SetMethod =
 				{
-					AccessModifyer = SetGetMethodAccessModifyer(propertyInfo)
+					AccessModifyer = PropertyCore.SetGetMethodAccessModifyer(propertyInfo)
 				},
 			};
 
-			SetupGeneric(propertyInfo, property);
+			PropertyCore.SetupGeneric(propertyInfo, property);
 
 			// saving field name and type for further appeals from ctor
 
@@ -29,13 +30,41 @@ namespace AnotherPoint.Core
 			return property;
 		}
 
-		private static void SetupGeneric(PropertyInfo propertyInfo, Property property)
+		private static AccessModifyer GetGetMethodAccessModifyer(PropertyInfo propertyInfo)
 		{
-			property.Type.IsGeneric = propertyInfo.PropertyType.IsGenericType;
-			foreach (var genericTypeArgument in propertyInfo.PropertyType.GenericTypeArguments)
+			AccessModifyer getMethodAccessModifyer = AccessModifyer.None;
+
+			if (propertyInfo.GetMethod.IsPublic)
 			{
-				property.Type.GenericTypes.Add(genericTypeArgument.FullName);
+				getMethodAccessModifyer |= AccessModifyer.Public;
 			}
+
+			if (propertyInfo.GetMethod.IsProtected())
+			{
+				getMethodAccessModifyer |= AccessModifyer.Protected;
+			}
+
+			if (propertyInfo.GetMethod.IsPrivate)
+			{
+				getMethodAccessModifyer |= AccessModifyer.Private;
+			}
+
+			if (propertyInfo.GetMethod.IsInternal())
+			{
+				getMethodAccessModifyer |= AccessModifyer.Internal;
+			}
+
+			if (propertyInfo.GetMethod.IsProtectedInternal())
+			{
+				getMethodAccessModifyer |= AccessModifyer.Internal | AccessModifyer.Protected;
+			}
+
+			if (propertyInfo.GetMethod.IsAbstract)
+			{
+				getMethodAccessModifyer |= AccessModifyer.Abstract;
+			}
+
+			return getMethodAccessModifyer;
 		}
 
 		private static AccessModifyer SetGetMethodAccessModifyer(PropertyInfo propertyInfo)
@@ -75,41 +104,14 @@ namespace AnotherPoint.Core
 			return setMethodAccessModifyer;
 		}
 
-		private static AccessModifyer GetGetMethodAccessModifyer(PropertyInfo propertyInfo)
+		private static void SetupGeneric(PropertyInfo propertyInfo, Property property)
 		{
-			AccessModifyer getMethodAccessModifyer = AccessModifyer.None;
+			property.Type.IsGeneric = propertyInfo.PropertyType.IsGenericType;
 
-			if (propertyInfo.GetMethod.IsPublic)
+			foreach (var genericTypeArgument in propertyInfo.PropertyType.GenericTypeArguments)
 			{
-				getMethodAccessModifyer |= AccessModifyer.Public;
+				property.Type.GenericTypes.Add(genericTypeArgument.FullName);
 			}
-
-			if (propertyInfo.GetMethod.IsProtected())
-			{
-				getMethodAccessModifyer |= AccessModifyer.Protected;
-			}
-
-			if (propertyInfo.GetMethod.IsPrivate)
-			{
-				getMethodAccessModifyer |= AccessModifyer.Private;
-			}
-
-			if (propertyInfo.GetMethod.IsInternal())
-			{
-				getMethodAccessModifyer |= AccessModifyer.Internal;
-			}
-
-			if (propertyInfo.GetMethod.IsProtectedInternal())
-			{
-				getMethodAccessModifyer |= AccessModifyer.Internal | AccessModifyer.Protected;
-			}
-
-			if (propertyInfo.GetMethod.IsAbstract)
-			{
-				getMethodAccessModifyer |= AccessModifyer.Abstract;
-			}
-
-			return getMethodAccessModifyer;
 		}
 	}
 }

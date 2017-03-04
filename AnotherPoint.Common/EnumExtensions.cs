@@ -5,9 +5,9 @@ namespace AnotherPoint.Common
 {
 	public static class EnumExtensions
 	{
-		public static string AsString(this TemplateType t)
+		public static string AsString(this TemplateType templateType)
 		{
-			switch (t)
+			switch (templateType)
 			{
 				case TemplateType.Class:
 					return "class";
@@ -22,15 +22,15 @@ namespace AnotherPoint.Common
 					return "ctor";
 
 				default:
-					throw new ArgumentOutOfRangeException(nameof(t), t, null);
+					throw new ArgumentOutOfRangeException(nameof(templateType), templateType, null);
 			}
 		}
 
-		public static string AsString(this AccessModifyer t)
+		public static string AsString(this AccessModifyer accessModifyer)
 		{
 			StringBuilder sb = new StringBuilder();
 
-			switch (t)
+			switch (accessModifyer)
 			{
 				case AccessModifyer.Public:
 					sb.Append(" ");
@@ -69,7 +69,7 @@ namespace AnotherPoint.Common
 					break;
 
 				default:
-					throw new ArgumentOutOfRangeException(nameof(t), t, null);
+					throw new ArgumentOutOfRangeException(nameof(accessModifyer), accessModifyer, null);
 			}
 
 			return sb.ToString();
