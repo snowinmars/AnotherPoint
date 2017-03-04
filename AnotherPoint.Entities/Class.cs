@@ -1,5 +1,6 @@
 ﻿using AnotherPoint.Common;
 using System.Collections.Generic;
+using System.Text;
 
 namespace AnotherPoint.Entities
 {
@@ -36,5 +37,21 @@ namespace AnotherPoint.Entities
 
 		public IList<Property> Properties { get; private set; }
 		public MyType Type { get; set; }
+
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.Append(this.Type.Name);
+
+			if (this.Type.IsGeneric)
+			{
+				sb.Append("<...>");
+			}
+
+			sb.Append($" {this.Name}");
+
+			return sb.ToString();
+		}
 	}
 }

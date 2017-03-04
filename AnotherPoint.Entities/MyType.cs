@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace AnotherPoint.Entities
 {
@@ -26,6 +27,20 @@ namespace AnotherPoint.Entities
 		public string Name { get; set; }
 
 		public string Namespace { get; set; }
+
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.Append($"{this.Name}");
+
+			if (this.IsGeneric)
+			{
+				sb.Append($"<...> ({this.GenericTypes.Count})");
+			}
+
+			return sb.ToString();
+		}
 
 		private string ParseFullName(string fullName)
 		{

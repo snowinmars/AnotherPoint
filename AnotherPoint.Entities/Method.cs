@@ -1,4 +1,5 @@
 ﻿using AnotherPoint.Common;
+using System.Text;
 
 namespace AnotherPoint.Entities
 {
@@ -12,5 +13,14 @@ namespace AnotherPoint.Entities
 
 		public AccessModifyer AccessModifyer { get; set; }
 		public string Name { get; set; }
+
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.Append($"{this.Name}");
+
+			return sb.ToString();
+		}
 	}
 }
