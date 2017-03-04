@@ -4,6 +4,14 @@ namespace AnotherPoint.Common
 {
 	public static class AssemblyForge
 	{
+		private static readonly string[] AssemblyNames =
+		{
+			"AnotherPoint.Common",
+			"AnotherPoint.Core",
+			"AnotherPoint.Entities",
+			"AnotherPoint.Templates",
+		};
+
 		public static void ForgeAll()
 		{
 			foreach (var assemblyName in AssemblyNames)
@@ -11,13 +19,5 @@ namespace AnotherPoint.Common
 				var assembly = Assembly.Load(assemblyName);
 			}
 		}
-
-		private static readonly string[] AssemblyNames =
-		{
-			"AnotherPoint.Common",
-			//"AnotherPoint.Core",
-			"AnotherPoint.Entities",
-			"AnotherPoint.Templates",
-		};
 	}
 }
