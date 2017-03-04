@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmpWebApplication", "TmpWeb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherPoint.Core", "AnotherPoint.Core\AnotherPoint.Core.csproj", "{D1358C0A-D566-42B6-8242-9F4BE201ADAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherPoint.Entities", "AnotherPoint.Entities\AnotherPoint.Entities.csproj", "{27769E9B-0950-43F3-930C-719ABD457BDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27769E9B-0950-43F3-930C-719ABD457BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27769E9B-0950-43F3-930C-719ABD457BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27769E9B-0950-43F3-930C-719ABD457BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27769E9B-0950-43F3-930C-719ABD457BDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 ﻿using System;
+using AnotherPoint.Common;
 
-namespace AnotherPoint.Core
+namespace AnotherPoint.Entities
 {
 	[AttributeUsage(AttributeTargets.Constructor, AllowMultiple = true)]
 	public class CtorBindAttribute : Attribute

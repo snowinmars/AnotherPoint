@@ -1,4 +1,4 @@
-﻿namespace AnotherPoint.Core
+﻿namespace AnotherPoint.Common
 {
 	public enum CtorBindSettings
 	{

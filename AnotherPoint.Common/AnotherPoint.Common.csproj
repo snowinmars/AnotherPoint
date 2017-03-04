@@ -85,8 +85,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessModifyer.cs" />
     <Compile Include="AssemblyForge.cs" />
     <Compile Include="Constant.cs" />
+    <Compile Include="CtorBindSettings.cs" />
+    <Compile Include="EnumExtensions.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

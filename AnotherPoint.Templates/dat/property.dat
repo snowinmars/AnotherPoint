@@ -1,89 +1,13 @@
-﻿@using AnotherPoint.Common
-@using AnotherPoint.Core
-@model System.Reflection.PropertyInfo
+﻿@model AnotherPoint.Entities.Property
 
 @{
-	string propertyName = Model.Name;
-	string propertyType = Helpers.GetCorrectCollectionTypeNaming(Model.PropertyType.Name);
+	setMethodAccessModificator = Model.SetMethod.AccessModifyer.AsString();
+	getMethodAccessModificator = Model.GetMethod.AccessModifyer.AsString();
 
-	if (propertyType.Contains(Constant.Generic))
-	{
-		propertyType += "<" + Model.DeclaringType.FullName + ">";
-	}
-
-	// saving field name and type for further appeals from ctor
-	if (ViewBag.FieldPropsCollection == null)
-	{
-		ViewBag.FieldPropsCollection = new Dictionary<string, string>();
-	}
-
-	ViewBag.FieldPropsCollection[propertyName] = propertyType;
-
-	string getMethodAccessModificator = "TODO";
-	string setMethodAccessModificator = "TODO";
-
-	#region getMethodAccessModificator
-
-	if (Model.GetMethod.IsPublic)
-	{
-		getMethodAccessModificator = Constant.Public;
-	}
-
-	if (Model.GetMethod.IsPrivate)
-	{
-		getMethodAccessModificator = Constant.Private;
-	}
-
-	if (Model.GetMethod.IsInternal())
-	{
-		getMethodAccessModificator = Constant.Internal;
-	}
-
-	if (Model.GetMethod.IsProtected())
-	{
-		getMethodAccessModificator = Constant.Protected;
-	}
-
-	if (Model.GetMethod.IsProtectedInternal())
-	{
-		getMethodAccessModificator = Constant.ProtectedInternal;
-	}
-
-	#endregion
-
-	#region setMethodAccessModificator
-
-	if (Model.SetMethod.IsPublic)
-	{
-		setMethodAccessModificator = Constant.Public;
-	}
-
-	if (Model.SetMethod.IsPrivate)
-	{
-		setMethodAccessModificator = Constant.Private;
-	}
-
-	if (Model.SetMethod.IsInternal())
-	{
-		setMethodAccessModificator = Constant.Internal;
-	}
-
-	if (Model.SetMethod.IsProtected())
-	{
-		setMethodAccessModificator = Constant.Protected;
-	}
-
-	if (Model.SetMethod.IsProtectedInternal())
-	{
-		setMethodAccessModificator = Constant.ProtectedInternal;
-	}
-
-	if (setMethodAccessModificator == getMethodAccessModificator)
+	if (getMethodAccessModificator == setMethodAccessModificator)
 	{
 		setMethodAccessModificator = "";
 	}
-
-	#endregion
 }
 
 @getMethodAccessModificator @propertyType @Model.Name { get; @setMethodAccessModificator set; }

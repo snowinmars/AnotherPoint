@@ -22,5 +22,7 @@ namespace AnotherPoint.Common
 
 		public const string Todo = " TODO ";
 		public const string AnotherPoint = "AnotherPoint";
+		public const string Set = "set";
+		public const string Get = "get";
 	}
 }
