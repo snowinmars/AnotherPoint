@@ -86,8 +86,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constant.cs" />
-    <Compile Include="CtorBindAttribute.cs" />
-    <Compile Include="CtorBindSettings.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

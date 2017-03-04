@@ -2,6 +2,17 @@
 @model System.Reflection.FieldInfo
 
 @{
+	string fieldName = Model.Name;
+	string fieldType = Model.FieldType.Name;
+
+	// saving field name and type for further appeals from ctor
+	if (ViewBag.FieldPropsCollection == null)
+	{
+		ViewBag.FieldPropsCollection = new Dictionary<string, string>();
+	}
+
+	ViewBag.FieldPropsCollection[fieldName] = fieldType;
+
 	string fieldAccessModificator = "TODO";
 
 	if (Model.IsPublic)
@@ -30,4 +41,4 @@
 	}
 }
 
-@fieldAccessModificator @Model.FieldType.FullName @Model.Name;
+@fieldAccessModificator @Model.FieldType.FullName @fieldName;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnotherPoint.Common
+namespace AnotherPoint.Templates
 {
 	[AttributeUsage(AttributeTargets.Constructor, AllowMultiple = true)]
 	public class CtorBindAttribute : Attribute
@@ -8,7 +8,7 @@ namespace AnotherPoint.Common
 		public CtorBindAttribute(CtorBindSettings settings, string name)
 		{
 			this.Settings = settings;
-			Name = name;
+			this.Name = name;
 		}
 
 		public string Name { get; }

@@ -2,6 +2,22 @@
 @model System.Reflection.PropertyInfo
 
 @{
+	string propertyName = Model.Name;
+	string propertyType = Constant.GetCorrectCollectionTypeNaming(Model.PropertyType.Name);
+
+	if (propertyType.Contains(Constant.Generic))
+	{
+		propertyType += "<" + Model.DeclaringType.FullName + ">";
+	}
+
+	// saving field name and type for further appeals from ctor
+	if (ViewBag.FieldPropsCollection == null)
+	{
+		ViewBag.FieldPropsCollection = new Dictionary<string, string>();
+	}
+
+	ViewBag.FieldPropsCollection[propertyName] = propertyType;
+
 	string getMethodAccessModificator = "TODO";
 	string setMethodAccessModificator = "TODO";
 
@@ -69,4 +85,4 @@
 	#endregion
 }
 
-@getMethodAccessModificator @Model.PropertyType.FullName @Model.Name { get; @setMethodAccessModificator set; }
+@getMethodAccessModificator @propertyType @Model.Name { get; @setMethodAccessModificator set; }

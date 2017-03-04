@@ -18,6 +18,8 @@ namespace AnotherPoint.Templates
 
 		static TemplateRepository()
 		{
+			dynamicViewBag = new DynamicViewBag();
+
 			TemplateRepository.NameFileBinding = new Dictionary<TemplateType, string>();
 
 			foreach (var enumName in Enum.GetNames(typeof(TemplateType)))
@@ -28,7 +30,7 @@ namespace AnotherPoint.Templates
 					throw new InvalidOperationException($"Can't parse enum {nameof(TemplateType)}: string enum value is wrong: it's {enumName}");
 				}
 
-				NameFileBinding.Add(templateType, $"{Path.Combine(TemplateRepository.RootFolder, $"{enumName}.dat")}");
+				NameFileBinding.Add(templateType, $"{Path.Combine(TemplateRepository.RootFolder, "dat", $"{enumName}.dat")}");
 			}
 
 			TemplateRepository.SelfValidate();
@@ -56,14 +58,21 @@ namespace AnotherPoint.Templates
 			}
 		}
 
+		private static readonly DynamicViewBag dynamicViewBag;
 		public static string Compile(TemplateType template, object model)
 		{
-			return TemplateRepository.razorService.RunCompile(new NameOnlyTemplateKey(template.AsString(),
-																				ResolveType.Layout,
-																				context: null),
+			var nameOnlyTemplateKey = new NameOnlyTemplateKey(template.AsString(),
+															ResolveType.Layout,
+															context: null);
+
+			var v = TemplateRepository.razorService.RunCompile(nameOnlyTemplateKey,
 																modelType: null,
 																model: model,
-																viewBag: null);
+																viewBag: dynamicViewBag);
+
+			v = v.Replace("&gt;", ">").Replace("&lt;", "<");
+
+			return v;
 		}
 
 		private static void SelfValidate()

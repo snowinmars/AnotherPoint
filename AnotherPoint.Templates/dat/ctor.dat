@@ -1,12 +1,22 @@
 ﻿@using System.Reflection
 @using System.Text
 @using AnotherPoint.Common
+@using System;
+@using AnotherPoint.Templates
 @model ConstructorInfo
 
 @{
+
+	if (ViewBag.FieldPropsCollection == null)
+	{
+		throw new InvalidOperationException("FieldProperty collection is null");
+	}
+
 	Layout = null;
 
 	string ctorAccessModificator = Constant.Todo;
+
+	#region access
 
 	if (Model.IsPublic)
 	{
@@ -33,6 +43,8 @@
 		ctorAccessModificator = Constant.ProtectedInternal;
 	}
 
+	#endregion
+
 	////////
 
 	if (Model.IsAbstract)
@@ -42,19 +54,19 @@
 
 	////////
 
-	StringBuilder sb = new StringBuilder(128);
+	StringBuilder parameters = new StringBuilder(128);
 
 	foreach (var parameter in Model.GetParameters())
 	{
-		sb.Append(parameter.ParameterType.FullName);
-		sb.Append(" ");
-		sb.Append(parameter.Name);
-		sb.Append(", ");
+		parameters.Append(parameter.ParameterType.FullName);
+		parameters.Append(" ");
+		parameters.Append(parameter.Name);
+		parameters.Append(", ");
 	}
 
-	if (sb.Length > 0)
+	if (parameters.Length > 0)
 	{
-		sb.Remove(sb.Length - 2, 1);
+		parameters.Remove(parameters.Length - 2, 1); // removing last comma
 	}
 
 	////////
@@ -68,13 +80,26 @@
 		switch (bind.Settings)
 		{
 			case CtorBindSettings.Exact:
-				body.Append("this.");
+				body.Append(" this. ");
 				body.Append(bind.Name.FirstLetterToUpper());
 				body.Append(" = ");
 				body.Append(bind.Name.FirstLetterToLower());
 				body.Append(";");
 				break;
 			case CtorBindSettings.New:
+				body.Append(" this. ");
+				body.Append(bind.Name.FirstLetterToUpper());
+				body.Append(" = ");
+				body.Append(" new ");
+					string typeFullName = ViewBag.FieldPropsCollection[bind.Name];
+
+					body.Append(Constant.GetImplementTypeNaming(typeFullName));
+
+					if (Constant.GetImplementTypeNaming(typeFullName).Contains(Constant.Generic))
+					{
+						body.Append(typeFullName.Substring(typeFullName.IndexOf("<")));
+					}
+				body.Append("();");
 				break;
 			default:
 				throw new ArgumentOutOfRangeException("bind", bind, "Enum CtorBindSettings is out of range");
@@ -84,7 +109,7 @@
 	}
 }
 
-@ctorAccessModificator @Model.DeclaringType.Name (@sb.ToString())
+@ctorAccessModificator @Model.DeclaringType.Name (@parameters.ToString())
 {
-	@body.ToString();
+@body.ToString();
 }
