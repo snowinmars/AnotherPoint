@@ -2,6 +2,7 @@
 @using System.Text
 @using AnotherPoint.Common
 @using System;
+@using AnotherPoint.Core
 @using AnotherPoint.Templates
 @model ConstructorInfo
 
@@ -91,14 +92,14 @@
 				body.Append(bind.Name.FirstLetterToUpper());
 				body.Append(" = ");
 				body.Append(" new ");
-					string typeFullName = ViewBag.FieldPropsCollection[bind.Name];
+				string typeFullName = ViewBag.FieldPropsCollection[bind.Name];
 
-					body.Append(Constant.GetImplementTypeNaming(typeFullName));
+				body.Append(Helpers.GetImplementTypeNaming(typeFullName));
 
-					if (Constant.GetImplementTypeNaming(typeFullName).Contains(Constant.Generic))
-					{
-						body.Append(typeFullName.Substring(typeFullName.IndexOf("<")));
-					}
+				if (Helpers.GetImplementTypeNaming(typeFullName).Contains(Constant.Generic))
+				{
+					body.Append(typeFullName.Substring(typeFullName.IndexOf("<")));
+				}
 				body.Append("();");
 				break;
 			default:

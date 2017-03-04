@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyForge.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="TemplateType.cs" />

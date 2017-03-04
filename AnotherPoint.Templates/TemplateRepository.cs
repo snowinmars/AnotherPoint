@@ -59,6 +59,7 @@ namespace AnotherPoint.Templates
 		}
 
 		private static readonly DynamicViewBag dynamicViewBag;
+
 		public static string Compile(TemplateType template, object model)
 		{
 			var nameOnlyTemplateKey = new NameOnlyTemplateKey(template.AsString(),

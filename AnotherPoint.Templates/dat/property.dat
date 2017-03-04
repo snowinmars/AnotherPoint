@@ -1,9 +1,10 @@
 ﻿@using AnotherPoint.Common
+@using AnotherPoint.Core
 @model System.Reflection.PropertyInfo
 
 @{
 	string propertyName = Model.Name;
-	string propertyType = Constant.GetCorrectCollectionTypeNaming(Model.PropertyType.Name);
+	string propertyType = Helpers.GetCorrectCollectionTypeNaming(Model.PropertyType.Name);
 
 	if (propertyType.Contains(Constant.Generic))
 	{

@@ -97,8 +97,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CtorBindAttribute.cs" />
-    <Compile Include="CtorBindSettings.cs" />
     <Compile Include="TemplateRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

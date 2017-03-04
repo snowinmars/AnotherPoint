@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnotherPoint.Templates
+namespace AnotherPoint.Core
 {
 	[AttributeUsage(AttributeTargets.Constructor, AllowMultiple = true)]
 	public class CtorBindAttribute : Attribute

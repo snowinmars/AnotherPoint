@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmpConsoleApplication", "Tm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TmpWebApplication", "TmpWebApplication\TmpWebApplication.csproj", "{B6BF9A33-0850-4376-8526-F0C4764D7449}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnotherPoint.Core", "AnotherPoint.Core\AnotherPoint.Core.csproj", "{D1358C0A-D566-42B6-8242-9F4BE201ADAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B6BF9A33-0850-4376-8526-F0C4764D7449}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6BF9A33-0850-4376-8526-F0C4764D7449}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6BF9A33-0850-4376-8526-F0C4764D7449}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1358C0A-D566-42B6-8242-9F4BE201ADAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
