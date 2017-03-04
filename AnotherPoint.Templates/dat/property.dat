@@ -1,13 +1,18 @@
-﻿@model AnotherPoint.Entities.Property
+﻿@using AnotherPoint.Common
+@model AnotherPoint.Entities.Property
 
 @{
-	setMethodAccessModificator = Model.SetMethod.AccessModifyer.AsString();
-	getMethodAccessModificator = Model.GetMethod.AccessModifyer.AsString();
+	string setMethodAccessModificator = Model.SetMethod.AccessModifyer.AsString();
+	string getMethodAccessModificator = Model.GetMethod.AccessModifyer.AsString();
 
 	if (getMethodAccessModificator == setMethodAccessModificator)
 	{
 		setMethodAccessModificator = "";
 	}
+
+	string typeName = Model.Type.IsGeneric ?
+						Model.Type.FullName + "<" + string.Join(",", Model.Type.GenericTypes) + ">" :
+						Model.Type.FullName;
 }
 
-@getMethodAccessModificator @propertyType @Model.Name { get; @setMethodAccessModificator set; }
+@getMethodAccessModificator @typeName @Model.Name { get; @setMethodAccessModificator set; }

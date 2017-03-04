@@ -13,6 +13,12 @@ namespace AnotherPoint.Entities
 			Type = new MyType(typeName);
 		}
 
+		public AccessModifyer AccessModifyer
+		{
+			get { return this.GetMethod.AccessModifyer; }
+			set { this.GetMethod.AccessModifyer = value; }
+		}
+
 		public Method GetMethod { get; set; }
 		public Method SetMethod { get; set; }
 		public string Name { get; set; }

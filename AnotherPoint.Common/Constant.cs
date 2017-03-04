@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace AnotherPoint.Common
 {
@@ -22,5 +23,10 @@ namespace AnotherPoint.Common
 		public const string AnotherPoint = "AnotherPoint";
 		public const string Set = "set";
 		public const string Get = "get";
+
+		public static readonly IDictionary<string, string> binds = new Dictionary<string, string>
+		{
+			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
+		};
 	}
 }

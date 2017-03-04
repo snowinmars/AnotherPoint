@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace AnotherPoint.Common
 {
@@ -27,26 +28,51 @@ namespace AnotherPoint.Common
 
 		public static string AsString(this AccessModifyer t)
 		{
+			StringBuilder sb = new StringBuilder();
+
 			switch (t)
 			{
 				case AccessModifyer.Public:
-					return Constant.Public;
+					sb.Append(" ");
+					sb.Append(Constant.Public);
+					sb.Append(" ");
+					break;
 
 				case AccessModifyer.Internal:
-					return Constant.Internal;
+					sb.Append(" ");
+					sb.Append(Constant.Internal);
+					sb.Append(" ");
+					break;
 
 				case AccessModifyer.Protected:
-					return Constant.Protected;
-
-				case AccessModifyer.ProtectedInternal:
-					return Constant.ProtectedInternal;
+					sb.Append(" ");
+					sb.Append(Constant.Protected);
+					sb.Append(" ");
+					break;
 
 				case AccessModifyer.Private:
-					return Constant.Private;
+					sb.Append(" ");
+					sb.Append(Constant.Private);
+					sb.Append(" ");
+					break;
+
+				case AccessModifyer.Abstract:
+					sb.Append(" ");
+					sb.Append(Constant.Abstract);
+					sb.Append(" ");
+					break;
+
+				case AccessModifyer.Sealed:
+					sb.Append(" ");
+					sb.Append(Constant.Sealed);
+					sb.Append(" ");
+					break;
 
 				default:
 					throw new ArgumentOutOfRangeException(nameof(t), t, null);
 			}
+
+			return sb.ToString();
 		}
 	}
 }

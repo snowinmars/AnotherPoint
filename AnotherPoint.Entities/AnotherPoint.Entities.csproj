@@ -41,7 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class.cs" />
+    <Compile Include="Ctor.cs" />
+    <Compile Include="CtorArgument.cs" />
     <Compile Include="CtorBindAttribute.cs" />
+    <Compile Include="Field.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

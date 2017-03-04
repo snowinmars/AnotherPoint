@@ -1,116 +1,13 @@
-﻿@using System.Reflection
-@using System.Text
-@using AnotherPoint.Common
-@using System;
+﻿@using AnotherPoint.Common
 @using AnotherPoint.Core
-@using AnotherPoint.Templates
-@model ConstructorInfo
+@model AnotherPoint.Entities.Ctor
 
 @{
-
-	if (ViewBag.FieldPropsCollection == null)
-	{
-		throw new InvalidOperationException("FieldProperty collection is null");
-	}
-
-	Layout = null;
-
-	string ctorAccessModificator = Constant.Todo;
-
-	#region access
-
-	if (Model.IsPublic)
-	{
-		ctorAccessModificator = Constant.Public;
-	}
-
-	if (Model.IsInternal())
-	{
-		ctorAccessModificator = Constant.Internal;
-	}
-
-	if (Model.IsPrivate)
-	{
-		ctorAccessModificator = Constant.Private;
-	}
-
-	if (Model.IsProtected())
-	{
-		ctorAccessModificator = Constant.Protected;
-	}
-
-	if (Model.IsProtectedInternal())
-	{
-		ctorAccessModificator = Constant.ProtectedInternal;
-	}
-
-	#endregion
-
-	////////
-
-	if (Model.IsAbstract)
-	{
-		ctorAccessModificator += Constant.Abstract;
-	}
-
-	////////
-
-	StringBuilder parameters = new StringBuilder(128);
-
-	foreach (var parameter in Model.GetParameters())
-	{
-		parameters.Append(parameter.ParameterType.FullName);
-		parameters.Append(" ");
-		parameters.Append(parameter.Name);
-		parameters.Append(", ");
-	}
-
-	if (parameters.Length > 0)
-	{
-		parameters.Remove(parameters.Length - 2, 1); // removing last comma
-	}
-
-	////////
-
-	StringBuilder body = new StringBuilder(256);
-
-	IEnumerable<CtorBindAttribute> binds = Model.GetCustomAttributes<CtorBindAttribute>();
-
-	foreach (var bind in binds)
-	{
-		switch (bind.Settings)
-		{
-			case CtorBindSettings.Exact:
-				body.Append(" this. ");
-				body.Append(bind.Name.FirstLetterToUpper());
-				body.Append(" = ");
-				body.Append(bind.Name.FirstLetterToLower());
-				body.Append(";");
-				break;
-			case CtorBindSettings.New:
-				body.Append(" this. ");
-				body.Append(bind.Name.FirstLetterToUpper());
-				body.Append(" = ");
-				body.Append(" new ");
-				string typeFullName = ViewBag.FieldPropsCollection[bind.Name];
-
-				body.Append(Helpers.GetImplementTypeNaming(typeFullName));
-
-				if (Helpers.GetImplementTypeNaming(typeFullName).Contains(Constant.Generic))
-				{
-					body.Append(typeFullName.Substring(typeFullName.IndexOf("<")));
-				}
-				body.Append("();");
-				break;
-			default:
-				throw new ArgumentOutOfRangeException("bind", bind, "Enum CtorBindSettings is out of range");
-		}
-
-		body.AppendLine();
-	}
+	string parameters = CtorCore.GetArgumentCollectionAsString(Model);
+	string body = CtorCore.GetBodyAsString(Model);
 }
 
-@ctorAccessModificator @Model.DeclaringType.Name (@parameters.ToString())
+@Model.AccessModifyer.AsString() @Model.Type.FullName (@parameters)
 {
-@body.ToString();
+	@body
 }

@@ -1,11 +1,16 @@
-﻿namespace AnotherPoint.Common
+﻿using System;
+
+namespace AnotherPoint.Common
 {
+	[Flags]
 	public enum AccessModifyer
 	{
-		Public = 0,
-		Internal = 1,
-		Protected = 2,
-		ProtectedInternal = 3,
-		Private = 4,
+		None = 0,
+		Public = 1,
+		Internal = 2,
+		Protected = 4,
+		Private = 8,
+		Abstract = 16,
+		Sealed = 32,
 	}
 }

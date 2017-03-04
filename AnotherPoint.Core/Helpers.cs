@@ -25,14 +25,6 @@ namespace AnotherPoint.Core
 		{
 			string value;
 
-			//foreach (var ban in banned)
-			//{
-			//	if (key.Contains(ban))
-			//	{
-			//		key = key.Remove(0, ban.Length + 1);
-			//	}
-			//}
-
 			int v = key.IndexOf("<");
 
 			if (v >= 0)
@@ -42,11 +34,5 @@ namespace AnotherPoint.Core
 
 			return implementTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
-
-		private static readonly string[] banned =
-		{
-			"System.Collections.Generic",
-			"System.Collections",
-		};
 	}
 }

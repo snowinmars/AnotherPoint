@@ -15,7 +15,7 @@ namespace AnotherPoint.Common
 		private static readonly string[] AssemblyNames =
 		{
 			"AnotherPoint.Common",
-			"AnotherPoint.Core",
+			//"AnotherPoint.Core",
 			"AnotherPoint.Entities",
 			"AnotherPoint.Templates",
 		};
