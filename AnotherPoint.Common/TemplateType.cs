@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AnotherPoint.Common
+﻿namespace AnotherPoint.Common
 {
 	public enum TemplateType
 	{

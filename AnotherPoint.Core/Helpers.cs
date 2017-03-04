@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace AnotherPoint.Core
 {
-    public static class Helpers
-    {
+	public static class Helpers
+	{
 		private static readonly IDictionary<string, string> correctCollectionTypeNaming = new Dictionary<string, string>
 		{
 			{"IEnumerable`1", "System.Collections.Generic.IEnumerable" }
@@ -17,7 +13,6 @@ namespace AnotherPoint.Core
 		{
 			{ "System.Collections.Generic.IEnumerable", "System.Collections.Generic.List" },
 		};
-
 
 		public static string GetCorrectCollectionTypeNaming(string key)
 		{

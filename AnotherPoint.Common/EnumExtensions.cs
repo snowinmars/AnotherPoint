@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AnotherPoint.Common
 {
@@ -35,14 +31,19 @@ namespace AnotherPoint.Common
 			{
 				case AccessModifyer.Public:
 					return Constant.Public;
+
 				case AccessModifyer.Internal:
 					return Constant.Internal;
+
 				case AccessModifyer.Protected:
 					return Constant.Protected;
+
 				case AccessModifyer.ProtectedInternal:
 					return Constant.ProtectedInternal;
+
 				case AccessModifyer.Private:
 					return Constant.Private;
+
 				default:
 					throw new ArgumentOutOfRangeException(nameof(t), t, null);
 			}

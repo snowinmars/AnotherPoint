@@ -1,5 +1,5 @@
-﻿using System;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
+using System;
 
 namespace AnotherPoint.Entities
 {

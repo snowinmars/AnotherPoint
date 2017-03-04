@@ -14,12 +14,12 @@ namespace AnotherPoint.Entities
 			if (v >= 0)
 			{
 				IsGeneric = true;
-				Name = fullName.Substring(0, v).Split(new [] {'.'}, StringSplitOptions.RemoveEmptyEntries).Last();
-				GenericType = fullName.Substring(v + 1,fullName.Length - 1);
+				Name = fullName.Substring(0, v).Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Last();
+				GenericType = fullName.Substring(v + 1, fullName.Length - 1);
 			}
 			else
 			{
-				Name = fullName.Split(new [] {'.'}, StringSplitOptions.RemoveEmptyEntries).Last();
+				Name = fullName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Last();
 			}
 		}
 
@@ -29,4 +29,3 @@ namespace AnotherPoint.Entities
 		public string GenericType { get; set; }
 	}
 }
-

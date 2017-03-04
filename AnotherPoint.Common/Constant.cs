@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace AnotherPoint.Common
 {
@@ -18,7 +17,6 @@ namespace AnotherPoint.Common
 		public const string Sealed = " sealed ";
 
 		public const string Generic = "Generic";
-
 
 		public const string Todo = " TODO ";
 		public const string AnotherPoint = "AnotherPoint";
