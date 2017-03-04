@@ -1,5 +1,6 @@
 ﻿using AnotherPoint.Common;
 using System;
+using System.Text;
 
 namespace AnotherPoint.Entities
 {
@@ -14,5 +15,14 @@ namespace AnotherPoint.Entities
 
 		public string Name { get; }
 		public CtorBindSettings Settings { get; }
+
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.Append($"{this.Name} to {this.Settings}");
+
+			return sb.ToString();
+		}
 	}
 }

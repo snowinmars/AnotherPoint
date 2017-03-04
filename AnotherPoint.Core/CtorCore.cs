@@ -110,7 +110,7 @@ namespace AnotherPoint.Core
 
 			foreach (var ctorBind in constructorInfo.GetCustomAttributes<CtorBindAttribute>())
 			{
-				string ctorArgTypeName = Bag.Pocket[ctorBind.Name];
+				string ctorArgTypeName = Bag.Pocket[ctorBind.Name]; // TODO generic info to bag
 				CtorArgument arg = new CtorArgument(ctorBind.Name, ctorArgTypeName, ctorBind.Settings);
 
 				ctor.ArgumentCollection.Add(arg);

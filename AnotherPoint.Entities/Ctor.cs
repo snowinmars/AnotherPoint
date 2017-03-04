@@ -20,9 +20,7 @@ namespace AnotherPoint.Entities
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.Append(this.AccessModifyer.AsString());
-			sb.Append(" ");
-			sb.Append($"({this.ArgumentCollection.Count} args)");
+			sb.Append($"{this.AccessModifyer.AsString()} {this.Type.Name} ({this.ArgumentCollection.Count} args)");
 
 			return sb.ToString();
 		}
