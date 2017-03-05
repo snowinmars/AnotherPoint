@@ -15,14 +15,14 @@ namespace AnotherPoint.Entities
 			this.FullName = this.ParseFullName(fullName);
 			this.Name = this.ParseName();
 			this.Namespace = this.ParseNamespace();
-			this.IsGeneric = false;
+			this.IsGeneric = null;
 		}
 
 		public string FullName { get; set; }
 
 		public IList<string> GenericTypes { get; }
 
-		public bool IsGeneric { get; set; }
+		public bool? IsGeneric { get; set; }
 
 		public string Name { get; set; }
 
@@ -34,7 +34,7 @@ namespace AnotherPoint.Entities
 
 			sb.Append($"{this.Name}");
 
-			if (this.IsGeneric)
+			if (this.IsGeneric.HasValue && this.IsGeneric.Value)
 			{
 				sb.Append($"<...> ({this.GenericTypes.Count})");
 			}

@@ -44,7 +44,7 @@ namespace AnotherPoint.Entities
 
 			sb.Append(this.Type.Name);
 
-			if (this.Type.IsGeneric)
+			if (this.Type.IsGeneric.HasValue && this.Type.IsGeneric.Value)
 			{
 				sb.Append("<...>");
 			}

@@ -9,6 +9,7 @@ namespace AnotherPoint.Entities
 		public Ctor(string fullTypeName)
 		{
 			this.Type = new MyType(fullTypeName);
+			this.AccessModifyer = AccessModifyer.Public;
 			this.ArgumentCollection = new List<CtorArgument>();
 		}
 

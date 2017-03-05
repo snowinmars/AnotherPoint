@@ -18,7 +18,7 @@ namespace AnotherPoint.Core
 			{
 				args.Append(parameter.Type.FullName);
 
-				if (parameter.Type.IsGeneric)
+				if (parameter.Type.IsGeneric.HasValue && parameter.Type.IsGeneric.Value)
 				{
 					args.Append("<");
 

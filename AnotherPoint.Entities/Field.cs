@@ -8,6 +8,7 @@ namespace AnotherPoint.Entities
 		public Field(string name, string typeName)
 		{
 			this.Name = name;
+			this.AccessModifyer = AccessModifyer.Public;
 
 			this.Type = new MyType(typeName);
 		}

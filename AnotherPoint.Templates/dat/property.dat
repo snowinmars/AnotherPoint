@@ -10,7 +10,7 @@
 		setMethodAccessModificator = "";
 	}
 
-	string typeName = Model.Type.IsGeneric ?
+	string typeName = Model.Type.IsGeneric.HasValue && Model.Type.IsGeneric.Value ?
 						Model.Type.FullName + "<" + string.Join(",", Model.Type.GenericTypes) + ">" :
 						Model.Type.FullName;
 }
