@@ -14,7 +14,8 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder args = new StringBuilder(128);
 
-			foreach (var parameter in ctor.ArgumentCollection)
+			foreach (var parameter in ctor.ArgumentCollection
+											.Where(arg => arg.BindAttribute != CtorBindSettings.CallThis && arg.BindAttribute != CtorBindSettings.New))
 			{
 				args.Append(parameter.Type.FullName);
 
@@ -63,32 +64,80 @@ namespace AnotherPoint.Core
 						body.Append(" = ");
 						body.Append(" new ");
 
-						string typeFullName = Bag.Pocket[bind.Name];
+						MyType type = Bag.Pocket[bind.Name];
 
-						var fullTypeNameWithoutAssmblyInfo = typeFullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
-						var typeName = Helpers.GetCorrectCollectionTypeNaming(fullTypeNameWithoutAssmblyInfo.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Last());
-						var fullImplementTypeName = Helpers.GetImplementTypeNaming(typeName);
+						var fullTypeNameWithoutAssmblyInfo = type.FullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
+						var fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
 						body.Append(fullImplementTypeName);
+
+						if (type.IsGeneric.HasValue && 
+							type.IsGeneric.Value)
+						{
+							body.Append("<");
+							body.Append(string.Join(",", type.GenericTypes));
+							body.Append(">");
+						}
 
 						if (Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo).Contains(Constant.Generic))
 						{
-							var v = typeFullName.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
+							var v = type.FullName.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
 
 							if (v >= 0)
 							{
-								body.Append(typeFullName.Substring(v));
+								body.Append(type.FullName.Substring(v));
 							}
 						}
 						body.Append("();");
 						break;
 
+					case CtorBindSettings.CallThis:
+						// do nothing here: I handle it in GetCtorCarriage()
+						break;
 					case CtorBindSettings.None:
+						break;
 						throw new ArgumentException($"Enum {nameof(CtorBindSettings)} can't equals to None");
 					default:
 						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(CtorBindSettings)} is out of range");
 				}
 
 				body.AppendLine();
+			}
+
+			return body.ToString();
+		}
+
+		public static string GetCtorCarriage(Ctor ctor)
+		{
+			StringBuilder body = new StringBuilder(256);
+
+			foreach (var bind in ctor.ArgumentCollection)
+			{
+				switch (bind.BindAttribute)
+				{
+					case CtorBindSettings.CallThis:
+						body.Append(bind.Name.FirstLetterToLower());
+						body.Append(",");
+						break;
+					case CtorBindSettings.Exact:
+						// do nothing here: I handle it in GetBodyAsString()
+						break;
+					case CtorBindSettings.New:
+						// do nothing here: I handle it in GetBodyAsString()
+						break;
+					case CtorBindSettings.None:
+						break;
+						throw new ArgumentException($"Enum {nameof(CtorBindSettings)} can't equals to None");
+					default:
+						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(CtorBindSettings)} is out of range");
+				}
+			}
+
+
+			if (body.Length > 0)
+			{
+				body.Remove(body.Length - 1, 1); // removing last comma
+				body.Insert(0, " : this(");
+				body.Append(")");
 			}
 
 			return body.ToString();
@@ -110,10 +159,22 @@ namespace AnotherPoint.Core
 
 			foreach (var ctorBind in constructorInfo.GetCustomAttributes<CtorBindAttribute>())
 			{
-				string ctorArgTypeName = Bag.Pocket[ctorBind.Name]; // TODO generic info to bag
-				CtorArgument arg = new CtorArgument(ctorBind.Name, ctorArgTypeName, ctorBind.Settings);
+				if (ctorBind.Settings == CtorBindSettings.CallThis)
+				{
+					CtorArgument arg = new CtorArgument(ctorBind.Name, "System", CtorBindSettings.CallThis);
 
-				ctor.ArgumentCollection.Add(arg);
+					ctor.ArgumentCollection.Add(arg);
+				}
+				else
+				{
+					MyType argType = Bag.Pocket[ctorBind.Name];
+					CtorArgument arg = new CtorArgument(ctorBind.Name, argType.FullName, ctorBind.Settings)
+					{
+						Type = argType
+					};
+
+					ctor.ArgumentCollection.Add(arg);
+				}
 			}
 
 			return ctor;

@@ -5,9 +5,10 @@
 @{
 	string parameters = CtorCore.GetArgumentCollectionAsString(Model);
 	string body = CtorCore.GetBodyAsString(Model);
+	string carriage = CtorCore.GetCtorCarriage(Model);
 }
 
-@Model.AccessModifyer.AsString() @Model.Type.Name (@parameters)
+@Model.AccessModifyer.AsString() @Model.Type.Name (@parameters) @carriage
 {
 	@body
 }

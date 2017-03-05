@@ -25,7 +25,7 @@ namespace AnotherPoint.Core
 
 			// saving field name and type for further appeals from ctor
 
-			Bag.Pocket[propertyName] = propertyType;
+			Bag.Pocket[propertyName] = property.Type;
 
 			return property;
 		}

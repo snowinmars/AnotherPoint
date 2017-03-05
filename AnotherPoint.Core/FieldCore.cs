@@ -20,7 +20,7 @@ namespace AnotherPoint.Core
 			FieldCore.SetupGeneric(fieldInfo, field);
 
 			// saving field name and type for further appeals from ctor
-			Bag.Pocket[fieldName] = fieldType;
+			Bag.Pocket[fieldName] = field.Type;
 
 			return field;
 		}

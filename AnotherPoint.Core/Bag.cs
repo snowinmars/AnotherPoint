@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using AnotherPoint.Entities;
 
 namespace AnotherPoint.Core
 {
@@ -6,9 +7,9 @@ namespace AnotherPoint.Core
 	{
 		static Bag()
 		{
-			Bag.Pocket = new Dictionary<string, string>();
+			Bag.Pocket = new Dictionary<string, MyType>();
 		}
 
-		public static IDictionary<string, string> Pocket { get; private set; }
+		public static IDictionary<string, MyType> Pocket { get; private set; }
 	}
 }
