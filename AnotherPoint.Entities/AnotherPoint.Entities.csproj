@@ -43,9 +43,10 @@
   <ItemGroup>
     <Compile Include="Class.cs" />
     <Compile Include="Ctor.cs" />
-    <Compile Include="CtorArgument.cs" />
-    <Compile Include="CtorBindAttribute.cs" />
+    <Compile Include="Argument.cs" />
+    <Compile Include="BindAttribute.cs" />
     <Compile Include="Field.cs" />
+    <Compile Include="Interface.cs" />
     <Compile Include="Method.cs" />
     <Compile Include="Property.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -55,6 +56,10 @@
     <ProjectReference Include="..\AnotherPoint.Common\AnotherPoint.Common.csproj">
       <Project>{df3e702e-4a73-48ee-8373-4c4529a15436}</Project>
       <Name>AnotherPoint.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Extensions\AnotherPoint.Extensions.csproj">
+      <Project>{1E1D5E38-1F40-4728-BDE4-704500F42D01}</Project>
+      <Name>AnotherPoint.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

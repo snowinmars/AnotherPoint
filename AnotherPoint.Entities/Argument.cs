@@ -3,9 +3,9 @@ using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class CtorArgument
+	public class Argument
 	{
-		public CtorArgument(string name, string typeName, CtorBindSettings bindAttribute)
+		public Argument(string name, string typeName, BindSettings bindAttribute)
 		{
 			this.Name = name;
 			this.BindAttribute = bindAttribute;
@@ -13,7 +13,7 @@ namespace AnotherPoint.Entities
 			this.Type = new MyType(typeName);
 		}
 
-		public CtorBindSettings BindAttribute { get; set; }
+		public BindSettings BindAttribute { get; set; }
 		public string Name { get; set; }
 		public MyType Type { get; set; }
 

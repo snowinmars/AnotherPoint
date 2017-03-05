@@ -88,7 +88,7 @@
     <Compile Include="AccessModifyer.cs" />
     <Compile Include="AssemblyForge.cs" />
     <Compile Include="Constant.cs" />
-    <Compile Include="CtorBindSettings.cs" />
+    <Compile Include="BindSettings.cs" />
     <Compile Include="EnumExtensions.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

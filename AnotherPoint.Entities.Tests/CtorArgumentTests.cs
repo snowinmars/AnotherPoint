@@ -15,9 +15,9 @@ namespace AnotherPoint.Entities.Tests
 		{
 			string argName = Guid.NewGuid().ToString();
 			string typeName = Guid.NewGuid().ToString();
-			const CtorBindSettings bind = CtorBindSettings.New;
+			const BindSettings bind = BindSettings.New;
 
-			CtorArgument arg = new CtorArgument(argName, typeName, bind);
+			Argument arg = new Argument(argName, typeName, bind);
 			
 			Assert.NotNull(arg.Type);
 			Assert.Equal(expected: bind, actual: arg.BindAttribute);

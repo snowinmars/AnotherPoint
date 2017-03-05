@@ -1,13 +1,15 @@
 ﻿@using AnotherPoint.Common
+@using AnotherPoint.Core
 @using AnotherPoint.Templates
 @model AnotherPoint.Entities.Class
 
 @{
+	string interfaces = ClassCore.GetInterfacesAsString(Model);
 }
 
 namespace @Model.Namespace
 {
-	@Model.AccessModifyer.AsString() class @Model.Name
+@Model.AccessModifyer.AsString() class @Model.Name @interfaces
 	{
 		@foreach (var field in Model.Fields)
 		{
@@ -23,5 +25,14 @@ namespace @Model.Namespace
 		{
 			WriteLiteral(TemplateRepository.Compile(TemplateType.Ctor, ctor));
 		}
+
+		@foreach (var modelInterface in Model.Interfaces)
+		{
+			foreach (var method in modelInterface.Methods)
+			{
+				WriteLiteral(TemplateRepository.Compile(TemplateType.Method, method));
+			}
+		}
+
 	}
 }

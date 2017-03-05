@@ -3,6 +3,7 @@ using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace AnotherPoint.Core
 {
@@ -10,6 +11,11 @@ namespace AnotherPoint.Core
 	{
 		public static Class Map(Type type)
 		{
+			if (type.IsInterface)
+			{
+				throw new ArgumentException($"Type {type.FullName} is an interface");
+			}
+
 			Class @class = new Class(type.FullName)
 			{
 				AccessModifyer = ClassCore.GetAccessModifyer(type),
@@ -20,8 +26,31 @@ namespace AnotherPoint.Core
 			ClassCore.SetupFields(type, @class);
 			ClassCore.SetupProperties(type, @class);
 			ClassCore.SetupCtors(type, @class);
+			SetupInterfaces(type, @class);
 
 			return @class;
+		}
+
+		private static void SetupInterfaces(Type type, Class @class)
+		{
+			foreach (var interfaceType in type.GetInterfaces())
+			{
+				Interface @interface = InterfaceCore.Map(interfaceType);
+
+				@class.Interfaces.Add(@interface);
+			}
+		}
+
+		public static string GetInterfacesAsString(Class @class)
+		{
+			StringBuilder sb = new StringBuilder(string.Join(",", @class.Interfaces.Select(i => i.FullName)));
+
+			if (sb.Length > 0)
+			{
+				sb.Insert(0, " : ");
+			}
+
+			return sb.ToString();
 		}
 
 		private static AccessModifyer GetAccessModifyer(Type type)

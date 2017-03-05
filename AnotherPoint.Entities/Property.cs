@@ -9,8 +9,8 @@ namespace AnotherPoint.Entities
 		{
 			this.Name = name;
 
-			this.GetMethod = new Method(Constant.Get);
-			this.SetMethod = new Method(Constant.Set);
+			this.GetMethod = new Method(Constant.Get, typeName);
+			this.SetMethod = new Method(Constant.Set, typeName);
 			this.Type = new MyType(typeName);
 		}
 

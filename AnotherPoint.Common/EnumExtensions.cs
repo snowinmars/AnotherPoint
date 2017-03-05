@@ -21,6 +21,9 @@ namespace AnotherPoint.Common
 				case TemplateType.Ctor:
 					return "ctor";
 
+				case TemplateType.Method:
+					return "method";
+
 				case TemplateType.None:
 					return "";
 				default:
@@ -30,49 +33,58 @@ namespace AnotherPoint.Common
 
 		public static string AsString(this AccessModifyer accessModifyer)
 		{
+			if (accessModifyer == AccessModifyer.None)
+			{
+				return "";
+			}
+
 			StringBuilder sb = new StringBuilder();
 
-			switch (accessModifyer)
+			if (accessModifyer.HasFlag(AccessModifyer.Public))
 			{
-				case AccessModifyer.Public:
-					sb.Append(" ");
-					sb.Append(Constant.Public);
-					sb.Append(" ");
-					break;
-
-				case AccessModifyer.Internal:
-					sb.Append(" ");
-					sb.Append(Constant.Internal);
-					sb.Append(" ");
-					break;
-
-				case AccessModifyer.Protected:
-					sb.Append(" ");
-					sb.Append(Constant.Protected);
-					sb.Append(" ");
-					break;
-
-				case AccessModifyer.Private:
-					sb.Append(" ");
-					sb.Append(Constant.Private);
-					sb.Append(" ");
-					break;
-
-				case AccessModifyer.Abstract:
-					sb.Append(" ");
-					sb.Append(Constant.Abstract);
-					sb.Append(" ");
-					break;
-
-				case AccessModifyer.Sealed:
-					sb.Append(" ");
-					sb.Append(Constant.Sealed);
-					sb.Append(" ");
-					break;
-
-				case AccessModifyer.None:
-				default:
-					throw new ArgumentOutOfRangeException(nameof(accessModifyer), accessModifyer, null);
+				sb.Append(" ");
+				sb.Append(Constant.Public);
+				sb.Append(" ");
+			}
+			else if (accessModifyer.HasFlag(AccessModifyer.Internal))
+			{
+				sb.Append(" ");
+				sb.Append(Constant.Internal);
+				sb.Append(" ");
+			}
+			else if (accessModifyer.HasFlag(AccessModifyer.Protected))
+			{
+				sb.Append(" ");
+				sb.Append(Constant.Protected);
+				sb.Append(" ");
+			}
+			else if (accessModifyer.HasFlag(AccessModifyer.Private))
+			{
+				sb.Append(" ");
+				sb.Append(Constant.Private);
+				sb.Append(" ");
+			}
+			else if (accessModifyer.HasFlag(AccessModifyer.Abstract))
+			{
+				sb.Append(" ");
+				sb.Append(Constant.Abstract);
+				sb.Append(" ");
+			}
+			else if (accessModifyer.HasFlag(AccessModifyer.Sealed))
+			{
+				sb.Append(" ");
+				sb.Append(Constant.Sealed);
+				sb.Append(" ");
+			}
+			else if (accessModifyer.HasFlag(AccessModifyer.Virtual))
+			{
+				sb.Append(" ");
+				sb.Append(Constant.Virtual);
+				sb.Append(" ");
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException(nameof(accessModifyer), accessModifyer, null);
 			}
 
 			return sb.ToString();

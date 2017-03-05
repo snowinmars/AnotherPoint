@@ -16,6 +16,7 @@ namespace AnotherPoint.Common
 		public const string ProtectedInternal = " protected internal ";
 		public const string Public = " public ";
 		public const string Sealed = " sealed ";
+		public const string Virtual = " virtual ";
 		public const string Todo = " TODO ";
 
 		#endregion constants for rendering
@@ -32,6 +33,7 @@ namespace AnotherPoint.Common
 		public const string Generic = "Generic";
 		public const string Get = "get";
 		public const string Set = "set";
+		public const string Void = "Void";
 
 		#endregion exact matching constants
 
@@ -39,5 +41,6 @@ namespace AnotherPoint.Common
 		{
 			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
+
 	}
 }

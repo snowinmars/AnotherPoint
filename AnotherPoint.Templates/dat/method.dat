@@ -1,0 +1,21 @@
+﻿@using AnotherPoint.Common
+@using AnotherPoint.Core
+@model AnotherPoint.Entities.Method
+
+@{
+	string arguments = MethodCore.GetArgumentsAsString(Model);
+	string body = MethodCore.GetBodyAsString(Model);
+
+	string returnTypeName = Model.ReturnType.FullName;
+
+	
+	if (returnTypeName == "System.Void")
+	{
+		returnTypeName = "void";
+	}
+}
+
+@Model.AccessModifyer.AsString() @returnTypeName @Model.Name (@arguments)
+{
+	@body
+}

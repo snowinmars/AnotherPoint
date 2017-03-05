@@ -15,7 +15,7 @@ namespace AnotherPoint.Core
 			StringBuilder args = new StringBuilder(128);
 
 			foreach (var parameter in ctor.ArgumentCollection
-											.Where(arg => arg.BindAttribute != CtorBindSettings.CallThis && arg.BindAttribute != CtorBindSettings.New))
+											.Where(arg => arg.BindAttribute != BindSettings.CallThis && arg.BindAttribute != BindSettings.New))
 			{
 				args.Append(parameter.Type.FullName);
 
@@ -50,7 +50,7 @@ namespace AnotherPoint.Core
 			{
 				switch (bind.BindAttribute)
 				{
-					case CtorBindSettings.Exact:
+					case BindSettings.Exact:
 						body.Append(" this. ");
 						body.Append(bind.Name.FirstLetterToUpper());
 						body.Append(" = ");
@@ -58,7 +58,7 @@ namespace AnotherPoint.Core
 						body.Append(";");
 						break;
 
-					case CtorBindSettings.New:
+					case BindSettings.New:
 						body.Append(" this. ");
 						body.Append(bind.Name.FirstLetterToUpper());
 						body.Append(" = ");
@@ -90,14 +90,14 @@ namespace AnotherPoint.Core
 						body.Append("();");
 						break;
 
-					case CtorBindSettings.CallThis:
+					case BindSettings.CallThis:
 						// do nothing here: I handle it in GetCtorCarriage()
 						break;
-					case CtorBindSettings.None:
+					case BindSettings.None:
 						break;
-						throw new ArgumentException($"Enum {nameof(CtorBindSettings)} can't equals to None");
+						throw new ArgumentException($"Enum {nameof(BindSettings)} can't equals to None");
 					default:
-						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(CtorBindSettings)} is out of range");
+						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
 				}
 
 				body.AppendLine();
@@ -114,21 +114,21 @@ namespace AnotherPoint.Core
 			{
 				switch (bind.BindAttribute)
 				{
-					case CtorBindSettings.CallThis:
+					case BindSettings.CallThis:
 						body.Append(bind.Name.FirstLetterToLower());
 						body.Append(",");
 						break;
-					case CtorBindSettings.Exact:
+					case BindSettings.Exact:
 						// do nothing here: I handle it in GetBodyAsString()
 						break;
-					case CtorBindSettings.New:
+					case BindSettings.New:
 						// do nothing here: I handle it in GetBodyAsString()
 						break;
-					case CtorBindSettings.None:
+					case BindSettings.None:
 						break;
-						throw new ArgumentException($"Enum {nameof(CtorBindSettings)} can't equals to None");
+						throw new ArgumentException($"Enum {nameof(BindSettings)} can't equals to None");
 					default:
-						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(CtorBindSettings)} is out of range");
+						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
 				}
 			}
 
@@ -157,18 +157,18 @@ namespace AnotherPoint.Core
 				AccessModifyer = CtorCore.GetAccessModifyer(constructorInfo)
 			};
 
-			foreach (var ctorBind in constructorInfo.GetCustomAttributes<CtorBindAttribute>())
+			foreach (var ctorBind in constructorInfo.GetCustomAttributes<BindAttribute>())
 			{
-				if (ctorBind.Settings == CtorBindSettings.CallThis)
+				if (ctorBind.Settings == BindSettings.CallThis)
 				{
-					CtorArgument arg = new CtorArgument(ctorBind.Name, "System", CtorBindSettings.CallThis);
+					Argument arg = new Argument(ctorBind.Name, "System", BindSettings.CallThis);
 
 					ctor.ArgumentCollection.Add(arg);
 				}
 				else
 				{
 					MyType argType = Bag.Pocket[ctorBind.Name];
-					CtorArgument arg = new CtorArgument(ctorBind.Name, argType.FullName, ctorBind.Settings)
+					Argument arg = new Argument(ctorBind.Name, argType.FullName, ctorBind.Settings)
 					{
 						Type = argType
 					};

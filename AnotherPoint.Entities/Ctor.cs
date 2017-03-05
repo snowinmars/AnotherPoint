@@ -10,11 +10,11 @@ namespace AnotherPoint.Entities
 		{
 			this.Type = new MyType(fullTypeName);
 			this.AccessModifyer = AccessModifyer.Public;
-			this.ArgumentCollection = new List<CtorArgument>();
+			this.ArgumentCollection = new List<Argument>();
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }
-		public IList<CtorArgument> ArgumentCollection { get; }
+		public IList<Argument> ArgumentCollection { get; }
 		public MyType Type { get; set; }
 
 		public override string ToString()

@@ -1,6 +1,6 @@
 ﻿namespace AnotherPoint.Common
 {
-	public enum CtorBindSettings
+	public enum BindSettings
 	{
 		None = 0,
 		Exact = 1,

@@ -12,5 +12,6 @@ namespace AnotherPoint.Common
 		Private = 8,
 		Abstract = 16,
 		Sealed = 32,
+		Virtual = 64,
 	}
 }

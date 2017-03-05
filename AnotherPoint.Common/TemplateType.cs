@@ -7,5 +7,6 @@
 		Field = 2,
 		Property = 3,
 		Ctor = 4,
+		Method = 5,
 	}
 }

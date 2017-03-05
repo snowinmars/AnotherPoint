@@ -13,9 +13,12 @@ namespace AnotherPoint.Entities
 			this.Ctors = new List<Ctor>();
 			this.Fields = new List<Field>();
 			this.Properties = new List<Property>();
+			this.Interfaces = new List<Interface>();
 
 			this.AccessModifyer = AccessModifyer.Public;
 		}
+
+		public IList<Interface> Interfaces { get; }
 
 		public AccessModifyer AccessModifyer { get; set; }
 
