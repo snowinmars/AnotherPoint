@@ -193,11 +193,6 @@ namespace AnotherPoint.Core
 				CtorCore.GetGenericTypesAsString(sb, type);
 			}
 
-			//if (type.IsGeneric.HasValue && type.IsGeneric.Value)
-			//{
-			//	sb.Append(string.Join(",", type.GenericTypes));
-			//}
-
 			sb.Append("();");
 
 			return sb.ToString();
