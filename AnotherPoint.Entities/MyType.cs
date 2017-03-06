@@ -42,19 +42,32 @@ namespace AnotherPoint.Entities
 			return sb.ToString();
 		}
 
-		private string ParseFullName(string fullName) // TODO
+		private string ParseFullName(string fullName)
 		{
 			// If original type is generic, fullName here is like
 			//   System.Collections.Generic.IEnumerable`1[[TmpConsoleApplication.User, TmpConsoleApplication, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
 
 			// fullNameWithoutAssemblyInfo is like
 			//  System.Collections.Generic.IEnumerable`1
-			string f;
-			string fullNameWithoutAssemblyInfo = fullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
+			string fullNameWithoutAssemblyInfo = this.GetFullNameWithoutAssemblyInfo(fullName);
 
 			// if this type was generic, convert it to the human-readable form like
 			//   System.Collections.Generic.IEnumerable
-			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullNameWithoutAssemblyInfo, out f) ? f : fullName;
+			return this.GetFullTypeNameHumanReadable(fullNameWithoutAssemblyInfo);
+		}
+
+		public string GetFullNameWithoutAssemblyInfo(string fullName)
+		{
+			return fullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
+		}
+
+		public string GetFullTypeNameHumanReadable(string fullTypeNameWithoutAssemblyInfo)
+		{
+			string f;
+
+			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out f) ? 
+				f :
+				fullTypeNameWithoutAssemblyInfo;
 		}
 
 		private string ParseName()

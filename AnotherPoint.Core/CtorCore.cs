@@ -183,7 +183,7 @@ namespace AnotherPoint.Core
 
 			MyType type = Bag.Pocket[bind.Name];
 
-			string fullTypeNameWithoutAssmblyInfo = CtorCore.GetFullTypeNameWithoutAssmblyInfo(type);
+			string fullTypeNameWithoutAssmblyInfo = type.GetFullNameWithoutAssemblyInfo(type.FullName);
 			string fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
 			sb.Append(fullImplementTypeName);
 
