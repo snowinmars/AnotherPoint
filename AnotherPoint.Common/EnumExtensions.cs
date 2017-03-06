@@ -26,6 +26,7 @@ namespace AnotherPoint.Common
 
 				case TemplateType.None:
 					return "";
+
 				default:
 					throw new ArgumentOutOfRangeException(nameof(templateType), templateType, null);
 			}

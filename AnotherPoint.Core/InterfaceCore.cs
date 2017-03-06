@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
+using System;
 
 namespace AnotherPoint.Core
 {
@@ -19,7 +15,7 @@ namespace AnotherPoint.Core
 
 			Interface @interface = new Interface(interfaceType.FullName);
 
-			HandleMethods(@interface, interfaceType);
+			InterfaceCore.HandleMethods(@interface, interfaceType);
 
 			return @interface;
 		}

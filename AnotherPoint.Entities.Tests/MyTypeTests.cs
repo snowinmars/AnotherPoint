@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
-using Xunit;
-using Xunit.Sdk;
+﻿using Xunit;
 
 namespace AnotherPoint.Entities.Tests
 {
@@ -19,7 +12,7 @@ namespace AnotherPoint.Entities.Tests
 			const string @namespace = "System";
 
 			MyType myType = new MyType(fullTypeName);
-			
+
 			Assert.Null(myType.IsGeneric);
 			Assert.NotNull(myType.GenericTypes);
 			Assert.Equal(expected: fullTypeName, actual: myType.FullName);

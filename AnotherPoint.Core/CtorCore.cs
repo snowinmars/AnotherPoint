@@ -70,7 +70,7 @@ namespace AnotherPoint.Core
 						var fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
 						body.Append(fullImplementTypeName);
 
-						if (type.IsGeneric.HasValue && 
+						if (type.IsGeneric.HasValue &&
 							type.IsGeneric.Value)
 						{
 							body.Append("<");
@@ -93,9 +93,10 @@ namespace AnotherPoint.Core
 					case BindSettings.CallThis:
 						// do nothing here: I handle it in GetCtorCarriage()
 						break;
+
 					case BindSettings.None:
 						break;
-						throw new ArgumentException($"Enum {nameof(BindSettings)} can't equals to None");
+
 					default:
 						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
 				}
@@ -118,20 +119,22 @@ namespace AnotherPoint.Core
 						body.Append(bind.Name.FirstLetterToLower());
 						body.Append(",");
 						break;
+
 					case BindSettings.Exact:
 						// do nothing here: I handle it in GetBodyAsString()
 						break;
+
 					case BindSettings.New:
 						// do nothing here: I handle it in GetBodyAsString()
 						break;
+
 					case BindSettings.None:
 						break;
-						throw new ArgumentException($"Enum {nameof(BindSettings)} can't equals to None");
+
 					default:
 						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
 				}
 			}
-
 
 			if (body.Length > 0)
 			{

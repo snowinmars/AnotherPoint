@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AnotherPoint.Entities.MethodImpl
 {
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method)]
 	public class MethodImpl_ValidateAttribute : Attribute
 	{
 		public MethodImpl_ValidateAttribute(string[] namesOfInputParametersToValidate)

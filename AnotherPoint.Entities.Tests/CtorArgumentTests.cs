@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
+using System;
 using Xunit;
 
 namespace AnotherPoint.Entities.Tests
@@ -18,7 +14,7 @@ namespace AnotherPoint.Entities.Tests
 			const BindSettings bind = BindSettings.New;
 
 			Argument arg = new Argument(argName, typeName, bind);
-			
+
 			Assert.NotNull(arg.Type);
 			Assert.Equal(expected: bind, actual: arg.BindAttribute);
 			Assert.Equal(expected: argName, actual: arg.Name);

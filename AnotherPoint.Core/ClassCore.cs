@@ -28,7 +28,6 @@ namespace AnotherPoint.Core
 				{
 					@class.IsEndpoint = true;
 					@class.DestinationTypeName = classImplAttribute.DestinationTypeName;
-
 				}
 			}
 
@@ -37,8 +36,8 @@ namespace AnotherPoint.Core
 			ClassCore.SetupFields(type, @class);
 			ClassCore.SetupProperties(type, @class);
 			ClassCore.SetupCtors(type, @class);
-			SetupInterfaces(type, @class);
-			SetupMethods(type, @class);
+			ClassCore.SetupInterfaces(type, @class);
+			ClassCore.SetupMethods(type, @class);
 
 			return @class;
 		}
@@ -117,7 +116,7 @@ namespace AnotherPoint.Core
 				@class.Ctors.Add(CtorCore.Map(constructorInfo));
 			}
 
-			if (@class.Ctors.Count == 1 && 
+			if (@class.Ctors.Count == 1 &&
 					@class.Ctors.First().IsDefaultCtor())
 			{
 				@class.Ctors.Clear();
@@ -146,7 +145,7 @@ namespace AnotherPoint.Core
 
 			if (@class.IsEndpoint)
 			{
-				Field destinationField = new Field(GetDefaultDestinationName(@class), @class.DestinationTypeName)
+				Field destinationField = new Field(ClassCore.GetDefaultDestinationName(@class), @class.DestinationTypeName)
 				{
 					AccessModifyer = AccessModifyer.Private
 				};
@@ -160,7 +159,7 @@ namespace AnotherPoint.Core
 				injectedCtor.AccessModifyer = AccessModifyer.Public;
 				injectedCtor.IsCtorForInject = true;
 
-				Argument arg = new Argument(destinationField.Name.FirstLetterToLower(), 
+				Argument arg = new Argument(destinationField.Name.FirstLetterToLower(),
 												destinationField.Type.FullName,
 												BindSettings.Exact);
 

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
+using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -85,11 +85,11 @@ namespace AnotherPoint.Core
 				AccessModifyer = MethodCore.GetAccessModifyer(methodInfo)
 			};
 
-			HandleAttributesForBodyGeneration(methodInfo, method);
+			MethodCore.HandleAttributesForBodyGeneration(methodInfo, method);
 
 			method.ForClass = className;
 
-			HandleArguments(method, methodInfo);
+			MethodCore.HandleArguments(method, methodInfo);
 
 			return method;
 		}

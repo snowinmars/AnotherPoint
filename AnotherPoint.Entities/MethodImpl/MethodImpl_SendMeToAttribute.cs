@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AnotherPoint.Entities.MethodImpl
 {
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method)]
 	public class MethodImpl_SendMeToAttribute : Attribute
 	{
 		public MethodImpl_SendMeToAttribute(string destination)

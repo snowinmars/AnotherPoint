@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
-using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method)]
 	public class MethodImpl_ShutMeUpAttribute : Attribute
 	{
 	}

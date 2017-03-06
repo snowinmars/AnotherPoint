@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
+using System;
 using Xunit;
 
 namespace AnotherPoint.Entities.Tests
@@ -16,7 +12,7 @@ namespace AnotherPoint.Entities.Tests
 			string typeName = Guid.NewGuid().ToString();
 
 			Class c = new Class(typeName);
-			
+
 			Assert.NotNull(c.Type);
 			Assert.NotNull(c.Ctors);
 			Assert.NotNull(c.Fields);
