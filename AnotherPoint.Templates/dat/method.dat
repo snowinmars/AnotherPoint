@@ -7,7 +7,6 @@
 	string body = MethodCore.GetBodyAsString(Model);
 
 	string returnTypeName = Model.ReturnType.FullName;
-
 	
 	if (returnTypeName == "System.Void")
 	{

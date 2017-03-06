@@ -26,12 +26,9 @@ namespace @Model.Namespace
 			WriteLiteral(TemplateRepository.Compile(TemplateType.Ctor, ctor));
 		}
 
-		@foreach (var modelInterface in Model.Interfaces)
+		@foreach (var method in Model.Methods)
 		{
-			foreach (var method in modelInterface.Methods)
-			{
-				WriteLiteral(TemplateRepository.Compile(TemplateType.Method, method));
-			}
+			WriteLiteral(TemplateRepository.Compile(TemplateType.Method, method));
 		}
 
 	}

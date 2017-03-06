@@ -14,10 +14,19 @@ namespace AnotherPoint.Entities
 			this.Fields = new List<Field>();
 			this.Properties = new List<Property>();
 			this.Interfaces = new List<Interface>();
+			this.Methods = new List<Method>();
 
 			this.AccessModifyer = AccessModifyer.Public;
+
+			this.DestinationTypeName = "";
+			this.IsEndpoint = false;
 		}
 
+		public string DestinationTypeName { get; set; }
+
+		public bool IsEndpoint { get; set; }
+
+		public IList<Method> Methods { get; }
 		public IList<Interface> Interfaces { get; }
 
 		public AccessModifyer AccessModifyer { get; set; }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using AnotherPoint.Common;
 using AnotherPoint.Entities;
+using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
+using System.Reflection;
+using System.Text;
 
 namespace AnotherPoint.Core
 {
@@ -14,31 +13,107 @@ namespace AnotherPoint.Core
 	{
 		public static string GetBodyAsString(Method method)
 		{
-			return "";
+			MethodImpl_ShutMeUpAttribute shutMeUpAttribute = null;
+			MethodImpl_SendMeToAttribute sendMeToAttribute = null;
+			MethodImpl_ValidateAttribute validateAttribute = null;
+
+			if (method.AttributesForBodyGeneration.Count > 3)
+			{
+				throw new InvalidOperationException("This can't be");
+			}
+
+			foreach (var attribute in method.AttributesForBodyGeneration)
+			{
+				if (shutMeUpAttribute == null)
+				{
+					shutMeUpAttribute = attribute as MethodImpl_ShutMeUpAttribute;
+				}
+
+				if (sendMeToAttribute == null)
+				{
+					sendMeToAttribute = attribute as MethodImpl_SendMeToAttribute;
+				}
+
+				if (validateAttribute == null)
+				{
+					validateAttribute = attribute as MethodImpl_ValidateAttribute;
+				}
+			}
+
+			StringBuilder body = new StringBuilder();
+
+			if (validateAttribute != null)
+			{
+				foreach (var param in validateAttribute.NamesOfInputParametersToValidate)
+				{
+					body.AppendLine($"Validator.Check({param});");
+				}
+			}
+
+			body.AppendLine();
+
+			if (sendMeToAttribute != null)
+			{
+				string defaultDestination = $"{method.ForClass.FirstLetterToLower()}Destination"; // TODO
+
+				string destination = sendMeToAttribute.Destination == Constant.DefaultDestination
+					? defaultDestination
+					: sendMeToAttribute.Destination;
+
+				if (!string.Equals(method.ReturnType.Name, Constant.Void, StringComparison.InvariantCultureIgnoreCase))
+				{
+					body.Append(" return ");
+				}
+
+				body.AppendLine($"this.{destination.FirstLetterToLower()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
+			}
+
+			body.AppendLine();
+
+			if (shutMeUpAttribute != null)
+			{
+				body.Append(Constant.MethodBody_ShutUp);
+			}
+
+			return body.ToString();
 		}
 
-		public static Method Map(MethodInfo methodInfo)
+		public static Method Map(MethodInfo methodInfo, string className = null)
 		{
 			Method method = new Method(methodInfo.Name, methodInfo.ReturnType.FullName)
 			{
 				AccessModifyer = MethodCore.GetAccessModifyer(methodInfo)
 			};
 
-			if (method.ReturnType.Name != Constant.Void)
-			{
-				HandleArguments(method, methodInfo);
-			}
+			HandleAttributesForBodyGeneration(methodInfo, method);
+
+			method.ForClass = className;
+
+			HandleArguments(method, methodInfo);
 
 			return method;
 		}
 
-		public static string GetArgumentsAsString(Method method)
+		private static void HandleAttributesForBodyGeneration(MethodInfo methodInfo, Method method)
 		{
-			if (method.ReturnType.Name == Constant.Void)
+			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl_ShutMeUpAttribute>())
 			{
-				return "";
+				method.AttributesForBodyGeneration.Add(methodImplAttribute);
 			}
 
+			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl_SendMeToAttribute>())
+			{
+				method.AttributesForBodyGeneration.Add(methodImplAttribute);
+			}
+
+			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl_ValidateAttribute>())
+			{
+				method.AttributesForBodyGeneration.Add(methodImplAttribute);
+			}
+		}
+
+		public static string GetArgumentsAsString(Method method)
+		{
 			StringBuilder sb = new StringBuilder();
 
 			foreach (var argument in method.Arguments)
@@ -46,7 +121,10 @@ namespace AnotherPoint.Core
 				sb.Append($"{argument.Type.FullName} {argument.Name.FirstLetterToLower()},");
 			}
 
-			sb.Remove(sb.Length - 1, 1);
+			if (sb.Length > 0)
+			{
+				sb.Remove(sb.Length - 1, 1);
+			}
 
 			return sb.ToString();
 		}

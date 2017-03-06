@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AnotherPoint.Common;
 using System.Text;
@@ -15,12 +16,17 @@ namespace AnotherPoint.Entities
 
 			this.Arguments = new List<Argument>();
 			this.ReturnType = new MyType(fullNameOfReturnType);
+
+			this.AttributesForBodyGeneration = new List<Attribute>();
+			this.ForClass = null;
 		}
 
+		public IList<Attribute> AttributesForBodyGeneration { get; set; }
 		public AccessModifyer AccessModifyer { get; set; }
 		public string Name { get; set; }
 		public IList<Argument> Arguments { get; }
 		public MyType ReturnType { get; set; }
+		public string ForClass { get; set; }
 
 		public override string ToString()
 		{

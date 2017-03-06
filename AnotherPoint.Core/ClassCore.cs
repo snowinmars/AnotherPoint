@@ -3,6 +3,7 @@ using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace AnotherPoint.Core
@@ -21,14 +22,36 @@ namespace AnotherPoint.Core
 				AccessModifyer = ClassCore.GetAccessModifyer(type),
 			};
 
+			foreach (var classImplAttribute in type.GetCustomAttributes<ClassImplAttribute>())
+			{
+				if (classImplAttribute.IsEndPoint)
+				{
+					@class.IsEndpoint = true;
+					@class.DestinationTypeName = classImplAttribute.DestinationTypeName;
+
+				}
+			}
+
 			ClassCore.SetupGeneric(type, @class);
 
 			ClassCore.SetupFields(type, @class);
 			ClassCore.SetupProperties(type, @class);
 			ClassCore.SetupCtors(type, @class);
 			SetupInterfaces(type, @class);
+			SetupMethods(type, @class);
 
 			return @class;
+		}
+
+		private static void SetupMethods(Type type, Class @class)
+		{
+			foreach (var methodInfo in type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
+											.Where(m => !m.Name.StartsWith(Constant.Get) && !m.Name.StartsWith(Constant.Set)))
+			{
+				Method method = MethodCore.Map(methodInfo, type.Name);
+
+				@class.Methods.Add(method);
+			}
 		}
 
 		private static void SetupInterfaces(Type type, Class @class)
@@ -93,6 +116,24 @@ namespace AnotherPoint.Core
 			{
 				@class.Ctors.Add(CtorCore.Map(constructorInfo));
 			}
+
+			if (@class.Ctors.Count == 1 && 
+					@class.Ctors.First().IsDefaultCtor())
+			{
+				@class.Ctors.Clear();
+			}
+
+			// I dont want class have default ctor next to ctor for dependency inject, so if there's only two of them - I remove default one
+			if (@class.Ctors.Count == 2)
+			{
+				Ctor defaultCtor = @class.Ctors.FirstOrDefault(c => c.IsDefaultCtor());
+				Ctor injectCtor = @class.Ctors.FirstOrDefault(c => c.IsCtorForInject);
+
+				if (defaultCtor != null && injectCtor != null)
+				{
+					@class.Ctors.Remove(defaultCtor);
+				}
+			}
 		}
 
 		private static void SetupFields(Type type, Class @class)
@@ -102,6 +143,36 @@ namespace AnotherPoint.Core
 			{
 				@class.Fields.Add(FieldCore.Map(fieldInfo));
 			}
+
+			if (@class.IsEndpoint)
+			{
+				Field destinationField = new Field(GetDefaultDestinationName(@class), @class.DestinationTypeName)
+				{
+					AccessModifyer = AccessModifyer.Private
+				};
+
+				destinationField.Name = destinationField.Name.FirstLetterToLower();
+
+				@class.Fields.Add(destinationField);
+
+				Ctor injectedCtor = new Ctor(@class.Type.FullName);
+
+				injectedCtor.AccessModifyer = AccessModifyer.Public;
+				injectedCtor.IsCtorForInject = true;
+
+				Argument arg = new Argument(destinationField.Name.FirstLetterToLower(), 
+												destinationField.Type.FullName,
+												BindSettings.Exact);
+
+				injectedCtor.ArgumentCollection.Add(arg);
+
+				@class.Ctors.Add(injectedCtor);
+			}
+		}
+
+		public static string GetDefaultDestinationName(Class @class)
+		{
+			return $"{@class.Name}Destination";
 		}
 
 		private static void SetupGeneric(Type type, Class @class)

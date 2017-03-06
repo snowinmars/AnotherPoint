@@ -42,5 +42,7 @@ namespace AnotherPoint.Common
 			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
 
+		public const string MethodBody_ShutUp = " throw new System.NotImplementedException(); ";
+		public const string DefaultDestination = "DefaultDestination";
 	}
 }
