@@ -24,7 +24,6 @@ namespace AnotherPoint.Core
 			PropertyCore.SetupGeneric(propertyInfo, property);
 
 			// saving field name and type for further appeals from ctor
-
 			Bag.Pocket[propertyName] = property.Type;
 
 			return property;

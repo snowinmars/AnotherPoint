@@ -11,18 +11,18 @@ namespace AnotherPoint.Entities
 			this.Methods = new List<Method>();
 		}
 
+		public string FullName
+		{
+			get { return this.Type.FullName; }
+			set { this.Type.FullName = value; }
+		}
+
 		public IList<Method> Methods { get; }
 
 		public string Name
 		{
 			get { return this.Type.Name; }
 			set { this.Type.Name = value; }
-		}
-
-		public string FullName
-		{
-			get { return this.Type.FullName; }
-			set { this.Type.FullName = value; }
 		}
 
 		public MyType Type { get; set; }

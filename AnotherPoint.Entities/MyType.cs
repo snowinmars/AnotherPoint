@@ -42,7 +42,7 @@ namespace AnotherPoint.Entities
 			return sb.ToString();
 		}
 
-		private string ParseFullName(string fullName)
+		private string ParseFullName(string fullName) // TODO
 		{
 			// If original type is generic, fullName here is like
 			//   System.Collections.Generic.IEnumerable`1[[TmpConsoleApplication.User, TmpConsoleApplication, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]

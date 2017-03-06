@@ -16,8 +16,8 @@ namespace AnotherPoint.Common
 		public const string ProtectedInternal = " protected internal ";
 		public const string Public = " public ";
 		public const string Sealed = " sealed ";
-		public const string Virtual = " virtual ";
 		public const string Todo = " TODO ";
+		public const string Virtual = " virtual ";
 
 		#endregion constants for rendering
 
@@ -37,12 +37,13 @@ namespace AnotherPoint.Common
 
 		#endregion exact matching constants
 
+		public const string DefaultDestination = "DefaultDestination";
+
+		public const string MethodBody_ShutUp = " throw new System.NotImplementedException(); ";
+
 		public static readonly IDictionary<string, string> FullTypeNameHumanReadableBinding = new Dictionary<string, string>
 		{
 			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
-
-		public const string MethodBody_ShutUp = " throw new System.NotImplementedException(); ";
-		public const string DefaultDestination = "DefaultDestination";
 	}
 }

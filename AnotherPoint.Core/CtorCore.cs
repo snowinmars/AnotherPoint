@@ -2,6 +2,7 @@
 using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,34 +13,19 @@ namespace AnotherPoint.Core
 	{
 		public static string GetArgumentCollectionAsString(Ctor ctor)
 		{
-			StringBuilder args = new StringBuilder(128);
+			IList<KeyValuePair<string, string>> parameters =
+				(
+					from argument
+					in ctor.ArgumentCollection
+						.Where(arg => arg.BindAttribute == BindSettings.Exact ||
+										arg.BindAttribute == BindSettings.None)
+					let type = argument.GetFullTypeName()
+					let parameter = argument.Name.FirstLetterToLower()
+					select
+						new KeyValuePair<string, string>(type, parameter)
+				 ).ToList();
 
-			foreach (var parameter in ctor.ArgumentCollection
-											.Where(arg => arg.BindAttribute != BindSettings.CallThis && arg.BindAttribute != BindSettings.New))
-			{
-				args.Append(parameter.Type.FullName);
-
-				if (parameter.Type.IsGeneric.HasValue && parameter.Type.IsGeneric.Value)
-				{
-					args.Append("<");
-
-					string s = string.Join(",", parameter.Type.GenericTypes);
-					args.Append(s);
-
-					args.Append(">");
-				}
-
-				args.Append(" ");
-				args.Append(parameter.Name.FirstLetterToLower());
-				args.Append(", ");
-			}
-
-			if (args.Length > 0)
-			{
-				args.Remove(args.Length - 2, 1); // removing last comma
-			}
-
-			return args.ToString();
+			return CtorCore.MergeParametersCollectionToString(parameters);
 		}
 
 		public static string GetBodyAsString(Ctor ctor)
@@ -51,43 +37,11 @@ namespace AnotherPoint.Core
 				switch (bind.BindAttribute)
 				{
 					case BindSettings.Exact:
-						body.Append(" this. ");
-						body.Append(bind.Name.FirstLetterToUpper());
-						body.Append(" = ");
-						body.Append(bind.Name.FirstLetterToLower());
-						body.Append(";");
+						body.Append(CtorCore.GetExactBindingArgumentString(bind));
 						break;
 
 					case BindSettings.New:
-						body.Append(" this. ");
-						body.Append(bind.Name.FirstLetterToUpper());
-						body.Append(" = ");
-						body.Append(" new ");
-
-						MyType type = Bag.Pocket[bind.Name];
-
-						var fullTypeNameWithoutAssmblyInfo = type.FullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
-						var fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
-						body.Append(fullImplementTypeName);
-
-						if (type.IsGeneric.HasValue &&
-							type.IsGeneric.Value)
-						{
-							body.Append("<");
-							body.Append(string.Join(",", type.GenericTypes));
-							body.Append(">");
-						}
-
-						if (Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo).Contains(Constant.Generic))
-						{
-							var v = type.FullName.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
-
-							if (v >= 0)
-							{
-								body.Append(type.FullName.Substring(v));
-							}
-						}
-						body.Append("();");
+						body.Append(CtorCore.GetNewBindingArgumentString(bind));
 						break;
 
 					case BindSettings.CallThis:
@@ -109,15 +63,14 @@ namespace AnotherPoint.Core
 
 		public static string GetCtorCarriage(Ctor ctor)
 		{
-			StringBuilder body = new StringBuilder(256);
+			StringBuilder carriage = new StringBuilder(256);
 
 			foreach (var bind in ctor.ArgumentCollection)
 			{
 				switch (bind.BindAttribute)
 				{
 					case BindSettings.CallThis:
-						body.Append(bind.Name.FirstLetterToLower());
-						body.Append(",");
+						carriage.Append($"{bind.Name.FirstLetterToLower()},");
 						break;
 
 					case BindSettings.Exact:
@@ -136,14 +89,14 @@ namespace AnotherPoint.Core
 				}
 			}
 
-			if (body.Length > 0)
+			if (carriage.Length > 0)
 			{
-				body.Remove(body.Length - 1, 1); // removing last comma
-				body.Insert(0, " : this(");
-				body.Append(")");
+				carriage.Remove(carriage.Length - 1, 1); // removing last comma
+				carriage.Insert(0, " : this(");
+				carriage.Append(")");
 			}
 
-			return body.ToString();
+			return carriage.ToString();
 		}
 
 		public static Ctor Map(ConstructorInfo constructorInfo)
@@ -160,25 +113,7 @@ namespace AnotherPoint.Core
 				AccessModifyer = CtorCore.GetAccessModifyer(constructorInfo)
 			};
 
-			foreach (var ctorBind in constructorInfo.GetCustomAttributes<BindAttribute>())
-			{
-				if (ctorBind.Settings == BindSettings.CallThis)
-				{
-					Argument arg = new Argument(ctorBind.Name, "System", BindSettings.CallThis);
-
-					ctor.ArgumentCollection.Add(arg);
-				}
-				else
-				{
-					MyType argType = Bag.Pocket[ctorBind.Name];
-					Argument arg = new Argument(ctorBind.Name, argType.FullName, ctorBind.Settings)
-					{
-						Type = argType
-					};
-
-					ctor.ArgumentCollection.Add(arg);
-				}
-			}
+			CtorCore.HandleCtorArguments(constructorInfo, ctor);
 
 			return ctor;
 		}
@@ -208,6 +143,104 @@ namespace AnotherPoint.Core
 			}
 
 			return accessModifyer;
+		}
+
+		private static string GetExactBindingArgumentString(Argument bind)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.Append(" this. ");
+			sb.Append(bind.Name.FirstLetterToUpper());
+			sb.Append(" = ");
+			sb.Append(bind.Name.FirstLetterToLower());
+			sb.Append(";");
+
+			return sb.ToString();
+		}
+
+		private static string GetFullTypeNameWithoutAssmblyInfo(MyType type)
+		{
+			return type.FullName
+				.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries)
+				.First();
+		}
+
+		private static void GetGenericTypesAsString(StringBuilder sb, MyType type)
+		{
+			sb.Append("<");
+			sb.Append(string.Join(",", type.GenericTypes));
+			sb.Append(">");
+		}
+
+		private static string GetNewBindingArgumentString(Argument bind)
+		{
+			StringBuilder sb = new StringBuilder(256);
+
+			sb.Append(" this. ");
+			sb.Append(bind.Name.FirstLetterToUpper());
+			sb.Append(" = ");
+			sb.Append(" new ");
+
+			MyType type = Bag.Pocket[bind.Name];
+
+			string fullTypeNameWithoutAssmblyInfo = CtorCore.GetFullTypeNameWithoutAssmblyInfo(type);
+			string fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
+			sb.Append(fullImplementTypeName);
+
+			if (type.IsGeneric.HasValue &&
+				type.IsGeneric.Value)
+			{
+				CtorCore.GetGenericTypesAsString(sb, type);
+			}
+
+			//if (type.IsGeneric.HasValue && type.IsGeneric.Value)
+			//{
+			//	sb.Append(string.Join(",", type.GenericTypes));
+			//}
+
+			sb.Append("();");
+
+			return sb.ToString();
+		}
+
+		private static void HandleCtorArguments(ConstructorInfo constructorInfo, Ctor ctor)
+		{
+			foreach (var ctorBind in constructorInfo.GetCustomAttributes<BindAttribute>())
+			{
+				if (ctorBind.Settings == BindSettings.CallThis)
+				{
+					Argument arg = new Argument(ctorBind.Name, "System", BindSettings.CallThis);
+
+					ctor.ArgumentCollection.Add(arg);
+				}
+				else
+				{
+					MyType argType = Bag.Pocket[ctorBind.Name];
+					Argument arg = new Argument(ctorBind.Name, argType.FullName, ctorBind.Settings)
+					{
+						Type = argType
+					};
+
+					ctor.ArgumentCollection.Add(arg);
+				}
+			}
+		}
+
+		private static string MergeParametersCollectionToString(IList<KeyValuePair<string, string>> parameters)
+		{
+			StringBuilder args = new StringBuilder(128);
+
+			foreach (var parameter in parameters)
+			{
+				args.Append($"{parameter.Key} {parameter.Value},");
+			}
+
+			if (args.Length > 0)
+			{
+				args.Remove(args.Length - 1, 1); // removing last comma
+			}
+
+			return args.ToString();
 		}
 	}
 }

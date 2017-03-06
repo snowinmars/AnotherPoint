@@ -19,12 +19,12 @@ namespace AnotherPoint.Entities
 			this.ForClass = null;
 		}
 
-		public IList<Attribute> AttributesForBodyGeneration { get; set; }
 		public AccessModifyer AccessModifyer { get; set; }
-		public string Name { get; set; }
 		public IList<Argument> Arguments { get; }
-		public MyType ReturnType { get; set; }
+		public IList<Attribute> AttributesForBodyGeneration { get; set; }
 		public string ForClass { get; set; }
+		public string Name { get; set; }
+		public MyType ReturnType { get; set; }
 
 		public override string ToString()
 		{

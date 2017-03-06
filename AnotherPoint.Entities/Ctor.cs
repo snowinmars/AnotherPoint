@@ -15,13 +15,23 @@ namespace AnotherPoint.Entities
 			this.IsCtorForInject = false;
 		}
 
-		public bool IsDefaultCtor()
-			=> this.ArgumentCollection.Count == 0;
+		public AccessModifyer AccessModifyer { get; set; }
+
+		public IList<Argument> ArgumentCollection { get; }
 
 		public bool IsCtorForInject { get; set; }
-		public AccessModifyer AccessModifyer { get; set; }
-		public IList<Argument> ArgumentCollection { get; }
+
 		public MyType Type { get; set; }
+
+		public bool IsDefaultCtor(bool ignoreAccessModifyer = true)
+		{
+			if (ignoreAccessModifyer)
+			{
+				return this.ArgumentCollection.Count == 0;
+			}
+
+			return this.ArgumentCollection.Count == 0 && this.AccessModifyer.HasFlag(AccessModifyer.Public);
+		}
 
 		public override string ToString()
 		{

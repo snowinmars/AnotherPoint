@@ -43,45 +43,31 @@ namespace AnotherPoint.Common
 
 			if (accessModifyer.HasFlag(AccessModifyer.Public))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Public);
-				sb.Append(" ");
 			}
 			else if (accessModifyer.HasFlag(AccessModifyer.Internal))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Internal);
-				sb.Append(" ");
 			}
 			else if (accessModifyer.HasFlag(AccessModifyer.Protected))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Protected);
-				sb.Append(" ");
 			}
 			else if (accessModifyer.HasFlag(AccessModifyer.Private))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Private);
-				sb.Append(" ");
 			}
 			else if (accessModifyer.HasFlag(AccessModifyer.Abstract))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Abstract);
-				sb.Append(" ");
 			}
 			else if (accessModifyer.HasFlag(AccessModifyer.Sealed))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Sealed);
-				sb.Append(" ");
 			}
 			else if (accessModifyer.HasFlag(AccessModifyer.Virtual))
 			{
-				sb.Append(" ");
 				sb.Append(Constant.Virtual);
-				sb.Append(" ");
 			}
 			else
 			{

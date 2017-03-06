@@ -10,11 +10,31 @@ namespace AnotherPoint.Core
 {
 	public static class ClassCore
 	{
+		public static string GetDefaultDestinationName(Class @class)
+		{
+			return $"{@class.Name}Destination";
+		}
+
+		public static string GetInterfacesAsString(Class @class)
+		{
+			if (@class.Interfaces.Count == 0)
+			{
+				return "";
+			}
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.Append(" : ");
+			sb.AppendLine(string.Join(",", @class.Interfaces.Select(i => i.FullName)));
+
+			return sb.ToString();
+		}
+
 		public static Class Map(Type type)
 		{
 			if (type.IsInterface)
 			{
-				throw new ArgumentException($"Type {type.FullName} is an interface");
+				throw new ArgumentException($"Type {type.FullName} is an interface, use InterfaceCore::Map for this type.");
 			}
 
 			Class @class = new Class(type.FullName)
@@ -22,15 +42,7 @@ namespace AnotherPoint.Core
 				AccessModifyer = ClassCore.GetAccessModifyer(type),
 			};
 
-			foreach (var classImplAttribute in type.GetCustomAttributes<ClassImplAttribute>())
-			{
-				if (classImplAttribute.IsEndPoint)
-				{
-					@class.IsEndpoint = true;
-					@class.DestinationTypeName = classImplAttribute.DestinationTypeName;
-				}
-			}
-
+			ClassCore.SetupEndpoint(type, @class);
 			ClassCore.SetupGeneric(type, @class);
 
 			ClassCore.SetupFields(type, @class);
@@ -40,39 +52,6 @@ namespace AnotherPoint.Core
 			ClassCore.SetupMethods(type, @class);
 
 			return @class;
-		}
-
-		private static void SetupMethods(Type type, Class @class)
-		{
-			foreach (var methodInfo in type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
-											.Where(m => !m.Name.StartsWith(Constant.Get) && !m.Name.StartsWith(Constant.Set)))
-			{
-				Method method = MethodCore.Map(methodInfo, type.Name);
-
-				@class.Methods.Add(method);
-			}
-		}
-
-		private static void SetupInterfaces(Type type, Class @class)
-		{
-			foreach (var interfaceType in type.GetInterfaces())
-			{
-				Interface @interface = InterfaceCore.Map(interfaceType);
-
-				@class.Interfaces.Add(@interface);
-			}
-		}
-
-		public static string GetInterfacesAsString(Class @class)
-		{
-			StringBuilder sb = new StringBuilder(string.Join(",", @class.Interfaces.Select(i => i.FullName)));
-
-			if (sb.Length > 0)
-			{
-				sb.Insert(0, " : ");
-			}
-
-			return sb.ToString();
 		}
 
 		private static AccessModifyer GetAccessModifyer(Type type)
@@ -109,6 +88,35 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
+		private static Field GetDestinationFieldForInject(Class @class)
+		{
+			Field destinationField = new Field(ClassCore.GetDefaultDestinationName(@class), @class.DestinationTypeName)
+			{
+				AccessModifyer = AccessModifyer.Private
+			};
+
+			destinationField.Name = destinationField.Name.FirstLetterToUpper();
+
+			return destinationField;
+		}
+
+		private static Ctor GetInjectCtorForDestinationField(Class @class, Field destinationField)
+		{
+			Ctor injectedCtor = new Ctor(@class.Type.FullName)
+			{
+				AccessModifyer = AccessModifyer.Public,
+				IsCtorForInject = true,
+			};
+
+			Argument arg = new Argument(destinationField.Name.FirstLetterToLower(),
+											destinationField.Type.FullName,
+											BindSettings.Exact);
+
+			injectedCtor.ArgumentCollection.Add(arg);
+
+			return injectedCtor;
+		}
+
 		private static void SetupCtors(Type type, Class @class)
 		{
 			foreach (var constructorInfo in type.GetConstructors(Constant.AllInstance))
@@ -116,6 +124,7 @@ namespace AnotherPoint.Core
 				@class.Ctors.Add(CtorCore.Map(constructorInfo));
 			}
 
+			// if there's only one explicit default ctor, there's no point to render it
 			if (@class.Ctors.Count == 1 &&
 					@class.Ctors.First().IsDefaultCtor())
 			{
@@ -133,6 +142,20 @@ namespace AnotherPoint.Core
 					@class.Ctors.Remove(defaultCtor);
 				}
 			}
+
+			// the other cases user have to fix manually
+		}
+
+		private static void SetupEndpoint(Type type, Class @class)
+		{
+			ClassImplAttribute classImplAttribute = type.GetCustomAttributes<ClassImplAttribute>()
+																					.FirstOrDefault(attr => attr.IsEndPoint);
+
+			if (classImplAttribute != null)
+			{
+				@class.IsEndpoint = true;
+				@class.DestinationTypeName = classImplAttribute.DestinationTypeName;
+			}
 		}
 
 		private static void SetupFields(Type type, Class @class)
@@ -143,35 +166,20 @@ namespace AnotherPoint.Core
 				@class.Fields.Add(FieldCore.Map(fieldInfo));
 			}
 
-			if (@class.IsEndpoint)
+			if (!@class.IsEndpoint)
 			{
-				Field destinationField = new Field(ClassCore.GetDefaultDestinationName(@class), @class.DestinationTypeName)
-				{
-					AccessModifyer = AccessModifyer.Private
-				};
-
-				destinationField.Name = destinationField.Name.FirstLetterToLower();
-
-				@class.Fields.Add(destinationField);
-
-				Ctor injectedCtor = new Ctor(@class.Type.FullName);
-
-				injectedCtor.AccessModifyer = AccessModifyer.Public;
-				injectedCtor.IsCtorForInject = true;
-
-				Argument arg = new Argument(destinationField.Name.FirstLetterToLower(),
-												destinationField.Type.FullName,
-												BindSettings.Exact);
-
-				injectedCtor.ArgumentCollection.Add(arg);
-
-				@class.Ctors.Add(injectedCtor);
+				return;
 			}
-		}
 
-		public static string GetDefaultDestinationName(Class @class)
-		{
-			return $"{@class.Name}Destination";
+			// Class is endpoint when it have container to inject the dependency. So I have to create this field and the ctor for injection
+
+			Field destinationField = ClassCore.GetDestinationFieldForInject(@class);
+
+			@class.Fields.Add(destinationField);
+
+			Ctor injectedCtor = ClassCore.GetInjectCtorForDestinationField(@class, destinationField);
+
+			@class.Ctors.Add(injectedCtor);
 		}
 
 		private static void SetupGeneric(Type type, Class @class)
@@ -181,6 +189,27 @@ namespace AnotherPoint.Core
 			foreach (var genericTypeArgument in type.GenericTypeArguments)
 			{
 				@class.Type.GenericTypes.Add(genericTypeArgument.FullName);
+			}
+		}
+
+		private static void SetupInterfaces(Type type, Class @class)
+		{
+			foreach (var interfaceType in type.GetInterfaces())
+			{
+				Interface @interface = InterfaceCore.Map(interfaceType);
+
+				@class.Interfaces.Add(@interface);
+			}
+		}
+
+		private static void SetupMethods(Type type, Class @class)
+		{
+			foreach (var methodInfo in type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
+											.Where(m => !m.Name.StartsWith(Constant.Get) && !m.Name.StartsWith(Constant.Set)))
+			{
+				Method method = MethodCore.Map(methodInfo, type.Name);
+
+				@class.Methods.Add(method);
 			}
 		}
 

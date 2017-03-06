@@ -22,18 +22,13 @@ namespace AnotherPoint.Entities
 			this.IsEndpoint = false;
 		}
 
-		public string DestinationTypeName { get; set; }
-
-		public bool IsEndpoint { get; set; }
-
-		public IList<Method> Methods { get; }
-		public IList<Interface> Interfaces { get; }
-
 		public AccessModifyer AccessModifyer { get; set; }
-
 		public IList<Ctor> Ctors { get; private set; }
-
+		public string DestinationTypeName { get; set; }
 		public IList<Field> Fields { get; private set; }
+		public IList<Interface> Interfaces { get; }
+		public bool IsEndpoint { get; set; }
+		public IList<Method> Methods { get; }
 
 		public string Name
 		{
