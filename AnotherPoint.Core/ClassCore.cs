@@ -95,7 +95,7 @@ namespace AnotherPoint.Core
 				AccessModifyer = AccessModifyer.Private
 			};
 
-			destinationField.Name = destinationField.Name.FirstLetterToUpper();
+			destinationField.Name = destinationField.Name.FirstLetterToLower();
 
 			return destinationField;
 		}

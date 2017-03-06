@@ -91,7 +91,7 @@ namespace AnotherPoint.Core
 
 			if (carriage.Length > 0)
 			{
-				carriage.Remove(carriage.Length - 1, 1); // removing last comma
+				carriage.RemoveLastSymbol();
 				carriage.Insert(0, " : this(");
 				carriage.Append(")");
 			}
@@ -237,7 +237,7 @@ namespace AnotherPoint.Core
 
 			if (args.Length > 0)
 			{
-				args.Remove(args.Length - 1, 1); // removing last comma
+				args.RemoveLastSymbol();
 			}
 
 			return args.ToString();

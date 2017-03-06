@@ -22,7 +22,7 @@ namespace AnotherPoint.Core
 
 			if (sb.Length > 0)
 			{
-				sb.Remove(sb.Length - 1, 1);
+				sb.RemoveLastSymbol();
 			}
 
 			return sb.ToString();
@@ -30,9 +30,9 @@ namespace AnotherPoint.Core
 
 		public static string GetBodyAsString(Method method)
 		{
-			MethodImpl_ShutMeUpAttribute shutMeUpAttribute = null;
-			MethodImpl_SendMeToAttribute sendMeToAttribute = null;
-			MethodImpl_ValidateAttribute validateAttribute = null;
+			MethodImpl.ShutMeUpAttribute shutMeUpAttribute = null;
+			MethodImpl.SendMeToAttribute sendMeToAttribute = null;
+			MethodImpl.ValidateAttribute validateAttribute = null;
 
 			if (method.AttributesForBodyGeneration.Count > 3)
 			{
@@ -43,17 +43,17 @@ namespace AnotherPoint.Core
 			{
 				if (shutMeUpAttribute == null)
 				{
-					shutMeUpAttribute = attribute as MethodImpl_ShutMeUpAttribute;
+					shutMeUpAttribute = attribute as MethodImpl.ShutMeUpAttribute;
 				}
 
 				if (sendMeToAttribute == null)
 				{
-					sendMeToAttribute = attribute as MethodImpl_SendMeToAttribute;
+					sendMeToAttribute = attribute as MethodImpl.SendMeToAttribute;
 				}
 
 				if (validateAttribute == null)
 				{
-					validateAttribute = attribute as MethodImpl_ValidateAttribute;
+					validateAttribute = attribute as MethodImpl.ValidateAttribute;
 				}
 			}
 
@@ -135,7 +135,7 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
-		private static string GetSendMeToBodyPart(Method method, MethodImpl_SendMeToAttribute sendMeToAttribute)
+		private static string GetSendMeToBodyPart(Method method, MethodImpl.SendMeToAttribute sendMeToAttribute)
 		{
 			StringBuilder body = new StringBuilder();
 
@@ -155,7 +155,7 @@ namespace AnotherPoint.Core
 			return body.ToString();
 		}
 
-		private static string GetValidationBodyPart(MethodImpl_ValidateAttribute validateAttribute)
+		private static string GetValidationBodyPart(MethodImpl.ValidateAttribute validateAttribute)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -179,17 +179,17 @@ namespace AnotherPoint.Core
 
 		private static void HandleAttributesForBodyGeneration(MethodInfo methodInfo, Method method)
 		{
-			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl_ShutMeUpAttribute>())
+			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.ShutMeUpAttribute>())
 			{
 				method.AttributesForBodyGeneration.Add(methodImplAttribute);
 			}
 
-			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl_SendMeToAttribute>())
+			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.SendMeToAttribute>())
 			{
 				method.AttributesForBodyGeneration.Add(methodImplAttribute);
 			}
 
-			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl_ValidateAttribute>())
+			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.ValidateAttribute>())
 			{
 				method.AttributesForBodyGeneration.Add(methodImplAttribute);
 			}
