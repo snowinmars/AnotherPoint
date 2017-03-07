@@ -5,6 +5,7 @@ using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -49,6 +50,7 @@ namespace AnotherPoint.Core
 			this.SetupInterfaces(type.GetInterfaces(), @class.Interfaces);
 			this.SetupMethods(type, @class);
 
+			Bag.TypePocket.Add(type.FullName, type);
 			Bag.ClassPocket.Add(@class.Name, @class);
 
 			return @class;

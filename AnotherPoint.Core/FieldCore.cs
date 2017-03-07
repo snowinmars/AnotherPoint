@@ -26,7 +26,7 @@ namespace AnotherPoint.Core
 			this.SetupGeneric(fieldInfo.FieldType, field.Type);
 
 			// saving field name and type for further appeals from ctor
-			Bag.TypePocket[fieldName.ToUpperInvariant()] = field.Type;
+			Bag.MyTypePocket[fieldName.ToUpperInvariant()] = field.Type;
 
 			return field;
 		}

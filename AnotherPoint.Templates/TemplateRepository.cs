@@ -17,6 +17,16 @@ namespace AnotherPoint.Templates
 		private static IDictionary<TemplateType, string> nameFileBinding;
 		private static IRazorEngineService razorService;
 
+		public static void Init()
+		{
+			
+		}
+
+		public static void Finit()
+		{
+
+		}
+
 		static TemplateRepository()
 		{
 			TemplateRepository.RootFolder = Directory.GetCurrentDirectory();

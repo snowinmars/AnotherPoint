@@ -193,7 +193,7 @@ namespace AnotherPoint.Core
 			sb.Append(" = ");
 			sb.Append(" new ");
 
-			MyType type = Bag.TypePocket[bingName.ToUpperInvariant()];
+			MyType type = Bag.MyTypePocket[bingName.ToUpperInvariant()];
 
 			string fullTypeNameWithoutAssmblyInfo = type.GetFullNameWithoutAssemblyInfo(type.FullName);
 			string fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
@@ -222,7 +222,7 @@ namespace AnotherPoint.Core
 				}
 				else
 				{
-					MyType argType = Bag.TypePocket[ctorBind.Name.ToUpperInvariant()];
+					MyType argType = Bag.MyTypePocket[ctorBind.Name.ToUpperInvariant()];
 					Argument arg = new Argument(ctorBind.Name, argType.FullName, ctorBind.Settings)
 					{
 						Type = argType

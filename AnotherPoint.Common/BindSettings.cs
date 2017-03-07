@@ -6,5 +6,6 @@
 		Exact = 1,
 		New = 2,
 		CallThis = 3,
+		Validate = 4,
 	}
 }
