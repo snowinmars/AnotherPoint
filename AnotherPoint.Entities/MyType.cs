@@ -65,7 +65,7 @@ namespace AnotherPoint.Entities
 		{
 			string f;
 
-			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out f) ? 
+			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out f) ?
 				f :
 				fullTypeNameWithoutAssemblyInfo;
 		}

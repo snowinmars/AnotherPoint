@@ -1,9 +1,9 @@
-﻿using System;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
-using System.Reflection;
 using AnotherPoint.Interfaces;
+using System;
+using System.Reflection;
 
 namespace AnotherPoint.Core
 {

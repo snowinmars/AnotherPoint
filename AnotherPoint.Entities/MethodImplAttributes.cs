@@ -6,7 +6,9 @@ namespace AnotherPoint.Entities.MethodImpl
 {
 	public abstract class MethodImpl
 	{
-		private MethodImpl() { }
+		private MethodImpl()
+		{
+		}
 
 		[AttributeUsage(AttributeTargets.Method)]
 		public class SendMeToAttribute : Attribute
