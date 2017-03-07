@@ -18,6 +18,7 @@ namespace AnotherPoint.Common
 		public const string Sealed = " sealed ";
 		public const string Todo = " TODO ";
 		public const string Virtual = " virtual ";
+		public const string Static = " static ";
 
 		#endregion constants for rendering
 
@@ -45,5 +46,6 @@ namespace AnotherPoint.Common
 		{
 			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
+
 	}
 }

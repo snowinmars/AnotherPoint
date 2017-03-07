@@ -8,5 +8,6 @@
 		Property = 3,
 		Ctor = 4,
 		Method = 5,
+		Constant = 6,
 	}
 }

@@ -48,7 +48,7 @@ namespace AnotherPoint.Core
 			SetupGeneric(propertyInfo.PropertyType, property.Type);
 
 			// saving field name and type for further appeals from ctor
-			Bag.Pocket[propertyName.ToUpperInvariant()] = property.Type;
+			Bag.TypePocket[propertyName.ToUpperInvariant()] = property.Type;
 
 			return property;
 		}

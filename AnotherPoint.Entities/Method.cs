@@ -16,13 +16,13 @@ namespace AnotherPoint.Entities
 			this.ReturnType = new MyType(fullNameOfReturnType);
 
 			this.AttributesForBodyGeneration = new List<Attribute>();
-			this.ForClass = null;
+			this.EntityPurposePair = null;
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }
 		public IList<Argument> Arguments { get; }
 		public IList<Attribute> AttributesForBodyGeneration { get; set; }
-		public string ForClass { get; set; }
+		public EntityPurposePair EntityPurposePair { get; set; }
 		public string Name { get; set; }
 		public MyType ReturnType { get; set; }
 

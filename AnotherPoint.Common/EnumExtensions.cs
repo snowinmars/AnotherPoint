@@ -24,6 +24,9 @@ namespace AnotherPoint.Common
 				case TemplateType.Method:
 					return "method";
 
+				case TemplateType.Constant:
+					return "constant";
+
 				case TemplateType.None:
 					return "";
 
@@ -45,35 +48,36 @@ namespace AnotherPoint.Common
 			{
 				sb.Append(Constant.Public);
 			}
-			else if (accessModifyer.HasFlag(AccessModifyer.Internal))
+			if (accessModifyer.HasFlag(AccessModifyer.Internal))
 			{
 				sb.Append(Constant.Internal);
 			}
-			else if (accessModifyer.HasFlag(AccessModifyer.Protected))
+			if (accessModifyer.HasFlag(AccessModifyer.Protected))
 			{
 				sb.Append(Constant.Protected);
 			}
-			else if (accessModifyer.HasFlag(AccessModifyer.Private))
+			if (accessModifyer.HasFlag(AccessModifyer.Private))
 			{
 				sb.Append(Constant.Private);
 			}
-			else if (accessModifyer.HasFlag(AccessModifyer.Abstract))
+			if (accessModifyer.HasFlag(AccessModifyer.Abstract))
 			{
 				sb.Append(Constant.Abstract);
 			}
-			else if (accessModifyer.HasFlag(AccessModifyer.Sealed))
+			if (accessModifyer.HasFlag(AccessModifyer.Sealed))
 			{
 				sb.Append(Constant.Sealed);
 			}
-			else if (accessModifyer.HasFlag(AccessModifyer.Virtual))
+			if (accessModifyer.HasFlag(AccessModifyer.Virtual))
 			{
 				sb.Append(Constant.Virtual);
 			}
-			else
+			if (accessModifyer.HasFlag(AccessModifyer.Static))
 			{
-				throw new ArgumentOutOfRangeException(nameof(accessModifyer), accessModifyer, null);
+				sb.Replace(Constant.Abstract, "").Replace(Constant.Sealed, ""); // abstract + sealed == static for clr
+				sb.Append(Constant.Static);
 			}
-
+			
 			return sb.ToString();
 		}
 	}

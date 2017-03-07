@@ -35,13 +35,16 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
+		private static readonly int NumberOfNestedAttributes = typeof(MethodImpl).GetNestedTypes(Constant.AllInstance).Length;
+
 		public string RenderBody(Method method)
 		{
 			MethodImpl.ShutMeUpAttribute shutMeUpAttribute = null;
 			MethodImpl.SendMeToAttribute sendMeToAttribute = null;
 			MethodImpl.ValidateAttribute validateAttribute = null;
+			MethodImpl.ToSqlAttribute toSqlAttribute = null;
 
-			if (method.AttributesForBodyGeneration.Count > 3)
+			if (method.AttributesForBodyGeneration.Count > MethodCore.NumberOfNestedAttributes)
 			{
 				throw new InvalidOperationException("This can't be");
 			}
@@ -62,6 +65,11 @@ namespace AnotherPoint.Core
 				{
 					validateAttribute = attribute as MethodImpl.ValidateAttribute;
 				}
+
+				if (toSqlAttribute == null)
+				{
+					toSqlAttribute = attribute as MethodImpl.ToSqlAttribute;
+				}
 			}
 
 			StringBuilder body = new StringBuilder();
@@ -69,6 +77,11 @@ namespace AnotherPoint.Core
 			if (validateAttribute != null)
 			{
 				body.AppendLine(GetValidationBodyPart(validateAttribute));
+			}
+
+			if (toSqlAttribute != null)
+			{
+				body.AppendLine(GetToSqlBodyPart(method));
 			}
 
 			if (sendMeToAttribute != null)
@@ -82,6 +95,180 @@ namespace AnotherPoint.Core
 			}
 
 			return body.ToString();
+		}
+
+		private string[] insert = {"CREATE"};
+		private string[] delete = {"REMOVE", "DELETE" };
+		private string[] update = {"UPDATE"};
+		private string[] select = {"GET", "READ" };
+
+		private string GetToSqlBodyPart(Method method)
+		{
+			StringBuilder sb = new StringBuilder();
+
+
+			string name = method.Name;
+
+			if (this.select.Contains(name.ToUpperInvariant()))
+			{
+				var toSqlBodyPart = this.GetSqlSelectCommand(method);
+				return toSqlBodyPart;
+			}
+
+			if (this.insert.Contains(name.ToUpperInvariant()))
+			{
+				var a = GetSqlInsertCommand(method);
+				return a;
+			}
+
+			if (this.delete.Contains(name.ToUpperInvariant()))
+			{
+				var a = GetSqlDeleteCommand(method);
+				return a;
+			}
+
+			if (this.update.Contains(name.ToUpperInvariant()))
+			{
+				var a = GetSqlUpdateCommand(method);
+				return a;
+			}
+
+			return sb.ToString();
+		}
+
+		private string GetSqlSelectCommand(Method method)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine("{");
+
+			foreach (var argument in method.Arguments)
+			{
+				sb.Append($"return sqlConnection.Query<{method.ReturnType.Name}>(");
+
+				sb.Append("\"");
+				sb.Append(" select * from " +
+						  $" [{method.EntityPurposePair}s] " + // table name in plural
+						  " where" +
+						  " (Id = @id) "); // values with @ prefix
+				sb.Append("\"");
+
+				sb.Append(", param: new {");
+
+				sb.Append(argument.Name.FirstLetterToLower());
+
+				sb.AppendLine("}).FirstOrDefault();");
+			}
+
+			sb.AppendLine("}");
+
+			return sb.ToString();
+		}
+
+		private string GetSqlUpdateCommand(Method method)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine("{");
+
+			foreach (var argument in method.Arguments)
+			{
+				Class argumentClass = Bag.ClassPocket[argument.Type.Name];
+				IList<Property> properties = argumentClass.Properties.Where(prop => prop.AccessModifyer.HasFlag(AccessModifyer.Public)).ToList();
+
+				sb.Append("sqlConnection.Execute(");
+
+				sb.Append("\"");
+				sb.Append(" update " +
+						  $" [{argumentClass.Name}s] " + // table name in plural
+						  " set " +
+						  $" ({string.Join(",", properties.Select(prop => $"{prop.Name.FirstLetterToUpper()} = @{prop.Name.FirstLetterToLower()}"))}) " + // columns' names
+						  " where" +
+						  " (Id = @id) "); // values with @ prefix
+				sb.Append("\"");
+
+				sb.Append(", param: new {");
+
+				if (properties.Any())
+				{
+					sb.Append(string.Join(",", properties.Select(prop => $"{argument.Name}.{prop.Name}")));
+				}
+
+				sb.AppendLine("});");
+			}
+
+			sb.AppendLine("}");
+
+			return sb.ToString();
+		}
+
+		private string GetSqlDeleteCommand(Method method)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine("{");
+
+			foreach (var argument in method.Arguments)
+			{
+				sb.Append("sqlConnection.Execute(");
+
+				sb.Append("\"");
+				sb.Append(" delete from " +
+				          $" [{method.EntityPurposePair}s] " + // table name in plural
+				          " where " +
+						  $" {argument.Name.FirstLetterToUpper()} = @{argument.Name.FirstLetterToLower()} ");
+				sb.Append("\"");
+
+				sb.Append(", param: new {");
+
+				sb.Append(argument.Name.FirstLetterToLower());
+
+				sb.AppendLine("});");
+			}
+
+			sb.AppendLine("}");
+
+			return sb.ToString();
+		}
+
+		private string GetSqlInsertCommand(Method method)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine("{");
+
+			foreach (var argument in method.Arguments)
+			{
+				Class argumentClass = Bag.ClassPocket[argument.Type.Name];
+				IList<Property> properties = argumentClass.Properties.Where(prop => prop.AccessModifyer.HasFlag(AccessModifyer.Public)).ToList();
+
+				sb.Append("sqlConnection.Execute(");
+
+				sb.Append("\"");
+				sb.Append(" insert " +
+				          $" [{argumentClass.Name}s] " + // table name in plural
+				          $" ({string.Join(",", properties.Select(prop => prop.Name.FirstLetterToUpper()))}) " + // columns' names
+				          " values" +
+				          $" ({string.Join(",", properties.Select(prop => $"@{prop.Name.FirstLetterToLower()}"))}) "); // values with @ prefix
+				sb.Append("\"");
+
+				sb.Append(", param: new {");
+
+				if (properties.Any())
+				{
+					sb.Append(string.Join(",", properties.Select(prop => $"{argument.Name}.{prop.Name}")));
+				}
+
+				sb.AppendLine("});");
+			}
+
+			sb.AppendLine("}");
+
+			return sb.ToString();
 		}
 
 		public string RenderMethodName(Method method)
@@ -99,7 +286,7 @@ namespace AnotherPoint.Core
 			return method.ReturnType.FullName;
 		}
 
-		public Method Map(MethodInfo methodInfo, string className = null)
+		public Method Map(MethodInfo methodInfo, EntityPurposePair entityPurposePair)
 		{
 			Method method = new Method(methodInfo.Name, methodInfo.ReturnType.FullName)
 			{
@@ -108,7 +295,7 @@ namespace AnotherPoint.Core
 
 			HandleAttributesForBodyGeneration(methodInfo, method.AttributesForBodyGeneration);
 
-			method.ForClass = className;
+			method.EntityPurposePair = entityPurposePair;
 
 			HandleArguments(methodInfo.GetParameters(), method.Arguments);
 
@@ -161,7 +348,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder body = new StringBuilder();
 
-			string defaultDestination = $"{method.ForClass.FirstLetterToLower()}Destination"; // TODO
+			string defaultDestination = $"{method.EntityPurposePair.Both.FirstLetterToLower()}Destination"; // TODO
 
 			string destination = sendMeToAttribute.Destination == Constant.DefaultDestination
 				? defaultDestination
@@ -172,7 +359,7 @@ namespace AnotherPoint.Core
 				body.Append(" return ");
 			}
 
-			body.AppendLine($"this.{destination.FirstLetterToLower()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
+			body.AppendLine($"this.{destination.FirstLetterToUpper()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
 
 			return body.ToString();
 		}
@@ -204,6 +391,11 @@ namespace AnotherPoint.Core
 			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.ShutMeUpAttribute>())
 			{
 				methodAttributes.Add(methodImplAttribute);
+			}
+
+			foreach (var toSqlAttribute in methodInfo.GetCustomAttributes<MethodImpl.ToSqlAttribute>())
+			{
+				methodAttributes.Add(toSqlAttribute);
 			}
 
 			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.SendMeToAttribute>())

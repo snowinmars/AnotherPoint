@@ -1,0 +1,11 @@
+﻿@using AnotherPoint.Common
+@using AnotherPoint.Engine
+@model AnotherPoint.Entities.Field
+
+@{
+	string accessModifyer = RenderEngine.FieldCore.RenderAccessModifyer(Model);
+	string fieldName = RenderEngine.FieldCore.RenderName(Model);
+	string typeName = RenderEngine.FieldCore.RenderTypeName(Model);
+}
+
+@accessModifyer const @typeName @fieldName = default(@typeName);

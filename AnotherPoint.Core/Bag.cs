@@ -7,9 +7,11 @@ namespace AnotherPoint.Core
 	{
 		static Bag()
 		{
-			Bag.Pocket = new Dictionary<string, MyType>();
+			Bag.TypePocket = new Dictionary<string, MyType>();
+			Bag.ClassPocket = new Dictionary<string, Class>();
 		}
 
-		public static IDictionary<string, MyType> Pocket { get; private set; }
+		public static IDictionary<string, MyType> TypePocket { get; private set; }
+		public static IDictionary<string, Class> ClassPocket { get; private set; }
 	}
 }

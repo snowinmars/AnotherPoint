@@ -28,7 +28,7 @@ namespace AnotherPoint.Core
 		{
 			foreach (var methodInfo in systemTypeMethods)
 			{
-				Method method = RenderEngine.MethodCore.Map(methodInfo);
+				Method method = RenderEngine.MethodCore.Map(methodInfo, new EntityPurposePair("", ""));
 
 				interfaceMethods.Add(method);
 			}

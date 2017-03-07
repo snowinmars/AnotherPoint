@@ -1,6 +1,8 @@
 ﻿using AnotherPoint.Common;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -89,7 +91,22 @@ namespace AnotherPoint.Extensions
 			=> !type.IsPublic && !type.IsPrivate();
 
 		public static bool IsPrivate(this Type type)
-					=> type.IsNotPublic && type.IsNested;
+			=> type.IsNotPublic && type.IsNested;
+
+		public static bool IsStatic(this Type type)
+			=> type.IsClass &&
+			   type.IsSealed &&
+			   type.IsAbstract;
+
+		public static IEnumerable<FieldInfo> GetConstants(this Type type)
+		{
+			return type.GetFields(BindingFlags.Public |
+			                      BindingFlags.Static |
+			                      BindingFlags.FlattenHierarchy)
+				.Where(fieldInfo => fieldInfo.IsLiteral &&
+				                    !fieldInfo.IsInitOnly)
+				.ToList();
+		}
 
 		#endregion Type
 	}

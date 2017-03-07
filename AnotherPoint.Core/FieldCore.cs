@@ -16,7 +16,7 @@ namespace AnotherPoint.Core
 
 		public string RenderName(Field field)
 		{
-			return field.Name;
+			return field.Name.FirstLetterToUpper();
 		}
 
 		public string RenderTypeName(Field field)
@@ -37,7 +37,7 @@ namespace AnotherPoint.Core
 			SetupGeneric(fieldInfo.FieldType, field.Type);
 
 			// saving field name and type for further appeals from ctor
-			Bag.Pocket[fieldName.ToUpperInvariant()] = field.Type;
+			Bag.TypePocket[fieldName.ToUpperInvariant()] = field.Type;
 
 			return field;
 		}

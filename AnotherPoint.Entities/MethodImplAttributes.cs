@@ -60,5 +60,10 @@ namespace AnotherPoint.Entities.MethodImpl
 				return sb.ToString();
 			}
 		}
+
+		[AttributeUsage(AttributeTargets.Method)]
+		public class ToSqlAttribute : Attribute
+		{
+		}
 	}
 }

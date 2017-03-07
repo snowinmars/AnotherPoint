@@ -12,34 +12,47 @@ namespace AnotherPoint.Entities
 
 			this.Ctors = new List<Ctor>();
 			this.Fields = new List<Field>();
+			this.Usings = new List<string>();
 			this.Properties = new List<Property>();
 			this.Interfaces = new List<Interface>();
 			this.Methods = new List<Method>();
+			this.Constants = new List<Field>();
 
 			this.AccessModifyer = AccessModifyer.Public;
 
+			this.EntityPurposePair = new EntityPurposePair("", "");
 			this.DestinationTypeName = "";
 			this.IsEndpoint = false;
 		}
 
+		public IList<string> Usings { get; private set; }
 		public AccessModifyer AccessModifyer { get; set; }
+		public IList<Field> Constants { get; private set; }
 		public IList<Ctor> Ctors { get; private set; }
 		public string DestinationTypeName { get; set; }
 		public IList<Field> Fields { get; private set; }
 		public IList<Interface> Interfaces { get; }
 		public bool IsEndpoint { get; set; }
 		public IList<Method> Methods { get; }
+		public EntityPurposePair EntityPurposePair { get; set; }
 
 		public string Name
 		{
-			get { return this.Type.Name; }
-			set { this.Type.Name = value; }
+			get
+			{
+				if (string.IsNullOrWhiteSpace(this.EntityPurposePair.Purpose) ||
+				    string.IsNullOrWhiteSpace(this.EntityPurposePair.Entity))
+				{
+					return this.Type.Name;
+				}
+
+				return this.EntityPurposePair.Both;
+			}
 		}
 
 		public string Namespace
 		{
 			get { return this.Type.Namespace; }
-			set { this.Type.Namespace = value; }
 		}
 
 		public IList<Property> Properties { get; private set; }

@@ -13,5 +13,6 @@ namespace AnotherPoint.Common
 		Abstract = 16,
 		Sealed = 32,
 		Virtual = 64,
+		Static = 128,
 	}
 }

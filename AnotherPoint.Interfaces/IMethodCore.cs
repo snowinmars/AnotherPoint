@@ -6,7 +6,7 @@ namespace AnotherPoint.Interfaces
 {
 	public interface IMethodCore : IDisposable
 	{
-		Method Map(MethodInfo methodInfo, string className = null);
+		Method Map(MethodInfo methodInfo, EntityPurposePair entityPurposePair);
 
 		string RenderAccessModifyer(Method method);
 

@@ -8,12 +8,21 @@
 	string accessModifyer = RenderEngine.ClassCore.RenderAccessModifyer(Model);
 	string interfaces = RenderEngine.ClassCore.RenderInterfaces(Model);
 	string name = RenderEngine.ClassCore.RenderName(Model);
+	string nameSpace = RenderEngine.ClassCore.RenderNamespace(Model);
+	string usings = RenderEngine.ClassCore.RenderUsings(Model);
 }
 
-namespace @Model.Namespace
+@usings
+
+namespace @nameSpace
 {
 @accessModifyer class @name @interfaces
 	{
+		@foreach (var cosntant in Model.Constants)
+		{
+			WriteLiteral(TemplateRepository.Compile(TemplateType.Constant, cosntant));
+		}
+
 		@foreach (var field in Model.Fields)
 		{
 			WriteLiteral(TemplateRepository.Compile(TemplateType.Field, field));

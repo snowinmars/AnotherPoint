@@ -12,6 +12,7 @@ TestResults
 
 TmpConsoleApplication
 TmpWebApplication
+Test
 
 # Windows Installer files
 *.cab
