@@ -11,7 +11,7 @@ namespace AnotherPoint.Core
 			Bag.ClassPocket = new Dictionary<string, Class>();
 		}
 
-		public static IDictionary<string, MyType> TypePocket { get; private set; }
 		public static IDictionary<string, Class> ClassPocket { get; private set; }
+		public static IDictionary<string, MyType> TypePocket { get; private set; }
 	}
 }

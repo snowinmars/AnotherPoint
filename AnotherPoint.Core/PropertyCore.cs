@@ -9,6 +9,32 @@ namespace AnotherPoint.Core
 {
 	public class PropertyCore : IPropertyCore
 	{
+		public void Dispose()
+		{
+		}
+
+		public Property Map(PropertyInfo propertyInfo)
+		{
+			string propertyName = propertyInfo.Name;
+			string propertyType = Helpers.GetCorrectCollectionTypeNaming(propertyInfo.PropertyType.FullName);
+
+			Property property = new Property(propertyName, propertyType)
+			{
+				AccessModifyer = this.GetGetMethodAccessModifyer(propertyInfo),
+				SetMethod =
+				{
+					AccessModifyer = this.SetGetMethodAccessModifyer(propertyInfo)
+				},
+			};
+
+			this.SetupGeneric(propertyInfo.PropertyType, property.Type);
+
+			// saving field name and type for further appeals from ctor
+			Bag.TypePocket[propertyName.ToUpperInvariant()] = property.Type;
+
+			return property;
+		}
+
 		public string RenderGetMethodAccessModifyer(Property property)
 		{
 			return property.GetMethod.AccessModifyer.AsString();
@@ -29,28 +55,6 @@ namespace AnotherPoint.Core
 			return property.Type.IsGeneric.HasValue && property.Type.IsGeneric.Value ?
 						property.Type.FullName + "<" + string.Join(",", property.Type.GenericTypes) + ">" :
 						property.Type.FullName;
-		}
-
-		public Property Map(PropertyInfo propertyInfo)
-		{
-			string propertyName = propertyInfo.Name;
-			string propertyType = Helpers.GetCorrectCollectionTypeNaming(propertyInfo.PropertyType.FullName);
-
-			Property property = new Property(propertyName, propertyType)
-			{
-				AccessModifyer = GetGetMethodAccessModifyer(propertyInfo),
-				SetMethod =
-				{
-					AccessModifyer = SetGetMethodAccessModifyer(propertyInfo)
-				},
-			};
-
-			SetupGeneric(propertyInfo.PropertyType, property.Type);
-
-			// saving field name and type for further appeals from ctor
-			Bag.TypePocket[propertyName.ToUpperInvariant()] = property.Type;
-
-			return property;
 		}
 
 		private AccessModifyer GetGetMethodAccessModifyer(PropertyInfo propertyInfo)
@@ -135,10 +139,6 @@ namespace AnotherPoint.Core
 			{
 				propertyMyType.GenericTypes.Add(genericTypeArgument.FullName);
 			}
-		}
-
-		public void Dispose()
-		{
 		}
 	}
 }

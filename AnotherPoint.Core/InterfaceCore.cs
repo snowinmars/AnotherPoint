@@ -10,6 +10,10 @@ namespace AnotherPoint.Core
 {
 	public class InterfaceCore : IInterfaceCore
 	{
+		public void Dispose()
+		{
+		}
+
 		public Interface Map(Type interfaceType)
 		{
 			if (!interfaceType.IsInterface)
@@ -19,7 +23,7 @@ namespace AnotherPoint.Core
 
 			Interface @interface = new Interface(interfaceType.FullName);
 
-			HandleMethods(interfaceType.GetMethods(Constant.AllInstance), @interface.Methods);
+			this.HandleMethods(interfaceType.GetMethods(Constant.AllInstance), @interface.Methods);
 
 			return @interface;
 		}
@@ -32,10 +36,6 @@ namespace AnotherPoint.Core
 
 				interfaceMethods.Add(method);
 			}
-		}
-
-		public void Dispose()
-		{
 		}
 	}
 }

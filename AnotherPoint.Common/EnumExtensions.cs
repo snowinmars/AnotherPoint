@@ -77,7 +77,7 @@ namespace AnotherPoint.Common
 				sb.Replace(Constant.Abstract, "").Replace(Constant.Sealed, ""); // abstract + sealed == static for clr
 				sb.Append(Constant.Static);
 			}
-			
+
 			return sb.ToString();
 		}
 	}

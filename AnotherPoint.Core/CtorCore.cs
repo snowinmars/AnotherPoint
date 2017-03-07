@@ -12,6 +12,29 @@ namespace AnotherPoint.Core
 {
 	public class CtorCore : ICtorCore
 	{
+		public void Dispose()
+		{
+		}
+
+		public Ctor Map(ConstructorInfo constructorInfo)
+		{
+			Type declaringType = constructorInfo.DeclaringType;
+
+			if (declaringType == null)
+			{
+				throw new ArgumentException($"Declaring type of constructor {constructorInfo.Name} is null, wtf");
+			}
+
+			Ctor ctor = new Ctor(declaringType.FullName)
+			{
+				AccessModifyer = this.GetAccessModifyer(constructorInfo)
+			};
+
+			this.HandleCtorArguments(constructorInfo, ctor.ArgumentCollection);
+
+			return ctor;
+		}
+
 		public string RenderAccessModifyer(Ctor ctor)
 		{
 			return ctor.AccessModifyer.AsString();
@@ -31,7 +54,7 @@ namespace AnotherPoint.Core
 						new KeyValuePair<string, string>(type, parameter)
 				 ).ToList();
 
-			return MergeParametersCollectionToString(parameters);
+			return this.MergeParametersCollectionToString(parameters);
 		}
 
 		public string RenderBody(Ctor ctor)
@@ -43,11 +66,11 @@ namespace AnotherPoint.Core
 				switch (bind.BindAttribute)
 				{
 					case BindSettings.Exact:
-						body.Append(GetExactBindingArgumentString(bind.Name));
+						body.Append(this.GetExactBindingArgumentString(bind.Name));
 						break;
 
 					case BindSettings.New:
-						body.Append(GetNewBindingArgumentString(bind.Name));
+						body.Append(this.GetNewBindingArgumentString(bind.Name));
 						break;
 
 					case BindSettings.CallThis:
@@ -108,25 +131,6 @@ namespace AnotherPoint.Core
 		public string RenderTypeName(Ctor ctor)
 		{
 			return ctor.Type.Name;
-		}
-
-		public Ctor Map(ConstructorInfo constructorInfo)
-		{
-			Type declaringType = constructorInfo.DeclaringType;
-
-			if (declaringType == null)
-			{
-				throw new ArgumentException($"Declaring type of constructor {constructorInfo.Name} is null, wtf");
-			}
-
-			Ctor ctor = new Ctor(declaringType.FullName)
-			{
-				AccessModifyer = GetAccessModifyer(constructorInfo)
-			};
-
-			HandleCtorArguments(constructorInfo, ctor.ArgumentCollection);
-
-			return ctor;
 		}
 
 		private AccessModifyer GetAccessModifyer(ConstructorInfo constructorInfo)
@@ -198,7 +202,7 @@ namespace AnotherPoint.Core
 			if (type.IsGeneric.HasValue &&
 				type.IsGeneric.Value)
 			{
-				sb.Append(GetGenericTypesAsString(type.GenericTypes));
+				sb.Append(this.GetGenericTypesAsString(type.GenericTypes));
 			}
 
 			sb.Append("();");
@@ -244,10 +248,6 @@ namespace AnotherPoint.Core
 			}
 
 			return args.ToString();
-		}
-
-		public void Dispose()
-		{
 		}
 	}
 }

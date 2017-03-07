@@ -87,8 +87,18 @@ namespace AnotherPoint.Extensions
 
 		#region Type
 
+		public static IEnumerable<FieldInfo> GetConstants(this Type type)
+		{
+			return type.GetFields(BindingFlags.Public |
+								  BindingFlags.Static |
+								  BindingFlags.FlattenHierarchy)
+				.Where(fieldInfo => fieldInfo.IsLiteral &&
+									!fieldInfo.IsInitOnly)
+				.ToList();
+		}
+
 		public static bool IsInternal(this Type type)
-			=> !type.IsPublic && !type.IsPrivate();
+					=> !type.IsPublic && !type.IsPrivate();
 
 		public static bool IsPrivate(this Type type)
 			=> type.IsNotPublic && type.IsNested;
@@ -97,16 +107,6 @@ namespace AnotherPoint.Extensions
 			=> type.IsClass &&
 			   type.IsSealed &&
 			   type.IsAbstract;
-
-		public static IEnumerable<FieldInfo> GetConstants(this Type type)
-		{
-			return type.GetFields(BindingFlags.Public |
-			                      BindingFlags.Static |
-			                      BindingFlags.FlattenHierarchy)
-				.Where(fieldInfo => fieldInfo.IsLiteral &&
-				                    !fieldInfo.IsInitOnly)
-				.ToList();
-		}
 
 		#endregion Type
 	}

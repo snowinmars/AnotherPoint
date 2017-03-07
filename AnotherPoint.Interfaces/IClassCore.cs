@@ -14,7 +14,9 @@ namespace AnotherPoint.Interfaces
 		string RenderInterfaces(Class @class);
 
 		string RenderName(Class @class);
+
 		string RenderNamespace(Class @class);
+
 		string RenderUsings(Class @class);
 	}
 }

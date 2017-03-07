@@ -41,7 +41,7 @@ namespace AnotherPoint.Entities
 			get
 			{
 				if (string.IsNullOrWhiteSpace(this.EntityPurposePair.Purpose) ||
-				    string.IsNullOrWhiteSpace(this.EntityPurposePair.Entity))
+					string.IsNullOrWhiteSpace(this.EntityPurposePair.Entity))
 				{
 					return this.Type.Name;
 				}

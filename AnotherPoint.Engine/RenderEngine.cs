@@ -11,12 +11,12 @@ namespace AnotherPoint.Engine
 			IMethodCore methodCore,
 			IPropertyCore propertyCore)
 		{
-			ClassCore = classCore;
-			CtorCore = ctorCore;
-			FieldCore = fieldCore;
-			InterfaceCore = interfaceCore;
-			MethodCore = methodCore;
-			PropertyCore = propertyCore;
+			RenderEngine.ClassCore = classCore;
+			RenderEngine.CtorCore = ctorCore;
+			RenderEngine.FieldCore = fieldCore;
+			RenderEngine.InterfaceCore = interfaceCore;
+			RenderEngine.MethodCore = methodCore;
+			RenderEngine.PropertyCore = propertyCore;
 		}
 
 		public static IClassCore ClassCore { get; private set; }
@@ -28,12 +28,12 @@ namespace AnotherPoint.Engine
 
 		public static void Dispose()
 		{
-			ClassCore.Dispose();
-			CtorCore.Dispose();
-			FieldCore.Dispose();
-			InterfaceCore.Dispose();
-			MethodCore.Dispose();
-			PropertyCore.Dispose();
+			RenderEngine.ClassCore.Dispose();
+			RenderEngine.CtorCore.Dispose();
+			RenderEngine.FieldCore.Dispose();
+			RenderEngine.InterfaceCore.Dispose();
+			RenderEngine.MethodCore.Dispose();
+			RenderEngine.PropertyCore.Dispose();
 		}
 	}
 }
