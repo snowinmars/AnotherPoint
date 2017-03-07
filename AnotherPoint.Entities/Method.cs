@@ -17,7 +17,7 @@ namespace AnotherPoint.Entities
 			this.ReturnType = new MyType(fullNameOfReturnType);
 
 			this.AttributesForBodyGeneration = new List<Attribute>();
-			this.EntityPurposePair = null;
+			this.EntityPurposePair = new EntityPurposePair("","");
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }

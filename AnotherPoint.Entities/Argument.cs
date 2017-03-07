@@ -34,7 +34,7 @@ namespace AnotherPoint.Entities
 				return false;
 			}
 
-			return this.Equals(obj);
+			return this.Equals(argument);
 		}
 
 		public bool Equals(Argument other)
