@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AnotherPoint.Entities.MethodImpl;
 
 namespace AnotherPoint.Core
 {
@@ -46,7 +47,26 @@ namespace AnotherPoint.Core
 			this.SetupProperties(type.GetProperties(Constant.AllInstance), @class.Properties);
 			this.SetupCtors(type.GetConstructors(Constant.AllInstance), @class.Ctors);
 			this.SetupInterfaces(type.GetInterfaces(), @class.Interfaces);
+			this.SetupMethods(type, @class);
 
+			Bag.ClassPocket.Add(@class.Name, @class);
+
+			return @class;
+		}
+
+		private void SetupMethods(Type type, Class @class)
+		{
+			EntityPurposePair entityPurposePair = ClassCore.GetEntityPurposePair(type, @class);
+
+			this.SetupMethodsImplementation(type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
+								.Where(m => !m.Name.StartsWith(Constant.Get) &&
+											!m.Name.StartsWith(Constant.Set)),
+							@class.Methods,
+							entityPurposePair);
+		}
+
+		private static EntityPurposePair GetEntityPurposePair(Type type, Class @class)
+		{
 			string entity;
 			string purpose;
 
@@ -61,17 +81,8 @@ namespace AnotherPoint.Core
 				purpose = @class.EntityPurposePair.Purpose;
 			}
 
-			EntityPurposePair p = new EntityPurposePair(entity, purpose);
-
-			this.SetupMethods(type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
-								.Where(m => !m.Name.StartsWith(Constant.Get) &&
-											!m.Name.StartsWith(Constant.Set)),
-							@class.Methods,
-							p);
-
-			Bag.ClassPocket.Add(@class.Name, @class);
-
-			return @class;
+			EntityPurposePair entityPurposePair = new EntityPurposePair(entity, purpose);
+			return entityPurposePair;
 		}
 
 		public string RenderAccessModifyer(Class @class)
@@ -288,7 +299,7 @@ namespace AnotherPoint.Core
 			}
 		}
 
-		private void SetupMethods(IEnumerable<MethodInfo> systemTypeMethods, ICollection<Method> classMethods, EntityPurposePair entityPurposePair)
+		private void SetupMethodsImplementation(IEnumerable<MethodInfo> systemTypeMethods, ICollection<Method> classMethods, EntityPurposePair entityPurposePair)
 		{
 			foreach (var methodInfo in systemTypeMethods)
 			{
