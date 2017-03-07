@@ -1,14 +1,17 @@
 ﻿@using AnotherPoint.Common
 @using AnotherPoint.Core
+@using AnotherPoint.Engine
 @model AnotherPoint.Entities.Ctor
 
 @{
-	string parameters = CtorCore.GetArgumentCollectionAsString(Model);
-	string body = CtorCore.GetBodyAsString(Model);
-	string carriage = CtorCore.GetCtorCarriage(Model);
+	string accessModifyer = RenderEngine.CtorCore.RenderAccessModifyer(Model);
+	string body = RenderEngine.CtorCore.RenderBody(Model);
+	string carriage = RenderEngine.CtorCore.RenderCtorCarriage(Model);
+	string parameters = RenderEngine.CtorCore.RenderArgumentCollection(Model);
+	string typeName = RenderEngine.CtorCore.RenderTypeName(Model);
 }
 
-@Model.AccessModifyer.AsString() @Model.Type.Name (@parameters) @carriage
+@accessModifyer @typeName (@parameters) @carriage
 {
 	@body
 }

@@ -1,12 +1,14 @@
 ﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
 using System;
+using AnotherPoint.Engine;
+using AnotherPoint.Interfaces;
 
 namespace AnotherPoint.Core
 {
-	public static class InterfaceCore
+	public class InterfaceCore : IInterfaceCore
 	{
-		public static Interface Map(Type interfaceType)
+		public Interface Map(Type interfaceType)
 		{
 			if (!interfaceType.IsInterface)
 			{
@@ -15,19 +17,23 @@ namespace AnotherPoint.Core
 
 			Interface @interface = new Interface(interfaceType.FullName);
 
-			InterfaceCore.HandleMethods(@interface, interfaceType);
+			HandleMethods(@interface, interfaceType);
 
 			return @interface;
 		}
 
-		private static void HandleMethods(Interface @interface, Type interfaceType)
+		private void HandleMethods(Interface @interface, Type interfaceType)
 		{
 			foreach (var methodInfo in interfaceType.GetMethods(Constant.AllInstance))
 			{
-				Method method = MethodCore.Map(methodInfo);
+				Method method = RenderEngine.MethodCore.Map(methodInfo);
 
 				@interface.Methods.Add(method);
 			}
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

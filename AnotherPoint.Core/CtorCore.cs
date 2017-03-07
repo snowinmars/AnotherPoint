@@ -6,12 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AnotherPoint.Interfaces;
 
 namespace AnotherPoint.Core
 {
-	public static class CtorCore
+	public class CtorCore : ICtorCore
 	{
-		public static string GetArgumentCollectionAsString(Ctor ctor)
+		public string RenderAccessModifyer(Ctor ctor)
+		{
+			return ctor.AccessModifyer.AsString();
+		}
+
+		public string RenderArgumentCollection(Ctor ctor)
 		{
 			IList<KeyValuePair<string, string>> parameters =
 				(
@@ -25,10 +31,10 @@ namespace AnotherPoint.Core
 						new KeyValuePair<string, string>(type, parameter)
 				 ).ToList();
 
-			return CtorCore.MergeParametersCollectionToString(parameters);
+			return MergeParametersCollectionToString(parameters);
 		}
 
-		public static string GetBodyAsString(Ctor ctor)
+		public string RenderBody(Ctor ctor)
 		{
 			StringBuilder body = new StringBuilder(256);
 
@@ -37,11 +43,11 @@ namespace AnotherPoint.Core
 				switch (bind.BindAttribute)
 				{
 					case BindSettings.Exact:
-						body.Append(CtorCore.GetExactBindingArgumentString(bind));
+						body.Append(GetExactBindingArgumentString(bind));
 						break;
 
 					case BindSettings.New:
-						body.Append(CtorCore.GetNewBindingArgumentString(bind));
+						body.Append(GetNewBindingArgumentString(bind));
 						break;
 
 					case BindSettings.CallThis:
@@ -61,7 +67,7 @@ namespace AnotherPoint.Core
 			return body.ToString();
 		}
 
-		public static string GetCtorCarriage(Ctor ctor)
+		public string RenderCtorCarriage(Ctor ctor)
 		{
 			StringBuilder carriage = new StringBuilder(256);
 
@@ -99,7 +105,12 @@ namespace AnotherPoint.Core
 			return carriage.ToString();
 		}
 
-		public static Ctor Map(ConstructorInfo constructorInfo)
+		public string RenderTypeName(Ctor ctor)
+		{
+			return ctor.Type.Name;
+		}
+
+		public Ctor Map(ConstructorInfo constructorInfo)
 		{
 			Type declaringType = constructorInfo.DeclaringType;
 
@@ -110,15 +121,15 @@ namespace AnotherPoint.Core
 
 			Ctor ctor = new Ctor(declaringType.FullName)
 			{
-				AccessModifyer = CtorCore.GetAccessModifyer(constructorInfo)
+				AccessModifyer = GetAccessModifyer(constructorInfo)
 			};
 
-			CtorCore.HandleCtorArguments(constructorInfo, ctor);
+			HandleCtorArguments(constructorInfo, ctor);
 
 			return ctor;
 		}
 
-		private static AccessModifyer GetAccessModifyer(ConstructorInfo constructorInfo)
+		private AccessModifyer GetAccessModifyer(ConstructorInfo constructorInfo)
 		{
 			AccessModifyer accessModifyer = AccessModifyer.None;
 
@@ -145,7 +156,7 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
-		private static string GetExactBindingArgumentString(Argument bind)
+		private string GetExactBindingArgumentString(Argument bind)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -158,21 +169,21 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		private static string GetFullTypeNameWithoutAssmblyInfo(MyType type)
+		private string GetFullTypeNameWithoutAssmblyInfo(MyType type)
 		{
 			return type.FullName
 				.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries)
 				.First();
 		}
 
-		private static void GetGenericTypesAsString(StringBuilder sb, MyType type)
+		private void GetGenericTypesAsString(StringBuilder sb, MyType type)
 		{
 			sb.Append("<");
 			sb.Append(string.Join(",", type.GenericTypes));
 			sb.Append(">");
 		}
 
-		private static string GetNewBindingArgumentString(Argument bind)
+		private string GetNewBindingArgumentString(Argument bind)
 		{
 			StringBuilder sb = new StringBuilder(256);
 
@@ -181,7 +192,7 @@ namespace AnotherPoint.Core
 			sb.Append(" = ");
 			sb.Append(" new ");
 
-			MyType type = Bag.Pocket[bind.Name];
+			MyType type = Bag.Pocket[bind.Name.ToUpperInvariant()];
 
 			string fullTypeNameWithoutAssmblyInfo = type.GetFullNameWithoutAssemblyInfo(type.FullName);
 			string fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
@@ -190,7 +201,7 @@ namespace AnotherPoint.Core
 			if (type.IsGeneric.HasValue &&
 				type.IsGeneric.Value)
 			{
-				CtorCore.GetGenericTypesAsString(sb, type);
+				GetGenericTypesAsString(sb, type);
 			}
 
 			sb.Append("();");
@@ -198,7 +209,7 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		private static void HandleCtorArguments(ConstructorInfo constructorInfo, Ctor ctor)
+		private void HandleCtorArguments(ConstructorInfo constructorInfo, Ctor ctor)
 		{
 			foreach (var ctorBind in constructorInfo.GetCustomAttributes<BindAttribute>())
 			{
@@ -210,7 +221,7 @@ namespace AnotherPoint.Core
 				}
 				else
 				{
-					MyType argType = Bag.Pocket[ctorBind.Name];
+					MyType argType = Bag.Pocket[ctorBind.Name.ToUpperInvariant()];
 					Argument arg = new Argument(ctorBind.Name, argType.FullName, ctorBind.Settings)
 					{
 						Type = argType
@@ -221,7 +232,7 @@ namespace AnotherPoint.Core
 			}
 		}
 
-		private static string MergeParametersCollectionToString(IList<KeyValuePair<string, string>> parameters)
+		private string MergeParametersCollectionToString(IList<KeyValuePair<string, string>> parameters)
 		{
 			StringBuilder args = new StringBuilder(128);
 
@@ -236,6 +247,10 @@ namespace AnotherPoint.Core
 			}
 
 			return args.ToString();
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

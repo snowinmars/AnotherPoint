@@ -2,30 +2,46 @@
 using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using System.Reflection;
+using AnotherPoint.Interfaces;
 
 namespace AnotherPoint.Core
 {
-	public static class FieldCore
+	public class FieldCore : IFieldCore
 	{
-		public static Field Map(FieldInfo fieldInfo)
+		public string RenderAccessModifyer(Field field)
+		{
+			return field.AccessModifyer.AsString();
+		}
+
+		public string RenderName(Field field)
+		{
+			return field.Name;
+		}
+
+		public string RenderTypeName(Field field)
+		{
+			return field.Type.Name;
+		}
+
+		public Field Map(FieldInfo fieldInfo)
 		{
 			string fieldName = fieldInfo.Name;
 			string fieldType = Helpers.GetCorrectCollectionTypeNaming(fieldInfo.FieldType.Name);
 
 			Field field = new Field(fieldName, fieldType)
 			{
-				AccessModifyer = FieldCore.GetAccessModifyer(fieldInfo)
+				AccessModifyer = GetAccessModifyer(fieldInfo)
 			};
 
-			FieldCore.SetupGeneric(fieldInfo, field);
+			SetupGeneric(fieldInfo, field);
 
 			// saving field name and type for further appeals from ctor
-			Bag.Pocket[fieldName] = field.Type;
+			Bag.Pocket[fieldName.ToUpperInvariant()] = field.Type;
 
 			return field;
 		}
 
-		private static AccessModifyer GetAccessModifyer(FieldInfo fieldInfo)
+		private AccessModifyer GetAccessModifyer(FieldInfo fieldInfo)
 		{
 			AccessModifyer accessModifyer = AccessModifyer.None;
 
@@ -57,7 +73,7 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
-		private static void SetupGeneric(FieldInfo fieldInfo, Field field)
+		private void SetupGeneric(FieldInfo fieldInfo, Field field)
 		{
 			field.Type.IsGeneric = fieldInfo.FieldType.IsGenericType;
 
@@ -65,6 +81,10 @@ namespace AnotherPoint.Core
 			{
 				field.Type.GenericTypes.Add(genericTypeArgument.FullName);
 			}
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

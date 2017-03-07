@@ -6,12 +6,18 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AnotherPoint.Interfaces;
 
 namespace AnotherPoint.Core
 {
-	public static class MethodCore
+	public class MethodCore : IMethodCore
 	{
-		public static string GetArgumentsAsString(Method method)
+		public string RenderAccessModifyer(Method method)
+		{
+			return method.AccessModifyer.AsString();
+		}
+
+		public string RenderArguments(Method method)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -28,7 +34,7 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		public static string GetBodyAsString(Method method)
+		public string RenderBody(Method method)
 		{
 			MethodImpl.ShutMeUpAttribute shutMeUpAttribute = null;
 			MethodImpl.SendMeToAttribute sendMeToAttribute = null;
@@ -61,12 +67,12 @@ namespace AnotherPoint.Core
 
 			if (validateAttribute != null)
 			{
-				body.AppendLine(MethodCore.GetValidationBodyPart(validateAttribute));
+				body.AppendLine(GetValidationBodyPart(validateAttribute));
 			}
 
 			if (sendMeToAttribute != null)
 			{
-				body.AppendLine(MethodCore.GetSendMeToBodyPart(method, sendMeToAttribute));
+				body.AppendLine(GetSendMeToBodyPart(method, sendMeToAttribute));
 			}
 
 			if (shutMeUpAttribute != null)
@@ -77,23 +83,38 @@ namespace AnotherPoint.Core
 			return body.ToString();
 		}
 
-		public static Method Map(MethodInfo methodInfo, string className = null)
+		public string RenderMethodName(Method method)
+		{
+			return method.Name;
+		}
+
+		public string RenderReturnTypeName(Method method)
+		{
+			if (method.ReturnType.FullName == "System.Void")
+			{
+				return "void";
+			}
+
+			return method.ReturnType.FullName;
+		}
+
+		public Method Map(MethodInfo methodInfo, string className = null)
 		{
 			Method method = new Method(methodInfo.Name, methodInfo.ReturnType.FullName)
 			{
-				AccessModifyer = MethodCore.GetAccessModifyer(methodInfo)
+				AccessModifyer = GetAccessModifyer(methodInfo)
 			};
 
-			MethodCore.HandleAttributesForBodyGeneration(methodInfo, method);
+			HandleAttributesForBodyGeneration(methodInfo, method);
 
 			method.ForClass = className;
 
-			MethodCore.HandleArguments(method, methodInfo);
+			HandleArguments(method, methodInfo);
 
 			return method;
 		}
 
-		private static AccessModifyer GetAccessModifyer(MethodInfo methodInfo)
+		private AccessModifyer GetAccessModifyer(MethodInfo methodInfo)
 		{
 			AccessModifyer accessModifyer = AccessModifyer.None;
 
@@ -135,7 +156,7 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
-		private static string GetSendMeToBodyPart(Method method, MethodImpl.SendMeToAttribute sendMeToAttribute)
+		private string GetSendMeToBodyPart(Method method, MethodImpl.SendMeToAttribute sendMeToAttribute)
 		{
 			StringBuilder body = new StringBuilder();
 
@@ -155,7 +176,7 @@ namespace AnotherPoint.Core
 			return body.ToString();
 		}
 
-		private static string GetValidationBodyPart(MethodImpl.ValidateAttribute validateAttribute)
+		private string GetValidationBodyPart(MethodImpl.ValidateAttribute validateAttribute)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -167,7 +188,7 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		private static void HandleArguments(Method method, MethodInfo methodInfo)
+		private void HandleArguments(Method method, MethodInfo methodInfo)
 		{
 			foreach (var parameterInfo in methodInfo.GetParameters())
 			{
@@ -177,7 +198,7 @@ namespace AnotherPoint.Core
 			}
 		}
 
-		private static void HandleAttributesForBodyGeneration(MethodInfo methodInfo, Method method)
+		private void HandleAttributesForBodyGeneration(MethodInfo methodInfo, Method method)
 		{
 			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.ShutMeUpAttribute>())
 			{
@@ -193,6 +214,10 @@ namespace AnotherPoint.Core
 			{
 				method.AttributesForBodyGeneration.Add(methodImplAttribute);
 			}
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }

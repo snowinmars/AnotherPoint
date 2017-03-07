@@ -8,8 +8,10 @@ namespace AnotherPoint.Common
 		{
 			"AnotherPoint.Common",
 			"AnotherPoint.Core",
+			"AnotherPoint.Engine",
 			"AnotherPoint.Entities",
 			"AnotherPoint.Extensions",
+			"AnotherPoint.Interfaces",
 			"AnotherPoint.Templates",
 		};
 

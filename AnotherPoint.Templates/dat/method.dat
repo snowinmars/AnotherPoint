@@ -1,20 +1,17 @@
 ﻿@using AnotherPoint.Common
 @using AnotherPoint.Core
+@using AnotherPoint.Engine
 @model AnotherPoint.Entities.Method
 
 @{
-	string arguments = MethodCore.GetArgumentsAsString(Model);
-	string body = MethodCore.GetBodyAsString(Model);
-
-	string returnTypeName = Model.ReturnType.FullName;
-	
-	if (returnTypeName == "System.Void")
-	{
-		returnTypeName = "void";
-	}
+	string accessModifyer = RenderEngine.MethodCore.RenderAccessModifyer(Model);
+	string arguments = RenderEngine.MethodCore.RenderArguments(Model);
+	string body = RenderEngine.MethodCore.RenderBody(Model);
+	string methodName = RenderEngine.MethodCore.RenderMethodName(Model);
+	string returnTypeName = RenderEngine.MethodCore.RenderReturnTypeName(Model);
 }
 
-@Model.AccessModifyer.AsString() @returnTypeName @Model.Name (@arguments)
+@accessModifyer @returnTypeName @methodName (@arguments)
 {
 	@body
 }

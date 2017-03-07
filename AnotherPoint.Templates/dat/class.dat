@@ -1,15 +1,18 @@
 ﻿@using AnotherPoint.Common
 @using AnotherPoint.Core
 @using AnotherPoint.Templates
+@using AnotherPoint.Engine
 @model AnotherPoint.Entities.Class
 
 @{
-	string interfaces = ClassCore.GetInterfacesAsString(Model);
+	string accessModifyer = RenderEngine.ClassCore.RenderAccessModifyer(Model);
+	string interfaces = RenderEngine.ClassCore.RenderInterfaces(Model);
+	string name = RenderEngine.ClassCore.RenderName(Model);
 }
 
 namespace @Model.Namespace
 {
-@Model.AccessModifyer.AsString() class @Model.Name @interfaces
+@accessModifyer class @name @interfaces
 	{
 		@foreach (var field in Model.Fields)
 		{

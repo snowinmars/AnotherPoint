@@ -2,34 +2,57 @@
 using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using System.Reflection;
+using AnotherPoint.Interfaces;
 
 namespace AnotherPoint.Core
 {
-	public static class PropertyCore
+	public class PropertyCore : IPropertyCore
 	{
-		public static Property Map(PropertyInfo propertyInfo)
+		public string RenderGetMethodAccessModifyer(Property property)
+		{
+			return property.GetMethod.AccessModifyer.AsString();
+		}
+
+		public string RenderName(Property property)
+		{
+			return property.Name;
+		}
+
+		public string RenderSetMethodAccessModifyer(Property property)
+		{
+			return property.SetMethod.AccessModifyer.AsString();
+		}
+
+		public string RenderTypeName(Property property)
+		{
+			return property.Type.IsGeneric.HasValue && property.Type.IsGeneric.Value ?
+						property.Type.FullName + "<" + string.Join(",", property.Type.GenericTypes) + ">" :
+						property.Type.FullName;
+		}
+
+		public Property Map(PropertyInfo propertyInfo)
 		{
 			string propertyName = propertyInfo.Name;
 			string propertyType = Helpers.GetCorrectCollectionTypeNaming(propertyInfo.PropertyType.FullName);
 
 			Property property = new Property(propertyName, propertyType)
 			{
-				AccessModifyer = PropertyCore.GetGetMethodAccessModifyer(propertyInfo),
+				AccessModifyer = GetGetMethodAccessModifyer(propertyInfo),
 				SetMethod =
 				{
-					AccessModifyer = PropertyCore.SetGetMethodAccessModifyer(propertyInfo)
+					AccessModifyer = SetGetMethodAccessModifyer(propertyInfo)
 				},
 			};
 
-			PropertyCore.SetupGeneric(propertyInfo, property);
+			SetupGeneric(propertyInfo, property);
 
 			// saving field name and type for further appeals from ctor
-			Bag.Pocket[propertyName] = property.Type;
+			Bag.Pocket[propertyName.ToUpperInvariant()] = property.Type;
 
 			return property;
 		}
 
-		private static AccessModifyer GetGetMethodAccessModifyer(PropertyInfo propertyInfo)
+		private AccessModifyer GetGetMethodAccessModifyer(PropertyInfo propertyInfo)
 		{
 			AccessModifyer getMethodAccessModifyer = AccessModifyer.None;
 
@@ -66,7 +89,7 @@ namespace AnotherPoint.Core
 			return getMethodAccessModifyer;
 		}
 
-		private static AccessModifyer SetGetMethodAccessModifyer(PropertyInfo propertyInfo)
+		private AccessModifyer SetGetMethodAccessModifyer(PropertyInfo propertyInfo)
 		{
 			AccessModifyer setMethodAccessModifyer = AccessModifyer.None;
 
@@ -103,7 +126,7 @@ namespace AnotherPoint.Core
 			return setMethodAccessModifyer;
 		}
 
-		private static void SetupGeneric(PropertyInfo propertyInfo, Property property)
+		private void SetupGeneric(PropertyInfo propertyInfo, Property property)
 		{
 			property.Type.IsGeneric = propertyInfo.PropertyType.IsGenericType;
 
@@ -111,6 +134,10 @@ namespace AnotherPoint.Core
 			{
 				property.Type.GenericTypes.Add(genericTypeArgument.FullName);
 			}
+		}
+
+		public void Dispose()
+		{
 		}
 	}
 }
