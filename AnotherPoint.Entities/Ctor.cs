@@ -23,14 +23,14 @@ namespace AnotherPoint.Entities
 
 		public MyType Type { get; set; }
 
-		public bool IsDefaultCtor(bool ignoreAccessModifyer = true)
+		public bool IsDefaultCtor(AccessModifyer? withAccessModifyer = null)
 		{
-			if (ignoreAccessModifyer)
+			if (!withAccessModifyer.HasValue)
 			{
 				return this.ArgumentCollection.Count == 0;
 			}
 
-			return this.ArgumentCollection.Count == 0 && this.AccessModifyer.HasFlag(AccessModifyer.Public);
+			return this.ArgumentCollection.Count == 0 && this.AccessModifyer.HasFlag(withAccessModifyer.Value);
 		}
 
 		public override string ToString()

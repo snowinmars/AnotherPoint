@@ -1,4 +1,5 @@
-﻿using AnotherPoint.Common;
+﻿using System;
+using AnotherPoint.Common;
 using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using System.Reflection;
@@ -44,7 +45,7 @@ namespace AnotherPoint.Core
 				},
 			};
 
-			SetupGeneric(propertyInfo, property);
+			SetupGeneric(propertyInfo.PropertyType, property.Type);
 
 			// saving field name and type for further appeals from ctor
 			Bag.Pocket[propertyName.ToUpperInvariant()] = property.Type;
@@ -126,13 +127,13 @@ namespace AnotherPoint.Core
 			return setMethodAccessModifyer;
 		}
 
-		private void SetupGeneric(PropertyInfo propertyInfo, Property property)
+		private void SetupGeneric(Type systemPropertyType, MyType propertyMyType)
 		{
-			property.Type.IsGeneric = propertyInfo.PropertyType.IsGenericType;
+			propertyMyType.IsGeneric = systemPropertyType.IsGenericType;
 
-			foreach (var genericTypeArgument in propertyInfo.PropertyType.GenericTypeArguments)
+			foreach (var genericTypeArgument in systemPropertyType.GenericTypeArguments)
 			{
-				property.Type.GenericTypes.Add(genericTypeArgument.FullName);
+				propertyMyType.GenericTypes.Add(genericTypeArgument.FullName);
 			}
 		}
 

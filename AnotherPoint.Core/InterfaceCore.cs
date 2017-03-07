@@ -1,6 +1,8 @@
 ﻿using AnotherPoint.Common;
 using AnotherPoint.Entities;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using AnotherPoint.Engine;
 using AnotherPoint.Interfaces;
 
@@ -17,18 +19,18 @@ namespace AnotherPoint.Core
 
 			Interface @interface = new Interface(interfaceType.FullName);
 
-			HandleMethods(@interface, interfaceType);
+			HandleMethods(interfaceType.GetMethods(Constant.AllInstance), @interface.Methods);
 
 			return @interface;
 		}
 
-		private void HandleMethods(Interface @interface, Type interfaceType)
+		private void HandleMethods(IEnumerable<MethodInfo> systemTypeMethods, ICollection<Method> interfaceMethods)
 		{
-			foreach (var methodInfo in interfaceType.GetMethods(Constant.AllInstance))
+			foreach (var methodInfo in systemTypeMethods)
 			{
 				Method method = RenderEngine.MethodCore.Map(methodInfo);
 
-				@interface.Methods.Add(method);
+				interfaceMethods.Add(method);
 			}
 		}
 

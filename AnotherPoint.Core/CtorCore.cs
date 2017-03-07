@@ -43,11 +43,11 @@ namespace AnotherPoint.Core
 				switch (bind.BindAttribute)
 				{
 					case BindSettings.Exact:
-						body.Append(GetExactBindingArgumentString(bind));
+						body.Append(GetExactBindingArgumentString(bind.Name));
 						break;
 
 					case BindSettings.New:
-						body.Append(GetNewBindingArgumentString(bind));
+						body.Append(GetNewBindingArgumentString(bind.Name));
 						break;
 
 					case BindSettings.CallThis:
@@ -124,7 +124,7 @@ namespace AnotherPoint.Core
 				AccessModifyer = GetAccessModifyer(constructorInfo)
 			};
 
-			HandleCtorArguments(constructorInfo, ctor);
+			HandleCtorArguments(constructorInfo, ctor.ArgumentCollection);
 
 			return ctor;
 		}
@@ -156,43 +156,40 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
-		private string GetExactBindingArgumentString(Argument bind)
+		private string GetExactBindingArgumentString(string bindName)
 		{
 			StringBuilder sb = new StringBuilder();
 
 			sb.Append(" this. ");
-			sb.Append(bind.Name.FirstLetterToUpper());
+			sb.Append(bindName.FirstLetterToUpper());
 			sb.Append(" = ");
-			sb.Append(bind.Name.FirstLetterToLower());
+			sb.Append(bindName.FirstLetterToLower());
 			sb.Append(";");
 
 			return sb.ToString();
 		}
 
-		private string GetFullTypeNameWithoutAssmblyInfo(MyType type)
+		private string GetGenericTypesAsString(IEnumerable<string> genericTypes)
 		{
-			return type.FullName
-				.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries)
-				.First();
-		}
+			StringBuilder sb = new StringBuilder();
 
-		private void GetGenericTypesAsString(StringBuilder sb, MyType type)
-		{
 			sb.Append("<");
-			sb.Append(string.Join(",", type.GenericTypes));
+			sb.Append(string.Join(",", genericTypes));
 			sb.Append(">");
+
+			return sb.ToString();
 		}
 
-		private string GetNewBindingArgumentString(Argument bind)
+		private string GetNewBindingArgumentString(string bingName)
 		{
 			StringBuilder sb = new StringBuilder(256);
 
 			sb.Append(" this. ");
-			sb.Append(bind.Name.FirstLetterToUpper());
+			sb.Append(bingName.FirstLetterToUpper());
 			sb.Append(" = ");
 			sb.Append(" new ");
 
-			MyType type = Bag.Pocket[bind.Name.ToUpperInvariant()];
+			MyType type = Bag.Pocket[bingName.ToUpperInvariant()];
 
 			string fullTypeNameWithoutAssmblyInfo = type.GetFullNameWithoutAssemblyInfo(type.FullName);
 			string fullImplementTypeName = Helpers.GetImplementTypeNaming(fullTypeNameWithoutAssmblyInfo);
@@ -201,7 +198,7 @@ namespace AnotherPoint.Core
 			if (type.IsGeneric.HasValue &&
 				type.IsGeneric.Value)
 			{
-				GetGenericTypesAsString(sb, type);
+				sb.Append(GetGenericTypesAsString(type.GenericTypes));
 			}
 
 			sb.Append("();");
@@ -209,7 +206,7 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		private void HandleCtorArguments(ConstructorInfo constructorInfo, Ctor ctor)
+		private void HandleCtorArguments(ConstructorInfo constructorInfo, IList<Argument> ctorArguments)
 		{
 			foreach (var ctorBind in constructorInfo.GetCustomAttributes<BindAttribute>())
 			{
@@ -217,7 +214,7 @@ namespace AnotherPoint.Core
 				{
 					Argument arg = new Argument(ctorBind.Name, "System", BindSettings.CallThis);
 
-					ctor.ArgumentCollection.Add(arg);
+					ctorArguments.Add(arg);
 				}
 				else
 				{
@@ -227,12 +224,12 @@ namespace AnotherPoint.Core
 						Type = argType
 					};
 
-					ctor.ArgumentCollection.Add(arg);
+					ctorArguments.Add(arg);
 				}
 			}
 		}
 
-		private string MergeParametersCollectionToString(IList<KeyValuePair<string, string>> parameters)
+		private string MergeParametersCollectionToString(IEnumerable<KeyValuePair<string, string>> parameters)
 		{
 			StringBuilder args = new StringBuilder(128);
 

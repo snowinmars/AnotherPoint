@@ -3,6 +3,7 @@ using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -105,11 +106,11 @@ namespace AnotherPoint.Core
 				AccessModifyer = GetAccessModifyer(methodInfo)
 			};
 
-			HandleAttributesForBodyGeneration(methodInfo, method);
+			HandleAttributesForBodyGeneration(methodInfo, method.AttributesForBodyGeneration);
 
 			method.ForClass = className;
 
-			HandleArguments(method, methodInfo);
+			HandleArguments(methodInfo.GetParameters(), method.Arguments);
 
 			return method;
 		}
@@ -188,31 +189,31 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		private void HandleArguments(Method method, MethodInfo methodInfo)
+		private void HandleArguments(IEnumerable<ParameterInfo> systemTypeParameters, ICollection<Argument> methodArguments)
 		{
-			foreach (var parameterInfo in methodInfo.GetParameters())
+			foreach (var parameterInfo in systemTypeParameters)
 			{
 				Argument argument = new Argument(parameterInfo.Name, parameterInfo.ParameterType.FullName, BindSettings.None);
 
-				method.Arguments.Add(argument);
+				methodArguments.Add(argument);
 			}
 		}
 
-		private void HandleAttributesForBodyGeneration(MethodInfo methodInfo, Method method)
+		private void HandleAttributesForBodyGeneration(MethodInfo methodInfo, ICollection<Attribute> methodAttributes)
 		{
 			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.ShutMeUpAttribute>())
 			{
-				method.AttributesForBodyGeneration.Add(methodImplAttribute);
+				methodAttributes.Add(methodImplAttribute);
 			}
 
 			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.SendMeToAttribute>())
 			{
-				method.AttributesForBodyGeneration.Add(methodImplAttribute);
+				methodAttributes.Add(methodImplAttribute);
 			}
 
 			foreach (var methodImplAttribute in methodInfo.GetCustomAttributes<MethodImpl.ValidateAttribute>())
 			{
-				method.AttributesForBodyGeneration.Add(methodImplAttribute);
+				methodAttributes.Add(methodImplAttribute);
 			}
 		}
 
