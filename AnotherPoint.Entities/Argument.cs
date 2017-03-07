@@ -19,6 +19,29 @@ namespace AnotherPoint.Entities
 
 		public MyType Type { get; set; }
 
+		public override bool Equals(object obj)
+		{
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+			if (this == null)
+			{
+				return false;
+			}
+
+			Argument argument = obj as Argument;
+
+			if (argument == null)
+			{
+				return false;
+			}
+
+			return this.Equals(obj);
+		}
+
+		public bool Equals(Argument other)
+			=> this.Type.Equals(other.Type) &&
+			   this.Name == other.Name &&
+			   this.BindAttribute == other.BindAttribute;
+
 		public string GetFullTypeName()
 		{
 			if (this.Type.IsGeneric.HasValue && this.Type.IsGeneric.Value)

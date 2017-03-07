@@ -25,6 +25,31 @@ namespace AnotherPoint.Entities
 		public Method SetMethod { get; set; }
 		public MyType Type { get; set; }
 
+		public override bool Equals(object obj)
+		{
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+			if (this == null)
+			{
+				return false;
+			}
+
+			Property property = obj as Property;
+
+			if (property == null)
+			{
+				return false;
+			}
+
+			return this.Equals(property);
+		}
+
+		public bool Equals(Property other)
+			=> this.Name == other.Name &&
+			   this.AccessModifyer == other.AccessModifyer &&
+			   this.Type.Equals(other.Type) &&
+			   this.GetMethod.Equals(other.GetMethod) &&
+			   this.SetMethod.Equals(other.SetMethod);
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();

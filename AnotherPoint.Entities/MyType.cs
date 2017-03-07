@@ -28,6 +28,47 @@ namespace AnotherPoint.Entities
 
 		public string Namespace { get; set; }
 
+		public override bool Equals(object obj)
+		{
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+			if (this == null)
+			{
+				return false;
+			}
+
+			MyType myType = obj as MyType;
+
+			if (myType == null)
+			{
+				return false;
+			}
+
+			return this.Equals(myType);
+		}
+
+		public bool Equals(MyType other)
+			=> this.FullName == other.FullName &&
+			   this.Name == other.Name &&
+			   this.Namespace == other.Namespace &&
+			   this.GenericTypes.OrderBy(a => a).SequenceEqual(other.GenericTypes.OrderBy(a => a)) &&
+			   this.IsGeneric == other.IsGeneric &&
+			   this.IsGeneric.HasValue == other.IsGeneric.HasValue &&
+			   (!this.IsGeneric.HasValue || !other.IsGeneric.HasValue || this.IsGeneric.Value == other.IsGeneric.Value); // if there's values - they are equals
+
+		public string GetFullNameWithoutAssemblyInfo(string fullName)
+		{
+			return fullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
+		}
+
+		public string GetFullTypeNameHumanReadable(string fullTypeNameWithoutAssemblyInfo)
+		{
+			string f;
+
+			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out f) ?
+				f :
+				fullTypeNameWithoutAssemblyInfo;
+		}
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -54,20 +95,6 @@ namespace AnotherPoint.Entities
 			// if this type was generic, convert it to the human-readable form like
 			//   System.Collections.Generic.IEnumerable
 			return this.GetFullTypeNameHumanReadable(fullNameWithoutAssemblyInfo);
-		}
-
-		public string GetFullNameWithoutAssemblyInfo(string fullName)
-		{
-			return fullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
-		}
-
-		public string GetFullTypeNameHumanReadable(string fullTypeNameWithoutAssemblyInfo)
-		{
-			string f;
-
-			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out f) ?
-				f :
-				fullTypeNameWithoutAssemblyInfo;
 		}
 
 		private string ParseName()

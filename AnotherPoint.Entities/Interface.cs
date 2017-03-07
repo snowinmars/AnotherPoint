@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AnotherPoint.Entities
 {
@@ -26,5 +27,29 @@ namespace AnotherPoint.Entities
 		}
 
 		public MyType Type { get; set; }
+
+		public override bool Equals(object obj)
+		{
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+			if (this == null)
+			{
+				return false;
+			}
+
+			Interface @interface = obj as Interface;
+
+			if (@interface == null)
+			{
+				return false;
+			}
+
+			return this.Equals(@interface);
+		}
+
+		public bool Equals(Interface other)
+			=> this.FullName == other.FullName &&
+			   this.Methods.OrderBy(a => a).SequenceEqual(other.Methods.OrderBy(a => a)) &&
+			   this.Name == other.Name &&
+			   this.Type.Equals(other.Type);
 	}
 }

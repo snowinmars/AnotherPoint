@@ -16,6 +16,28 @@ namespace AnotherPoint.Entities
 		public string Name { get; }
 		public BindSettings Settings { get; }
 
+		public override bool Equals(object obj)
+		{
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+			if (this == null)
+			{
+				return false;
+			}
+
+			BindAttribute bindAttribute = obj as BindAttribute;
+
+			if (bindAttribute == null)
+			{
+				return false;
+			}
+
+			return this.Equals(bindAttribute);
+		}
+
+		public bool Equals(BindAttribute other)
+			=> this.Name == other.Name &&
+			   this.Settings == other.Settings;
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();

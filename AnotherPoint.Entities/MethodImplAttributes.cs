@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AnotherPoint.Entities.MethodImpl
@@ -20,6 +21,27 @@ namespace AnotherPoint.Entities.MethodImpl
 
 			public string Destination { get; }
 
+			public override bool Equals(object obj)
+			{
+				// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+				if (this == null)
+				{
+					return false;
+				}
+
+				SendMeToAttribute sendMeToAttribute = obj as SendMeToAttribute;
+
+				if (sendMeToAttribute == null)
+				{
+					return false;
+				}
+
+				return this.Equals(sendMeToAttribute);
+			}
+
+			public bool Equals(SendMeToAttribute other)
+				=> this.Destination == other.Destination;
+
 			public override string ToString()
 			{
 				StringBuilder sb = new StringBuilder();
@@ -39,6 +61,11 @@ namespace AnotherPoint.Entities.MethodImpl
 		}
 
 		[AttributeUsage(AttributeTargets.Method)]
+		public class ToSqlAttribute : Attribute
+		{
+		}
+
+		[AttributeUsage(AttributeTargets.Method)]
 		public class ValidateAttribute : Attribute
 		{
 			public ValidateAttribute(string[] namesOfInputParametersToValidate)
@@ -47,6 +74,29 @@ namespace AnotherPoint.Entities.MethodImpl
 			}
 
 			public IEnumerable<string> NamesOfInputParametersToValidate { get; }
+
+			public override bool Equals(object obj)
+			{
+				// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions
+				if (this == null)
+				{
+					return false;
+				}
+
+				ValidateAttribute validateAttribute = obj as ValidateAttribute;
+
+				if (validateAttribute == null)
+				{
+					return false;
+				}
+
+				return this.Equals(validateAttribute);
+			}
+
+			public bool Equals(ValidateAttribute other)
+				=>
+					this.NamesOfInputParametersToValidate.OrderBy(a => a)
+						.SequenceEqual(other.NamesOfInputParametersToValidate.OrderBy(a => a));
 
 			public override string ToString()
 			{
@@ -59,11 +109,6 @@ namespace AnotherPoint.Entities.MethodImpl
 
 				return sb.ToString();
 			}
-		}
-
-		[AttributeUsage(AttributeTargets.Method)]
-		public class ToSqlAttribute : Attribute
-		{
 		}
 	}
 }
