@@ -4,19 +4,9 @@
 @model AnotherPoint.Entities.Method
 
 @{
-	string accessModifyer = RenderEngine.MethodCore.RenderAccessModifyer(Model);
 	string arguments = RenderEngine.MethodCore.RenderArguments(Model);
-	string body = RenderEngine.MethodCore.RenderBody(Model);
 	string methodName = RenderEngine.MethodCore.RenderMethodName(Model);
-	string additionalBody = RenderEngine.MethodCore.RenderAdditionalBody(Model);
 	string returnTypeName = RenderEngine.MethodCore.RenderReturnTypeName(Model);
 }
 
-@accessModifyer @returnTypeName @methodName (@arguments)
-{
-	@additionalBody
-
-
-
-	@body
-}
+@returnTypeName @methodName (@arguments);

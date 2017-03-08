@@ -4,6 +4,6 @@ namespace AnotherPoint.Interfaces
 {
 	public interface IValidationCore
 	{
-		Class ConstructValidationClass(string @namespace, string forDestination);
+		Class ConstructValidationClass(string @namespace);
 	}
 }

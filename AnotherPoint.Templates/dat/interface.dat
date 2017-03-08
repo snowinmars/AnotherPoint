@@ -1,0 +1,23 @@
+﻿@using AnotherPoint.Common
+@using AnotherPoint.Engine
+@using AnotherPoint.Templates
+@model AnotherPoint.Entities.Interface
+	
+@{
+	string accessModifyer = RenderEngine.InterfaceCore.RenderAccessModifyer(Model);
+	string name = RenderEngine.InterfaceCore.RenderName(Model);
+	string nameSpace = RenderEngine.InterfaceCore.RenderNamespace(Model);
+	string carrige = RenderEngine.InterfaceCore.RenderCarrige(Model);
+}
+
+namespace @nameSpace
+{
+	@accessModifyer interface @name @carrige 
+	{
+		@foreach (var method in Model.Methods)
+		{
+			WriteLiteral(TemplateRepository.Compile(TemplateType.InterfaceMethod, method));
+		}
+
+	}
+}

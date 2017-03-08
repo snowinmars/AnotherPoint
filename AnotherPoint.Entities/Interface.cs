@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AnotherPoint.Common;
 
 namespace AnotherPoint.Entities
 {
@@ -9,8 +10,12 @@ namespace AnotherPoint.Entities
 		{
 			this.Type = new MyType(fullTypeName);
 
+			this.ImplementedInterfaces = new List<Interface>();
+
 			this.Methods = new List<Method>();
 		}
+
+		public string Namespace { get; set; }
 
 		public string FullName
 		{
@@ -25,6 +30,10 @@ namespace AnotherPoint.Entities
 			get { return this.Type.Name; }
 			set { this.Type.Name = value; }
 		}
+
+		public IList<Interface> ImplementedInterfaces { get; private set; }
+
+		public AccessModifyer AccessModifyer { get; set; }
 
 		public MyType Type { get; set; }
 
@@ -50,6 +59,9 @@ namespace AnotherPoint.Entities
 			=> this.FullName == other.FullName &&
 			   this.Methods.OrderBy(a => a).SequenceEqual(other.Methods.OrderBy(a => a)) &&
 			   this.Name == other.Name &&
+				this.AccessModifyer == other.AccessModifyer &&
+			this.ImplementedInterfaces.OrderBy(a => a).SequenceEqual(other.ImplementedInterfaces.OrderBy(a => a)) &&
+			this.Namespace == other.Namespace &&
 			   this.Type.Equals(other.Type);
 	}
 }

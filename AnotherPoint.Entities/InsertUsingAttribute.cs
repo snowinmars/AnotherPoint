@@ -2,7 +2,7 @@
 
 namespace AnotherPoint.Entities
 {
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
 	public class InsertUsingAttribute : Attribute
 	{
 		public InsertUsingAttribute(string @using)

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AnotherPoint.Common;
 using AnotherPoint.Engine;
@@ -15,30 +17,73 @@ namespace AnotherPoint.Core
 {
 	public class ValidationCore : IValidationCore
 	{
-		public Class ConstructValidationClass(string @namespace, string forDestination)
+		public Class ConstructValidationClass(string @namespace)
 		{
 			Class @class = new Class("Validator");
 			@class.Type.Namespace = @namespace;
 			@class.AccessModifyer = AccessModifyer.Internal | AccessModifyer.Sealed;
+			@class.Usings.Add("System");
+			@class.Usings.Add("System.Text.RegularExpressions");
 
 			foreach (var type in Bag.TypePocket.Values)
 			{
-				foreach (var propertyInfo in type.GetProperties())
-				{
-					IDictionary<string, ICollection<Attribute>> dataAnnotationsAttributes = new Dictionary<string, ICollection<Attribute>>();
+				var props = type.GetProperties();
 
-					foreach (var attribute in this.GetDataAnnotationsAttributes(propertyInfo))
+				if (props.Length > 0)
+				{
+					Method m = new Method("Check", "System.Void");
+					m.AccessModifyer = AccessModifyer.Public;
+					Argument argument = null;
+
+					foreach (var propertyInfo in props)
 					{
-						dataAnnotationsAttributes.Add(attribute);
+						InitDataAnnotationsAttributes(propertyInfo);
+
+						if (m.Arguments.Count == 0)
+						{
+							Type declaringType = propertyInfo.DeclaringType;
+							argument = new Argument(declaringType.Name.FirstLetterToLower(), declaringType.FullName, BindSettings.Validate);
+							m.Arguments.Add(argument);
+						}
 					}
 
-					Type declaringType = propertyInfo.DeclaringType;
+					StringBuilder body = new StringBuilder();
 
-					Method m = new Method("Check", "System.Void");
+					foreach (var pair in this.propertyAttributeBinding)
+					{
+						if (pair.Value.Count > 0)
+						{
+							foreach (var attribute in pair.Value)
+							{
+								var rangeAttribute = attribute as RangeAttribute;
+								var regularExpressionAttribute = attribute as RegularExpressionAttribute;
 
-					m.Arguments.Add(new Argument(declaringType.Name.FirstLetterToLower(), declaringType.FullName, BindSettings.Validate));
+								if (rangeAttribute != null)
+								{
+									body.Append($"if (!({argument.Name}.{pair.Key.Name} > {rangeAttribute.Minimum} && ");
+									body.AppendLine();
+									body.Append($"{argument.Name}.{pair.Key.Name} < {rangeAttribute.Maximum} ))");
+									body.AppendLine();
+									body.AppendLine("{");
+									body.AppendLine("throw new Exception();");
+									body.AppendLine("}");
+								}
 
-					m.AccessModifyer = AccessModifyer.Public;
+								body.AppendLine();
+
+								if (regularExpressionAttribute != null)
+								{
+									body.Append($"if (!(Regex.Match({argument.Name}.{pair.Key.Name}, \"{regularExpressionAttribute.Pattern}\").Success))");
+									body.AppendLine();
+									body.AppendLine("{");
+									body.AppendLine("throw new Exception();");
+									body.AppendLine("}");
+								}
+							}
+						}
+					}
+
+					m.AdditionalBody = body.ToString();
 
 					if (!@class.Methods.Contains(m))
 					{
@@ -58,24 +103,25 @@ namespace AnotherPoint.Core
 			"System.ComponentModel.DataAnnotations.StringLengthAttribute",
 		};
 
-		private IDictionary<string, ICollection<Attribute>> GetDataAnnotationsAttributes(PropertyInfo prop)
+		private readonly IDictionary<Property, ICollection<Attribute>> propertyAttributeBinding;
+
+		public ValidationCore()
 		{
-			IDictionary<string, ICollection<Attribute>> result = new Dictionary<string, ICollection<Attribute>>();
+			this.propertyAttributeBinding = new Dictionary<Property, ICollection<Attribute>>();
+		}
 
-			foreach (var dataAnnotationAttributeName in this.a)
-			{
-				result.Add(dataAnnotationAttributeName, new List<Attribute>());
-			}
+		private void InitDataAnnotationsAttributes(PropertyInfo prop)
+		{
+			var property = RenderEngine.PropertyCore.Map(prop);
+			propertyAttributeBinding.Add(property, new List<Attribute>());
 
-			foreach (var pair in result)
+			foreach (var dataAnnotationAttributeName in a)
 			{
-				foreach (var customAttribute in prop.GetCustomAttributes(ValidationCore.FindType(pair.Key)))
+				foreach (var customAttribute in prop.GetCustomAttributes(ValidationCore.FindType(dataAnnotationAttributeName)))
 				{
-					pair.Value.Add(customAttribute);
+					this.propertyAttributeBinding[property].Add(customAttribute);
 				}
 			}
-
-			return result;
 		}
 
 		public static Type FindType(string qualifiedTypeName)

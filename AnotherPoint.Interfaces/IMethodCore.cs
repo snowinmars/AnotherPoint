@@ -17,5 +17,7 @@ namespace AnotherPoint.Interfaces
 		string RenderMethodName(Method method);
 
 		string RenderReturnTypeName(Method method);
+
+		string RenderAdditionalBody(Method method);
 	}
 }

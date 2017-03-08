@@ -43,7 +43,7 @@ namespace AnotherPoint.Core
 
 		public string RenderTypeName(Field field)
 		{
-			return field.Type.Name;
+			return field.Type.FullName;
 		}
 
 		private AccessModifyer GetAccessModifyer(FieldInfo fieldInfo)

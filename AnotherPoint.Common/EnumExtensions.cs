@@ -27,6 +27,12 @@ namespace AnotherPoint.Common
 				case TemplateType.Constant:
 					return "constant";
 
+				case TemplateType.Interface:
+					return "interface";
+				
+				case TemplateType.InterfaceMethod:
+					return "interfaceMethod";
+
 				case TemplateType.None:
 					return "";
 

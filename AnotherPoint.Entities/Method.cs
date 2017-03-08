@@ -18,7 +18,11 @@ namespace AnotherPoint.Entities
 
 			this.AttributesForBodyGeneration = new List<Attribute>();
 			this.EntityPurposePair = new EntityPurposePair("","");
+
+			this.AdditionalBody = "";
 		}
+
+		public string AdditionalBody { get; set; }
 
 		public AccessModifyer AccessModifyer { get; set; }
 

@@ -113,6 +113,12 @@
     <None Include="dat\field.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="dat\interface.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="dat\interfaceMethod.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="dat\method.dat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

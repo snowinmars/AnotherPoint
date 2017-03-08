@@ -53,7 +53,7 @@ namespace AnotherPoint.Templates
 																model: model,
 																viewBag: TemplateRepository.DynamicViewBag);
 
-			str = str.Replace("&gt;", ">").Replace("&lt;", "<").Replace("&quot;", "\"");
+			str = str.Replace("&gt;", ">").Replace("&lt;", "<").Replace("&quot;", "\"").Replace("&amp;", "&");
 
 			return str;
 		}

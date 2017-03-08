@@ -45,6 +45,8 @@ namespace AnotherPoint.Core
 
 		public string RenderAccessModifyer(Method method)
 		{
+
+
 			return method.AccessModifyer.AsString();
 		}
 
@@ -200,6 +202,11 @@ namespace AnotherPoint.Core
 			body.AppendLine($"this.{destination.FirstLetterToUpper()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
 
 			return body.ToString();
+		}
+
+		public string RenderAdditionalBody(Method method)
+		{
+			return method.AdditionalBody;
 		}
 
 		private string GetSqlDeleteCommand(Method method)

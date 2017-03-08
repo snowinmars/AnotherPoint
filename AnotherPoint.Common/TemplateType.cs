@@ -9,5 +9,7 @@
 		Ctor = 4,
 		Method = 5,
 		Constant = 6,
+		Interface = 7,
+		InterfaceMethod = 8,
 	}
 }
