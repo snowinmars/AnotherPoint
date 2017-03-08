@@ -19,12 +19,10 @@ namespace AnotherPoint.Templates
 
 		public static void Init()
 		{
-			
 		}
 
 		public static void Finit()
 		{
-
 		}
 
 		static TemplateRepository()

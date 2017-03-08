@@ -1,5 +1,5 @@
-﻿using System;
-using AnotherPoint.Entities;
+﻿using AnotherPoint.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace AnotherPoint.Core

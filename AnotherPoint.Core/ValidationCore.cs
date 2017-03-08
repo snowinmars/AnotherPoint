@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Engine;
 using AnotherPoint.Entities;
-using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using System.Text;
 
 namespace AnotherPoint.Core
 {

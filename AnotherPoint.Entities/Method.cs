@@ -17,7 +17,7 @@ namespace AnotherPoint.Entities
 			this.ReturnType = new MyType(fullNameOfReturnType);
 
 			this.AttributesForBodyGeneration = new List<Attribute>();
-			this.EntityPurposePair = new EntityPurposePair("","");
+			this.EntityPurposePair = new EntityPurposePair("", "");
 
 			this.AdditionalBody = "";
 		}

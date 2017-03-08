@@ -45,8 +45,6 @@ namespace AnotherPoint.Core
 
 		public string RenderAccessModifyer(Method method)
 		{
-
-
 			return method.AccessModifyer.AsString();
 		}
 

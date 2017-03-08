@@ -29,7 +29,7 @@ namespace AnotherPoint.Common
 
 				case TemplateType.Interface:
 					return "interface";
-				
+
 				case TemplateType.InterfaceMethod:
 					return "interfaceMethod";
 

@@ -1,13 +1,13 @@
 ﻿using AnotherPoint.Common;
 using AnotherPoint.Engine;
 using AnotherPoint.Entities;
+using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using AnotherPoint.Extensions;
 
 namespace AnotherPoint.Core
 {
