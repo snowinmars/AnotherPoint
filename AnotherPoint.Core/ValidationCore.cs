@@ -18,8 +18,8 @@ namespace AnotherPoint.Core
 			Class @class = new Class("Validator");
 			@class.Type.Namespace = @namespace;
 			@class.AccessModifyer = AccessModifyer.Internal | AccessModifyer.Sealed;
-			@class.Usings.Add("System");
-			@class.Usings.Add("System.Text.RegularExpressions");
+			@class.Usings.Add(Constant.Usings.System);
+			@class.Usings.Add(Constant.Usings.System_Text_RegularExpressions);
 
 			foreach (var type in Bag.TypePocket.Values)
 			{

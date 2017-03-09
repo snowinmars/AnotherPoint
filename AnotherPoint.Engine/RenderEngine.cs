@@ -10,7 +10,8 @@ namespace AnotherPoint.Engine
 			IInterfaceCore interfaceCore,
 			IMethodCore methodCore,
 			IPropertyCore propertyCore,
-			IValidationCore validationCore)
+			IValidationCore validationCore,
+			IEndpointCore endpointCore)
 		{
 			RenderEngine.ClassCore = classCore;
 			RenderEngine.CtorCore = ctorCore;
@@ -19,6 +20,7 @@ namespace AnotherPoint.Engine
 			RenderEngine.MethodCore = methodCore;
 			RenderEngine.PropertyCore = propertyCore;
 			RenderEngine.ValidationCore = validationCore;
+			RenderEngine.EndpointCore = endpointCore;
 		}
 
 		public static IClassCore ClassCore { get; private set; }
@@ -28,6 +30,7 @@ namespace AnotherPoint.Engine
 		public static IMethodCore MethodCore { get; private set; }
 		public static IPropertyCore PropertyCore { get; private set; }
 		public static IValidationCore ValidationCore { get; private set; }
+		public static IEndpointCore EndpointCore { get; set; }
 
 		public static void Dispose()
 		{

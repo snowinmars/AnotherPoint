@@ -75,6 +75,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Build.15.1.548\lib\net46\Microsoft.Build.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Build.Framework.15.1.548\lib\net46\Microsoft.Build.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="RazorEngine, Version=3.9.3.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
       <HintPath>..\packages\RazorEngine.3.9.3\lib\net45\RazorEngine.dll</HintPath>
       <Private>True</Private>
@@ -84,7 +92,20 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.1.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.4.1.0\lib\net462\System.Runtime.InteropServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Thread, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Thread.4.0.0\lib\net46\System.Threading.Thread.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
       <Private>True</Private>
@@ -131,6 +152,22 @@
     <ProjectReference Include="..\AnotherPoint.Common\AnotherPoint.Common.csproj">
       <Project>{DF3E702E-4A73-48EE-8373-4C4529A15436}</Project>
       <Name>AnotherPoint.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Engine\AnotherPoint.Engine.csproj">
+      <Project>{6BC87FEC-7F9E-4486-B15A-39CE845D277B}</Project>
+      <Name>AnotherPoint.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Entities\AnotherPoint.Entities.csproj">
+      <Project>{27769E9B-0950-43F3-930C-719ABD457BDB}</Project>
+      <Name>AnotherPoint.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Extensions\AnotherPoint.Extensions.csproj">
+      <Project>{1E1D5E38-1F40-4728-BDE4-704500F42D01}</Project>
+      <Name>AnotherPoint.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Interfaces\AnotherPoint.Interfaces.csproj">
+      <Project>{23F0572B-61E6-414A-A6B7-4EDE549E0BFB}</Project>
+      <Name>AnotherPoint.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

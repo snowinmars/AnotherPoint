@@ -46,6 +46,7 @@
     <Compile Include="Ctor.cs" />
     <Compile Include="Argument.cs" />
     <Compile Include="BindAttribute.cs" />
+    <Compile Include="Endpoint.cs" />
     <Compile Include="EntityPurposePair.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="InsertUsingAttribute.cs" />

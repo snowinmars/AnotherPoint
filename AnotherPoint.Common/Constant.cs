@@ -5,6 +5,23 @@ namespace AnotherPoint.Common
 {
 	public static class Constant
 	{
+		public static class Usings
+		{
+			public const string System = "System";
+			public const string Dapper = "System";
+			public const string System_Linq = "System.Linq";
+			public const string System_Text_RegularExpressions = "System.Text.RegularExpressions";
+		}
+
+		public static class Types
+		{
+			public const string System_String = "System.String";
+			public const string System_Void = "System.Void";
+			public const string System_Guid = "System.Guid";
+			public const string System_Int32 = "System.Int32";
+
+		}
+
 		#region constants for rendering
 
 		// I wanna be ensure that no words will stick to each other, so I surround this type of constants with spaces
@@ -36,6 +53,16 @@ namespace AnotherPoint.Common
 		public const string Set = "set";
 		public const string Void = "Void";
 
+		public const string Logic = "Logic";
+		public const string DAO = "DAO";
+		public const string BLL = "BLL";
+		public const string DAL = "DAL";
+		public const string Interfaces = "Interfaces";
+		public const string Entities = "Entities";
+		public const string _Constant = "Constant";
+		public const string Common = "Common";
+		public const string ICrud = "ICRUD";
+
 		#endregion exact matching constants
 
 		public const string DefaultDestination = "DefaultDestination";
@@ -46,5 +73,6 @@ namespace AnotherPoint.Common
 		{
 			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
+
 	}
 }

@@ -45,6 +45,7 @@
     <Compile Include="Bag.cs" />
     <Compile Include="ClassCore.cs" />
     <Compile Include="CtorCore.cs" />
+    <Compile Include="EndpointCore.cs" />
     <Compile Include="FieldCore.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="InterfaceCore.cs" />

@@ -15,7 +15,7 @@ namespace AnotherPoint.Entities
 			this.Fields = new List<Field>();
 			this.Usings = new List<string>();
 			this.Properties = new List<Property>();
-			this.Interfaces = new List<Interface>();
+			this.ImplementedInterfaces = new List<Interface>();
 			this.Methods = new List<Method>();
 			this.Constants = new List<Field>();
 
@@ -32,7 +32,7 @@ namespace AnotherPoint.Entities
 		public string DestinationTypeName { get; set; }
 		public EntityPurposePair EntityPurposePair { get; set; }
 		public IList<Field> Fields { get; private set; }
-		public IList<Interface> Interfaces { get; }
+		public IList<Interface> ImplementedInterfaces { get; }
 		public bool IsEndpoint { get; set; }
 		public IList<Method> Methods { get; }
 
@@ -50,9 +50,15 @@ namespace AnotherPoint.Entities
 			}
 		}
 
+		public string FullName
+		{
+			get { return $"{this.Namespace}.{this.Name}"; }
+		}
+
 		public string Namespace
 		{
 			get { return this.Type.Namespace; }
+			set { this.Type.Namespace = value; }
 		}
 
 		public IList<Property> Properties { get; private set; }
@@ -90,7 +96,7 @@ namespace AnotherPoint.Entities
 				this.Constants.OrderBy(a => a).SequenceEqual(other.Constants.OrderBy(a => a)) &&
 				this.Ctors.OrderBy(a => a).SequenceEqual(other.Ctors.OrderBy(a => a)) &&
 				this.Fields.OrderBy(a => a).SequenceEqual(other.Fields.OrderBy(a => a)) &&
-				this.Interfaces.OrderBy(a => a).SequenceEqual(other.Interfaces.OrderBy(a => a)) &&
+				this.ImplementedInterfaces.OrderBy(a => a).SequenceEqual(other.ImplementedInterfaces.OrderBy(a => a)) &&
 				this.Methods.OrderBy(a => a).SequenceEqual(other.Methods.OrderBy(a => a)) &&
 				this.Properties.OrderBy(a => a).SequenceEqual(other.Properties.OrderBy(a => a)) &&
 				this.Usings.OrderBy(a => a).SequenceEqual(other.Usings.OrderBy(a => a));

@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="IClassCore.cs" />
     <Compile Include="ICtorCore.cs" />
+    <Compile Include="IEndpointCore.cs" />
     <Compile Include="IFieldCore.cs" />
     <Compile Include="IInterfaceCore.cs" />
     <Compile Include="IMethodCore.cs" />

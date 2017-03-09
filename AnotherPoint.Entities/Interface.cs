@@ -12,6 +12,7 @@ namespace AnotherPoint.Entities
 
 			this.ImplementedInterfaces = new List<Interface>();
 
+			this.Usings = new List<string>();
 			this.Methods = new List<Method>();
 		}
 
@@ -23,6 +24,7 @@ namespace AnotherPoint.Entities
 			set { this.Type.FullName = value; }
 		}
 
+		public IList<string> Usings { get; }
 		public IList<Method> Methods { get; }
 
 		public string Name

@@ -30,6 +30,7 @@ namespace AnotherPoint.Core
 			@interface.Namespace = interfaceType.Namespace;
 
 			this.HandleMethods(interfaceType.GetMethods(Constant.AllInstance), @interface.Methods);
+			this.HandleUsings(interfaceType.GetCustomAttributes<InsertUsingAttribute>(), @interface.Usings);
 
 			foreach (var implementInterface in interfaceType.GetInterfaces())
 			{
@@ -37,6 +38,26 @@ namespace AnotherPoint.Core
 			}
 
 			return @interface;
+		}
+
+		public string RenderUsings(Interface @interface)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var interfaceUsing in @interface.Usings)
+			{
+				sb.AppendLine($"using {interfaceUsing};");
+			}
+
+			return sb.ToString();
+		}
+
+		private void HandleUsings(IEnumerable<InsertUsingAttribute> getCustomAttributes, IList<string> interfaceUsings)
+		{
+			foreach (var insertUsingAttribute in getCustomAttributes)
+			{
+				interfaceUsings.Add(insertUsingAttribute.Using);
+			}
 		}
 
 		public string RenderCarrige(Interface @interface)

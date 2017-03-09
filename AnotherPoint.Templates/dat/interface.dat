@@ -8,7 +8,10 @@
 	string name = RenderEngine.InterfaceCore.RenderName(Model);
 	string nameSpace = RenderEngine.InterfaceCore.RenderNamespace(Model);
 	string carrige = RenderEngine.InterfaceCore.RenderCarrige(Model);
+	string usings = RenderEngine.InterfaceCore.RenderUsings(Model);
 }
+
+@usings
 
 namespace @nameSpace
 {

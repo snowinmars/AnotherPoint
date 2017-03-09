@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -10,8 +11,26 @@ namespace AnotherPoint.Extensions
 {
 	public static class Extensions
 	{
+		public static void Clear(this DirectoryInfo directory)
+		{
+			foreach (FileInfo file in directory.GetFiles())
+			{
+				file.Delete();
+			}
+
+			foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories())
+			{
+				subDirectory.Delete(true);
+			}
+		}
+
 		public static string FirstLetterToLower(this string str)
 		{
+			if (string.IsNullOrWhiteSpace(str))
+			{
+				return str;
+			}
+
 			if (!char.IsLetter(str[0]))
 			{
 				return str;
@@ -26,6 +45,11 @@ namespace AnotherPoint.Extensions
 
 		public static string FirstLetterToUpper(this string str)
 		{
+			if (string.IsNullOrWhiteSpace(str))
+			{
+				return str;
+			}
+
 			if (!char.IsLetter(str[0]))
 			{
 				return str;

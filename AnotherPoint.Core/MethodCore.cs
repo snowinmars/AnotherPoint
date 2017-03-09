@@ -13,8 +13,6 @@ namespace AnotherPoint.Core
 {
 	public class MethodCore : IMethodCore
 	{
-		private static readonly int NumberOfNestedAttributes = typeof(MethodImpl).GetNestedTypes(Constant.AllInstance).Length;
-
 		private string[] delete = { "REMOVE", "DELETE" };
 
 		private string[] insert = { "CREATE" };
@@ -71,11 +69,6 @@ namespace AnotherPoint.Core
 			MethodImpl.SendMeToAttribute sendMeToAttribute = null;
 			MethodImpl.ValidateAttribute validateAttribute = null;
 			MethodImpl.ToSqlAttribute toSqlAttribute = null;
-
-			if (method.AttributesForBodyGeneration.Count > MethodCore.NumberOfNestedAttributes)
-			{
-				throw new InvalidOperationException("This can't be");
-			}
 
 			foreach (var attribute in method.AttributesForBodyGeneration)
 			{
