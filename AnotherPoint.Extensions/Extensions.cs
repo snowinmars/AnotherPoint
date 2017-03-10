@@ -6,11 +6,25 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.Build.Construction;
 
 namespace AnotherPoint.Extensions
 {
 	public static class Extensions
 	{
+		public static void AddItems(this ProjectRootElement elem, string groupName, params string[] items)
+		{
+			var group = elem.AddItemGroup();
+
+			foreach (var item in items)
+			{
+				if (item != null)
+				{
+					group.AddItem(groupName, item);
+				}
+			}
+		}
+
 		public static void Clear(this DirectoryInfo directory)
 		{
 			foreach (FileInfo file in directory.GetFiles())
@@ -18,7 +32,7 @@ namespace AnotherPoint.Extensions
 				file.Delete();
 			}
 
-			foreach (System.IO.DirectoryInfo subDirectory in directory.GetDirectories())
+			foreach (DirectoryInfo subDirectory in directory.GetDirectories())
 			{
 				subDirectory.Delete(true);
 			}

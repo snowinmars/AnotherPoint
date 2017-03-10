@@ -11,7 +11,8 @@ namespace AnotherPoint.Engine
 			IMethodCore methodCore,
 			IPropertyCore propertyCore,
 			IValidationCore validationCore,
-			IEndpointCore endpointCore)
+			IEndpointCore endpointCore,
+			ISolutionCore solutionCore)
 		{
 			RenderEngine.ClassCore = classCore;
 			RenderEngine.CtorCore = ctorCore;
@@ -21,8 +22,10 @@ namespace AnotherPoint.Engine
 			RenderEngine.PropertyCore = propertyCore;
 			RenderEngine.ValidationCore = validationCore;
 			RenderEngine.EndpointCore = endpointCore;
+			RenderEngine.SolutionCore = solutionCore;
 		}
 
+		public static ISolutionCore SolutionCore { get; set; }
 		public static IClassCore ClassCore { get; private set; }
 		public static ICtorCore CtorCore { get; private set; }
 		public static IFieldCore FieldCore { get; private set; }
