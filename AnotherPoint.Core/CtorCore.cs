@@ -188,10 +188,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder(256);
 
-			sb.Append(" this. ");
-			sb.Append(bingName.FirstLetterToUpper());
-			sb.Append(" = ");
-			sb.Append(" new ");
+			sb.Append($" {Constant.This}.{bingName.FirstLetterToUpper()} = {Constant.New} ");
 
 			MyType type = Bag.MyTypePocket[bingName.ToUpperInvariant()];
 
@@ -216,7 +213,7 @@ namespace AnotherPoint.Core
 			{
 				if (ctorBind.Settings == BindSettings.CallThis)
 				{
-					Argument arg = new Argument(ctorBind.Name, "System", BindSettings.CallThis);
+					Argument arg = new Argument(ctorBind.Name, Constant.Usings.System, BindSettings.CallThis);
 
 					ctorArguments.Add(arg);
 				}

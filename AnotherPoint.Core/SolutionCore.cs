@@ -8,311 +8,261 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace AnotherPoint.Core
 {
 	public class SolutionCore : ISolutionCore
 	{
-		private readonly IDictionary<string, IList<string>> internalReferences = new Dictionary<string, IList<string>>();
 		private readonly IDictionary<string, IList<string>> externalReferences = new Dictionary<string, IList<string>>();
+		private readonly IDictionary<string, IList<string>> internalReferences = new Dictionary<string, IList<string>>();
 		private readonly IDictionary<string, IList<InsertNugetPackageAttribute>> packages = new Dictionary<string, IList<InsertNugetPackageAttribute>>();
 		private readonly IDictionary<string, string> projectIds = new Dictionary<string, string>();
-		private string root;
 		private string appName;
+		private string root;
 
 		public void ConstructSolution(IEnumerable<Endpoint> endpoints, string fullPathToDir)
 		{
 			this.root = fullPathToDir;
-			foreach (var endpoint in endpoints)
-			{
-				this.appName = endpoint.AppName;
-				this.ScaffoldToDirectory(endpoint, fullPathToDir);
-			}
-
-			foreach (var endpoint in endpoints)
-			{
-				this.internalReferences.Add(endpoint.CommonClass.Namespace, new List<string>());
-
-				foreach (var @class in endpoint.Classes)
-				{
-					if (this.internalReferences.ContainsKey(@class.Namespace))
-					{
-						continue;
-					}
-
-					this.internalReferences.Add(@class.Namespace, new List<string>());
-					this.externalReferences.Add(@class.Namespace, new List<string>());
-					this.packages.Add(@class.Namespace, new List<InsertNugetPackageAttribute>());
-
-					foreach (var @using in @class.Usings)
-					{
-						if (@using.StartsWith(endpoint.AppName) &&
-							!this.internalReferences[@class.Namespace].Contains(@using))
-						{
-							this.internalReferences[@class.Namespace].Add(@using);
-						}
-					}
-
-					foreach (var reference in @class.References)
-					{
-						this.externalReferences[@class.Namespace].Add(reference);
-					}
-
-					if (@class.Validation != null)
-					{
-						foreach (var reference in @class.Validation.References)
-						{
-							this.externalReferences[@class.Namespace].Add(reference);
-						}
-					}
-
-					foreach (var insertNugetPackageAttribute in @class.PackageAttributes)
-					{
-						this.packages[@class.Namespace].Add(insertNugetPackageAttribute);
-					}
-				}
-
-				foreach (var @interface in endpoint.Interfaces)
-				{
-					if (this.internalReferences.ContainsKey(@interface.Namespace))
-					{
-						continue;
-					}
-
-					this.internalReferences.Add(@interface.Namespace, new List<string>());
-					foreach (var @using in @interface.Usings)
-					{
-						if (@using.StartsWith(endpoint.AppName) &&
-							!this.internalReferences[@interface.Namespace].Contains(@using))
-						{
-							this.internalReferences[@interface.Namespace].Add(@using);
-						}
-					}
-
-					foreach (var reference in @interface.References)
-					{
-						this.internalReferences[@interface.Namespace].Add(reference);
-					}
-				}
-			}
+			this.ScaffoldEndpoints(endpoints, fullPathToDir);
+			this.SetupReferences(endpoints);
 
 			this.WriteApplication(fullPathToDir);
 		}
 
-		private void ScaffoldToDirectory(Endpoint endpoint, string fullPathToDir)
+		private void DeclareExistance(string classNamespace)
+		{
+			this.internalReferences.Add(classNamespace, new List<string>());
+			this.externalReferences.Add(classNamespace, new List<string>());
+			this.packages.Add(classNamespace, new List<InsertNugetPackageAttribute>());
+		}
+
+		private string GetPackagesConfigBody(DirectoryInfo directoryInfo, ProjectRootElement root)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
+			sb.AppendLine("<packages>");
+
+			if (this.packages.ContainsKey(directoryInfo.Name))
+			{
+				foreach (var reference in this.packages[directoryInfo.Name])
+				{
+					// here I have to place info about package into to buckets: the first one is csproj (I use root entity to access it) and the second one is packages.config
+					root.AddItem("Reference", reference.ReferenceInclude, new[]
+					{
+						new KeyValuePair<string, string>("HintPath", reference.HintPath),
+						new KeyValuePair<string, string>("Private", "True"),
+					});
+
+					sb.AppendLine($"  <package id=\"{reference.Name}\" version=\"{reference.Version}\" targetFramework=\"net452\" />");
+				}
+			}
+
+			sb.AppendLine("</packages>");
+
+			return sb.ToString();
+		}
+
+		private string GetSolutionBody()
+		{
+			#region consts
+
+			const string slnHeader = @"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1";
+			const string slnFooterStart = @"
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution";
+			const string SlnFooterEnd = @"
+EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal";
+
+			#endregion consts
+
+			Guid slnId = Guid.NewGuid();
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.AppendLine(slnHeader);
+
+			foreach (var projectId in this.projectIds)
+			{
+				sb.AppendLine($"Project(\"{{{slnId}}}\") = \"{projectId.Key}\", \"{projectId.Key}\\{projectId.Key}.csproj\", \"{{{projectId.Value}}}\"");
+				sb.AppendLine("EndProject");
+			}
+
+			sb.AppendLine(slnFooterStart);
+
+			foreach (var projectId in this.projectIds)
+			{
+				sb.AppendLine($"{projectId.Value}.Debug|Any CPU.ActiveCfg = Debug|Any CPU");
+				sb.AppendLine($"{projectId.Value}.Debug|Any CPU.Build.0 = Debug|Any CPU");
+				sb.AppendLine($"{projectId.Value}.Release|Any CPU.ActiveCfg = Release|Any CPU");
+				sb.AppendLine($"{projectId.Value}.Release|Any CPU.Build.0 = Release|Any CPU");
+			}
+
+			sb.AppendLine(SlnFooterEnd);
+
+			return sb.ToString();
+		}
+
+		private DirectoryInfo PrepareDirectory(string fullPathToDir, Endpoint endpoint)
 		{
 			if (!Directory.Exists(fullPathToDir))
 			{
 				Directory.CreateDirectory(fullPathToDir);
 			}
 
-			DirectoryInfo d = new DirectoryInfo(fullPathToDir);
+			DirectoryInfo rootDirectory = new DirectoryInfo(fullPathToDir);
 
-			d.Clear();
+			rootDirectory.Clear();
 
-			IDictionary<string, string> renderedIBlls = new Dictionary<string, string>();
+			return rootDirectory;
+		}
 
-			foreach (var endpointBllInterface in endpoint.BLLInterfaces)
-			{
-				string res = TemplateRepository.Compile(TemplateType.Interface, endpointBllInterface);
-				string name = endpointBllInterface.Name;
+		private void RenderBll(Endpoint endpoint, DirectoryInfo rootDirectory)
+		{
+			string renderedBll = TemplateRepository.Compile(TemplateType.Class, endpoint.BllClass);
+			DirectoryInfo bllDir = rootDirectory.CreateSubdirectory($"{endpoint.AppName}.{Constant.Bll}");
 
-				renderedIBlls.Add(name, res);
-			}
+			File.WriteAllText(path: Path.Combine(bllDir.FullName, $"{endpoint.BllClass.Name}.cs"),
+								contents: renderedBll);
+		}
 
-			IDictionary<string, string> renderedIDaos = new Dictionary<string, string>();
+		private void RenderBllInterfaces(Endpoint endpoint, DirectoryInfo rootDirectory, IDictionary<string, string> renderedBllInterfaces)
+		{
+			DirectoryInfo bllInterfacesDir = rootDirectory.CreateSubdirectory($"{endpoint.AppName}.{Constant.Bll}.{Constant.Interfaces}");
 
-			foreach (var endpointDaoInterface in endpoint.DAOInterfaces)
-			{
-				string res = TemplateRepository.Compile(TemplateType.Interface, endpointDaoInterface);
-				string name = endpointDaoInterface.Name;
-
-				renderedIDaos.Add(name, res);
-			}
-
-			string renderedCommon = TemplateRepository.Compile(TemplateType.Class, endpoint.CommonClass);
-			string renderedEntity = TemplateRepository.Compile(TemplateType.Class, endpoint.EntityClass);
-			string renderedBll = TemplateRepository.Compile(TemplateType.Class, endpoint.BLLClass);
-			string renderedDao = TemplateRepository.Compile(TemplateType.Class, endpoint.DAOClass);
-
-			DirectoryInfo commonDir = d.CreateSubdirectory($"{endpoint.AppName}.{Constant.Common}");
-			DirectoryInfo entitiesDir = d.CreateSubdirectory($"{endpoint.AppName}.{Constant.Entities}");
-			DirectoryInfo bllInterfacesDir = d.CreateSubdirectory($"{endpoint.AppName}.{Constant.BLL}.{Constant.Interfaces}");
-			DirectoryInfo daoInterfacesDir = d.CreateSubdirectory($"{endpoint.AppName}.{Constant.DAO}.{Constant.Interfaces}");
-			DirectoryInfo bllDir = d.CreateSubdirectory($"{endpoint.AppName}.{Constant.BLL}");
-			DirectoryInfo daoDir = d.CreateSubdirectory($"{endpoint.AppName}.{Constant.DAO}");
-
-			File.WriteAllText(Path.Combine(entitiesDir.FullName, $"{endpoint.EntityClass.Name}.cs"), renderedEntity);
-			File.WriteAllText(Path.Combine(commonDir.FullName, $"{endpoint.CommonClass.Name}.cs"), renderedCommon);
-
-			foreach (var ibll in renderedIBlls)
+			foreach (var ibll in renderedBllInterfaces)
 			{
 				File.WriteAllText(Path.Combine(bllInterfacesDir.FullName, $"{ibll.Key}.cs"), ibll.Value);
 			}
+		}
 
-			foreach (var idao in renderedIDaos)
+		private IDictionary<string, string> RenderBllInterfaces(Endpoint endpoint)
+		{
+			IDictionary<string, string> renderedBllInterfaces = new Dictionary<string, string>();
+
+			foreach (var endpointBllInterface in endpoint.BllInterfaces)
+			{
+				string name = endpointBllInterface.Name;
+				string @interface = TemplateRepository.Compile(TemplateType.Interface, endpointBllInterface);
+
+				renderedBllInterfaces.Add(name, @interface);
+			}
+
+			return renderedBllInterfaces;
+		}
+
+		private void RenderCommonClass(Endpoint endpoint, DirectoryInfo rootDirectory)
+		{
+			string renderedCommon = TemplateRepository.Compile(TemplateType.Class, endpoint.CommonClass);
+			DirectoryInfo commonDir = rootDirectory.CreateSubdirectory($"{endpoint.AppName}.{Constant.Common}");
+
+			File.WriteAllText(path: Path.Combine(commonDir.FullName, $"{endpoint.CommonClass.Name}.cs"),
+								contents: renderedCommon);
+		}
+
+		private void RenderDao(Endpoint endpoint, DirectoryInfo rootDirectory)
+		{
+			string renderedDao = TemplateRepository.Compile(TemplateType.Class, endpoint.DaoClass);
+			DirectoryInfo daoDir = rootDirectory.CreateSubdirectory($"{endpoint.AppName}.{Constant.Dao}");
+
+			File.WriteAllText(path: Path.Combine(daoDir.FullName, $"{endpoint.DaoClass.Name}.cs"),
+								contents: renderedDao);
+		}
+
+		private IDictionary<string, string> RenderDaoInterfaces(Endpoint endpoint)
+		{
+			IDictionary<string, string> renderedDaoInterfaces = new Dictionary<string, string>();
+
+			foreach (var endpointDaoInterface in endpoint.DaoInterfaces)
+			{
+				string name = endpointDaoInterface.Name;
+				string @interface = TemplateRepository.Compile(TemplateType.Interface, endpointDaoInterface);
+
+				renderedDaoInterfaces.Add(name, @interface);
+			}
+
+			return renderedDaoInterfaces;
+		}
+
+		private void RenderEntity(Endpoint endpoint, DirectoryInfo rootDirectory)
+		{
+			string renderedEntity = TemplateRepository.Compile(TemplateType.Class, endpoint.EntityClass);
+			DirectoryInfo entitiesDir = rootDirectory.CreateSubdirectory($"{endpoint.AppName}.{Constant.Entities}");
+
+			File.WriteAllText(path: Path.Combine(entitiesDir.FullName, $"{endpoint.EntityClass.Name}.cs"),
+								contents: renderedEntity);
+		}
+
+		private void RendernDaoInterfaces(Endpoint endpoint, DirectoryInfo rootDirectory, IDictionary<string, string> renderedDaoInterfaces)
+		{
+			DirectoryInfo daoInterfacesDir = rootDirectory.CreateSubdirectory($"{endpoint.AppName}.{Constant.Dao}.{Constant.Interfaces}");
+
+			foreach (var idao in renderedDaoInterfaces)
 			{
 				File.WriteAllText(Path.Combine(daoInterfacesDir.FullName, $"{idao.Key}.cs"), idao.Value);
 			}
-
-			File.WriteAllText(Path.Combine(bllDir.FullName, $"{endpoint.BLLClass.Name}.cs"), renderedBll);
-			File.WriteAllText(Path.Combine(daoDir.FullName, $"{endpoint.DAOClass.Name}.cs"), renderedDao);
-
-			File.WriteAllText(Path.Combine(this.root, endpoint.BLLClass.Validation.Namespace, $"{Constant.Validation}.cs"), TemplateRepository.Compile(TemplateType.Class, endpoint.BLLClass.Validation));
-			File.WriteAllText(Path.Combine(this.root, endpoint.DAOClass.Validation.Namespace, $"{Constant.Validation}.cs"), TemplateRepository.Compile(TemplateType.Class, endpoint.DAOClass.Validation));
 		}
 
-		private void WriteApplication(string fullPathToDir)
+		private void RenderValidationForBll(Endpoint endpoint, string bllClassValidationNamespace)
 		{
-			IList<DirectoryInfo> res = new List<DirectoryInfo>();
-
-			foreach (var internalReference in this.internalReferences.OrderBy(ir => ir.Value.Count))
-			{
-				var d = new DirectoryInfo(Path.Combine(fullPathToDir, internalReference.Key));
-
-				res.Add(d);
-			}
-
-			foreach (var directoryInfo in res)
-			{
-				this.WriteProject(directoryInfo);
-			}
-
-			this.WriteSolution(fullPathToDir);
+			File.WriteAllText(path: Path.Combine(this.root, bllClassValidationNamespace, $"{Constant.Validation}.cs"),
+								contents: TemplateRepository.Compile(TemplateType.Class, endpoint.BllClass.Validation));
 		}
 
-		private void WriteSolution(string fullPathToDir)
+		private void RenderValidationForDao(Endpoint endpoint, string daoClassValidationNamespace)
 		{
-			using (var stream = File.Create(Path.Combine(fullPathToDir, $"{this.appName}.sln")))
+			File.WriteAllText(path: Path.Combine(this.root, daoClassValidationNamespace, $"{Constant.Validation}.cs"),
+								contents: TemplateRepository.Compile(TemplateType.Class, endpoint.DaoClass.Validation));
+		}
+
+		private void SaveProject(DirectoryInfo directoryInfo, ProjectRootElement root)
+		{
+			root.Save(Path.Combine(directoryInfo.FullName, $"{directoryInfo.Name}.csproj"));
+		}
+
+		private void ScaffoldEndpoint(Endpoint endpoint, string fullPathToDir)
+		{
+			DirectoryInfo rootDirectory = this.PrepareDirectory(fullPathToDir, endpoint);
+			IDictionary<string, string> renderedBllInterfaces = this.RenderBllInterfaces(endpoint);
+			IDictionary<string, string> renderedDaoInterfaces = this.RenderDaoInterfaces(endpoint);
+
+			this.RenderCommonClass(endpoint, rootDirectory);
+			this.RenderEntity(endpoint, rootDirectory);
+			this.RenderBllInterfaces(endpoint, rootDirectory, renderedBllInterfaces);
+			this.RendernDaoInterfaces(endpoint, rootDirectory, renderedDaoInterfaces);
+			this.RenderBll(endpoint, rootDirectory);
+			this.RenderDao(endpoint, rootDirectory);
+
+			// validation classes have to be rendered after its' parent classes
+			this.RenderValidationForBll(endpoint, endpoint.BllClass.Validation.Namespace);
+			this.RenderValidationForDao(endpoint, endpoint.DaoClass.Validation.Namespace);
+		}
+
+		private void ScaffoldEndpoints(IEnumerable<Endpoint> endpoints, string fullPathToDir)
+		{
+			foreach (var endpoint in endpoints)
 			{
-				using (StreamWriter writer = new StreamWriter(stream))
-				{
-					writer.WriteLine(@"
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
-MinimumVisualStudioVersion = 10.0.40219.1");
-
-					Guid slnId = Guid.NewGuid();
-					foreach (var projectId in this.projectIds)
-					{
-						writer.WriteLine($"Project(\"{{{slnId}}}\") = \"{projectId.Key}\", \"{projectId.Key}\\{projectId.Key}.csproj\", \"{{{projectId.Value}}}\"");
-						writer.WriteLine("EndProject");
-					}
-
-					writer.WriteLine(@"
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution");
-
-					foreach (var projectId in this.projectIds)
-					{
-						writer.WriteLine($"{projectId.Value}.Debug|Any CPU.ActiveCfg = Debug|Any CPU");
-						writer.WriteLine($"{projectId.Value}.Debug|Any CPU.Build.0 = Debug|Any CPU");
-						writer.WriteLine($"{projectId.Value}.Release|Any CPU.ActiveCfg = Release|Any CPU");
-						writer.WriteLine($"{projectId.Value}.Release|Any CPU.Build.0 = Release|Any CPU");
-					}
-
-					writer.WriteLine(@"
-EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-EndGlobal");
-				}
+				this.appName = endpoint.AppName;
+				this.ScaffoldEndpoint(endpoint, fullPathToDir);
 			}
 		}
 
-		private void WriteProject(DirectoryInfo directoryInfo)
+		private void SetupCompileTargets(DirectoryInfo directoryInfo, ProjectRootElement root)
 		{
-			var root = ProjectRootElement.Create();
-
-			Guid projectId = Guid.NewGuid();
-
-			if (!this.projectIds.ContainsKey(directoryInfo.Name))
-			{
-				this.projectIds.Add(directoryInfo.Name, projectId.ToString());
-			}
-
-			this.SetUpDefaultPropertyGroup(root);
-			this.SetUpDebugPropertyGroup(directoryInfo, root, projectId);
-			this.SetUpReleasePropertyGroup(root);
-
-			using (FileStream packageConfigStream = File.Create(Path.Combine(directoryInfo.FullName, "packages.config")))
-			{
-				using (TextWriter packageConfig = new StreamWriter(packageConfigStream))
-				{
-					ProjectItemGroupElement r = root.AddItemGroup();
-
-					foreach (var a in this.internalReferences[directoryInfo.Name])
-					{
-						IList<KeyValuePair<string, string>> asd = new List<KeyValuePair<string, string>>();
-
-						string destinationCsprojPath = $"{a}\\{a}.csproj";
-
-						asd.Add(new KeyValuePair<string, string>("Project", $"{{{this.projectIds[a]}}}"));
-						asd.Add(new KeyValuePair<string, string>("Name", a));
-
-						ProjectItemElement proh = r.AddItem("ProjectReference", $"..\\{destinationCsprojPath}", asd);
-					}
-
-					if (this.externalReferences.ContainsKey(directoryInfo.Name))
-					{
-						var group = root.AddItemGroup();
-
-						foreach (var item in this.externalReferences[directoryInfo.Name].ToArray())
-						{
-							if (item != null)
-							{
-								group.AddItem("Reference", item);
-							}
-						}
-					}
-
-					packageConfig.WriteLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
-					packageConfig.WriteLine("<packages>");
-					if (this.packages.ContainsKey(directoryInfo.Name))
-					{
-						foreach (var reference in this.packages[directoryInfo.Name])
-						{
-							root.AddItem("Reference", reference.ReferenceInclude, new[]
-							{
-								new KeyValuePair<string, string>("HintPath", reference.HintPath),
-								new KeyValuePair<string, string>("Private", "True"),
-							});
-
-							packageConfig.WriteLine($"  <package id=\"{reference.Name}\" version=\"{reference.Version}\" targetFramework=\"net452\" />");
-						}
-					}
-					packageConfig.WriteLine("</packages>");
-
-					root.AddItem("None", "packages.config");
-
-					// items to compile
-					root.AddItems("Compile", directoryInfo.GetFiles("*.cs").Select(f => f.Name).ToArray());
-
-					root.AddImport(@"$(MSBuildToolsPath)\Microsoft.CSharp.targets");
-
-					root.Save(Path.Combine(directoryInfo.FullName, $"{directoryInfo.Name}.csproj"));
-				}
-			}
-		}
-
-		private void SetUpReleasePropertyGroup(ProjectRootElement root)
-		{
-			ProjectPropertyGroupElement group = root.AddPropertyGroup();
-
-			group.Condition = " '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ";
-
-			group.AddProperty("DebugType", "pdbonly");
-			group.AddProperty("Optimize", "true");
-			group.AddProperty("OutputPath", @"bin\Release\");
-			group.AddProperty("DefineConstants", "TRACE");
-			group.AddProperty("ErrorReport", "prompt");
-			group.AddProperty("WarningLevel", "4");
+			root.AddItems("Compile", directoryInfo.GetFiles("*.cs").Select(f => f.Name).ToArray());
 		}
 
 		private void SetUpDebugPropertyGroup(DirectoryInfo directoryInfo, ProjectRootElement root, Guid projectId)
@@ -344,6 +294,212 @@ EndGlobal");
 			group.AddProperty("DefineConstants", "DEBUG;TRACE");
 			group.AddProperty("ErrorReport", "prompt");
 			group.AddProperty("WarningLevel", "4");
+		}
+
+		private void SetupExternalReferences(Class @class)
+		{
+			foreach (var reference in @class.References)
+			{
+				this.externalReferences[@class.Namespace].AddOnce(reference);
+			}
+
+			if (@class.Validation != null)
+			{
+				foreach (var reference in @class.Validation.References)
+				{
+					this.externalReferences[@class.Namespace].AddOnce(reference);
+				}
+			}
+		}
+
+		private void SetupImports(ProjectRootElement root)
+		{
+			root.AddImport(@"$(MSBuildToolsPath)\Microsoft.CSharp.targets");
+		}
+
+		private void SetupInternalPackages(Endpoint endpoint, Interface @interface)
+		{
+			foreach (var @using in @interface.Usings.Where(u => u.StartsWith(endpoint.AppName)))
+			{
+				this.internalReferences[@interface.Namespace].AddOnce(@using);
+			}
+
+			foreach (var reference in @interface.References)
+			{
+				this.internalReferences[@interface.Namespace].AddOnce(reference);
+			}
+		}
+
+		private void SetupInternalReferences(Endpoint endpoint, Class @class)
+		{
+			foreach (var @using in @class.Usings.Where(u => u.StartsWith(endpoint.AppName)))
+			{
+				this.internalReferences[@class.Namespace].AddOnce(@using);
+			}
+		}
+
+		private void SetupPackages(Class @class)
+		{
+			foreach (var insertNugetPackageAttribute in @class.PackageAttributes)
+			{
+				this.packages[@class.Namespace].AddOnce(insertNugetPackageAttribute);
+			}
+		}
+
+		private void SetupPackagesConfig(DirectoryInfo directoryInfo, ProjectRootElement root)
+		{
+			string body = this.GetPackagesConfigBody(directoryInfo, root);
+			this.WritePackagesConfigBody(directoryInfo, body);
+
+			root.AddItem("None", "packages.config");
+		}
+
+		private void SetupReferences(IEnumerable<Endpoint> endpoints)
+		{
+			foreach (var endpoint in endpoints)
+			{
+				this.internalReferences.Add(endpoint.CommonClass.Namespace, new List<string>());
+
+				foreach (var @class in endpoint.Classes)
+				{
+					if (this.internalReferences.ContainsKey(@class.Namespace))
+					{
+						continue;
+					}
+
+					this.DeclareExistance(@class.Namespace);
+
+					this.SetupInternalReferences(endpoint, @class);
+					this.SetupExternalReferences(@class);
+					this.SetupPackages(@class);
+				}
+
+				foreach (var @interface in endpoint.Interfaces)
+				{
+					if (this.internalReferences.ContainsKey(@interface.Namespace))
+					{
+						continue;
+					}
+
+					this.DeclareExistance(@interface.Namespace);
+					this.SetupInternalPackages(endpoint, @interface);
+				}
+			}
+		}
+
+		private void SetupReferencesToForeignProjects(DirectoryInfo directoryInfo, ProjectRootElement root)
+		{
+			if (this.externalReferences.ContainsKey(directoryInfo.Name))
+			{
+				var group = root.AddItemGroup();
+
+				foreach (var item in this.externalReferences[directoryInfo.Name].ToArray())
+				{
+					if (item != null)
+					{
+						group.AddItem("Reference", item);
+					}
+				}
+			}
+		}
+
+		private void SetupReferenceToMyProjects(DirectoryInfo directoryInfo, ProjectRootElement root)
+		{
+			ProjectItemGroupElement projectReferenceGroup = root.AddItemGroup();
+
+			foreach (var projectName in this.internalReferences[directoryInfo.Name])
+			{
+				string destinationCsprojPath = $"{projectName}\\{projectName}.csproj";
+
+				IList<KeyValuePair<string, string>> metadata = new List<KeyValuePair<string, string>>();
+
+				metadata.Add(new KeyValuePair<string, string>("Project", $"{{{this.projectIds[projectName]}}}"));
+				metadata.Add(new KeyValuePair<string, string>("Name", projectName));
+
+				projectReferenceGroup.AddItem("ProjectReference", $"..\\{destinationCsprojPath}", metadata);
+			}
+		}
+
+		private void SetUpReleasePropertyGroup(ProjectRootElement root)
+		{
+			ProjectPropertyGroupElement group = root.AddPropertyGroup();
+
+			group.Condition = " '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ";
+
+			group.AddProperty("DebugType", "pdbonly");
+			group.AddProperty("Optimize", "true");
+			group.AddProperty("OutputPath", @"bin\Release\");
+			group.AddProperty("DefineConstants", "TRACE");
+			group.AddProperty("ErrorReport", "prompt");
+			group.AddProperty("WarningLevel", "4");
+		}
+
+		private void WriteApplication(string fullPathToDir)
+		{
+			// that's a bit tricky
+			// It's too lazy for me to build correct dependency tree, so I make a guess:
+			// if I write projects from those, which have fewer dependencies, I will have correct scaffold order.
+			// Yea, that's a crunch, so some day I will have to fix it
+
+			foreach (var directoryInfo in this.internalReferences
+											.OrderBy(ir => ir.Value.Count)
+											.Select(i => new DirectoryInfo(Path.Combine(fullPathToDir, i.Key)))
+											.ToList())
+			{
+				this.WriteProject(directoryInfo);
+			}
+
+			this.WriteSolution(fullPathToDir);
+		}
+
+		private void WritePackagesConfigBody(DirectoryInfo directoryInfo, string packagesConfigBody)
+		{
+			using (FileStream stream = File.Create(Path.Combine(directoryInfo.FullName, "packages.config")))
+			{
+				using (TextWriter writer = new StreamWriter(stream))
+				{
+					writer.WriteLine(packagesConfigBody.ToString());
+				}
+			}
+		}
+
+		private void WriteProject(DirectoryInfo directoryInfo)
+		{
+			var root = ProjectRootElement.Create();
+
+			Guid projectId = Guid.NewGuid();
+
+			if (!this.projectIds.ContainsKey(directoryInfo.Name))
+			{
+				this.projectIds.Add(directoryInfo.Name, projectId.ToString());
+			}
+
+			this.SetUpDefaultPropertyGroup(root);
+			this.SetUpDebugPropertyGroup(directoryInfo, root, projectId);
+			this.SetUpReleasePropertyGroup(root);
+			this.SetupReferenceToMyProjects(directoryInfo, root);
+			this.SetupReferencesToForeignProjects(directoryInfo, root);
+			this.SetupPackagesConfig(directoryInfo, root);
+			this.SetupCompileTargets(directoryInfo, root);
+			this.SetupImports(root);
+			this.SaveProject(directoryInfo, root);
+		}
+
+		private void WriteSolution(string fullPathToDir)
+		{
+			string body = this.GetSolutionBody();
+			this.WriteSolutionBody(fullPathToDir, body);
+		}
+
+		private void WriteSolutionBody(string fullPathToDir, string body)
+		{
+			using (var stream = File.Create(Path.Combine(fullPathToDir, $"{this.appName}.sln")))
+			{
+				using (StreamWriter writer = new StreamWriter(stream))
+				{
+					writer.WriteLine(body);
+				}
+			}
 		}
 	}
 }

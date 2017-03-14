@@ -13,13 +13,13 @@ namespace AnotherPoint.Core
 {
 	public class MethodCore : IMethodCore
 	{
-		private string[] delete = { "REMOVE", "DELETE" };
+		private readonly string[] deleteSynonyms = { "REMOVE", "DELETE" };
 
-		private string[] insert = { "CREATE" };
+		private readonly string[] insertSynonyms = { "CREATE" };
 
-		private string[] select = { "GET", "READ" };
+		private readonly string[] selectSynonyms = { "GET", "READ" };
 
-		private string[] update = { "UPDATE" };
+		private readonly string[] updateSynonyms = { "UPDATE" };
 
 		public void Dispose()
 		{
@@ -44,6 +44,11 @@ namespace AnotherPoint.Core
 		public string RenderAccessModifyer(Method method)
 		{
 			return method.AccessModifyer.AsString();
+		}
+
+		public string RenderAdditionalBody(Method method)
+		{
+			return method.AdditionalBody;
 		}
 
 		public string RenderArguments(Method method)
@@ -112,7 +117,7 @@ namespace AnotherPoint.Core
 
 			if (shutMeUpAttribute != null)
 			{
-				body.AppendLine(Constant.MethodBody_ShutUp);
+				body.AppendLine(Constant.MethodBodyShutUp);
 			}
 
 			return body.ToString();
@@ -125,9 +130,9 @@ namespace AnotherPoint.Core
 
 		public string RenderReturnTypeName(Method method)
 		{
-			if (method.ReturnType.FullName == "System.Void")
+			if (method.ReturnType.FullName == Constant.Types.SystemVoid)
 			{
-				return "void";
+				return Constant.Void;
 			}
 
 			return method.ReturnType.FullName;
@@ -185,26 +190,21 @@ namespace AnotherPoint.Core
 				? defaultDestination
 				: sendMeToAttribute.Destination;
 
-			if (!string.Equals(method.ReturnType.FullName, Constant.Types.System_Void, StringComparison.InvariantCultureIgnoreCase))
+			if (!string.Equals(method.ReturnType.FullName, Constant.Types.SystemVoid, StringComparison.InvariantCultureIgnoreCase))
 			{
-				body.Append(" return ");
+				body.Append($" {Constant.Return} ");
 			}
 
-			body.AppendLine($"this.{destination.FirstLetterToUpper()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
+			body.AppendLine($"{Constant.This}.{destination.FirstLetterToUpper()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
 
 			return body.ToString();
-		}
-
-		public string RenderAdditionalBody(Method method)
-		{
-			return method.AdditionalBody;
 		}
 
 		private string GetSqlDeleteCommand(Method method)
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
+			sb.AppendLine($"using (var sqlConnection = new {Constant.Types.SystemDataSqlClientSqlConnection}({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
@@ -212,7 +212,7 @@ namespace AnotherPoint.Core
 				sb.Append("sqlConnection.Execute(");
 
 				sb.Append("\"");
-				sb.Append(" delete from " +
+				sb.Append(" deleteSynonyms from " +
 						  $" [{method.EntityPurposePair}s] " + // table name in plural
 						  " where " +
 						  $" {argument.Name.FirstLetterToUpper()} = @{argument.Name.FirstLetterToLower()} ");
@@ -234,7 +234,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
+			sb.AppendLine($"using (var sqlConnection = new {Constant.Types.SystemDataSqlClientSqlConnection}({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
@@ -245,7 +245,7 @@ namespace AnotherPoint.Core
 				sb.Append("sqlConnection.Execute(");
 
 				sb.Append("\"");
-				sb.Append(" insert " +
+				sb.Append(" insertSynonyms " +
 						  $" [{argumentClass.Name}s] " + // table name in plural
 						  $" ({string.Join(",", properties.Select(prop => prop.Name.FirstLetterToUpper()))}) " + // columns' names
 						  " values" +
@@ -271,7 +271,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
+			sb.AppendLine($"using (var sqlConnection = new {Constant.Types.SystemDataSqlClientSqlConnection}({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
@@ -279,7 +279,7 @@ namespace AnotherPoint.Core
 				sb.Append($"return sqlConnection.Query<{method.ReturnType.FullName}>(");
 
 				sb.Append("\"");
-				sb.Append(" select * from " +
+				sb.Append(" selectSynonyms * from " +
 						  $" [{method.EntityPurposePair}s] " + // table name in plural
 						  " where" +
 						  " (Id = @id) "); // values with @ prefix
@@ -301,7 +301,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
+			sb.AppendLine($"using (var sqlConnection = new {Constant.Types.SystemDataSqlClientSqlConnection}({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
@@ -312,7 +312,7 @@ namespace AnotherPoint.Core
 				sb.Append("sqlConnection.Execute(");
 
 				sb.Append("\"");
-				sb.Append(" update " +
+				sb.Append(" updateSynonyms " +
 						  $" [{argumentClass.Name}s] " + // table name in plural
 						  " set " +
 						  $" ({string.Join(",", properties.Select(prop => $"{prop.Name.FirstLetterToUpper()} = @{prop.Name.FirstLetterToLower()}"))}) " + // columns' names
@@ -337,35 +337,29 @@ namespace AnotherPoint.Core
 
 		private string GetToSqlBodyPart(Method method)
 		{
-			StringBuilder sb = new StringBuilder();
+			string name = method.Name.ToUpperInvariant();
 
-			string name = method.Name;
-
-			if (this.select.Contains(name.ToUpperInvariant()))
+			if (this.selectSynonyms.Contains(name))
 			{
-				var toSqlBodyPart = this.GetSqlSelectCommand(method);
-				return toSqlBodyPart;
+				return this.GetSqlSelectCommand(method);
 			}
 
-			if (this.insert.Contains(name.ToUpperInvariant()))
+			if (this.insertSynonyms.Contains(name))
 			{
-				var a = this.GetSqlInsertCommand(method);
-				return a;
+				return this.GetSqlInsertCommand(method);
 			}
 
-			if (this.delete.Contains(name.ToUpperInvariant()))
+			if (this.deleteSynonyms.Contains(name))
 			{
-				var a = this.GetSqlDeleteCommand(method);
-				return a;
+				return this.GetSqlDeleteCommand(method);
 			}
 
-			if (this.update.Contains(name.ToUpperInvariant()))
+			if (this.updateSynonyms.Contains(name))
 			{
-				var a = this.GetSqlUpdateCommand(method);
-				return a;
+				return this.GetSqlUpdateCommand(method);
 			}
 
-			return sb.ToString();
+			return "";
 		}
 
 		private string GetValidationBodyPart(MethodImpl.ValidateAttribute validateAttribute)
@@ -374,7 +368,7 @@ namespace AnotherPoint.Core
 
 			foreach (var param in validateAttribute.NamesOfInputParametersToValidate)
 			{
-				sb.AppendLine($"Validator.Check({param});");
+				sb.AppendLine($"{Constant.Validation}.Check({param});");
 			}
 
 			return sb.ToString();

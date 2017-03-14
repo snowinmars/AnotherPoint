@@ -16,11 +16,40 @@ namespace AnotherPoint.Core
 		private readonly string[] reserverClassNamePostfixes =
 		{
 			"Logic",
-			"DAO",
+			"Dao",
 		};
 
 		public void Dispose()
 		{
+		}
+
+		public Field GetDestinationFieldForInject(Class @class)
+		{
+			Field destinationField = new Field(this.RenderDefaultDestinationName(@class), @class.DestinationTypeName)
+			{
+				AccessModifyer = AccessModifyer.Private
+			};
+
+			destinationField.Name = destinationField.Name.FirstLetterToLower();
+
+			return destinationField;
+		}
+
+		public Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField)
+		{
+			Ctor injectedCtor = new Ctor(typeFullName)
+			{
+				AccessModifyer = AccessModifyer.Public,
+				IsCtorForInject = true,
+			};
+
+			Argument arg = new Argument(destinationField.Name.FirstLetterToLower(),
+											destinationField.Type.FullName,
+											BindSettings.Exact);
+
+			injectedCtor.ArgumentCollection.Add(arg);
+
+			return injectedCtor;
 		}
 
 		public Class Map(Type type)
@@ -69,8 +98,6 @@ namespace AnotherPoint.Core
 
 			throw new InvalidOperationException($"Class {@class.Name} is not an endpoint class, so it can't have destination field");
 		}
-
-		
 
 		public string RenderInterfaces(Class @class)
 		{
@@ -168,35 +195,6 @@ namespace AnotherPoint.Core
 			}
 
 			return accessModifyer;
-		}
-
-		public Field GetDestinationFieldForInject(Class @class)
-		{
-			Field destinationField = new Field(this.RenderDefaultDestinationName(@class), @class.DestinationTypeName)
-			{
-				AccessModifyer = AccessModifyer.Private
-			};
-
-			destinationField.Name = destinationField.Name.FirstLetterToLower();
-
-			return destinationField;
-		}
-
-		public Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField)
-		{
-			Ctor injectedCtor = new Ctor(typeFullName)
-			{
-				AccessModifyer = AccessModifyer.Public,
-				IsCtorForInject = true,
-			};
-
-			Argument arg = new Argument(destinationField.Name.FirstLetterToLower(),
-											destinationField.Type.FullName,
-											BindSettings.Exact);
-
-			injectedCtor.ArgumentCollection.Add(arg);
-
-			return injectedCtor;
 		}
 
 		private void SetupConstants(IEnumerable<FieldInfo> getConstants, IList<Field> classConstants)

@@ -24,10 +24,11 @@ namespace AnotherPoint.Core
 				throw new ArgumentException($"Type {interfaceType.FullName} is not an interface");
 			}
 
-			Interface @interface = new Interface(interfaceType.FullName);
-
-			@interface.AccessModifyer = GetAccessModifyer(interfaceType);
-			@interface.Namespace = interfaceType.Namespace;
+			Interface @interface = new Interface(interfaceType.FullName)
+			{
+				AccessModifyer = this.GetAccessModifyer(interfaceType),
+				Namespace = interfaceType.Namespace
+			};
 
 			this.HandleMethods(interfaceType.GetMethods(Constant.AllInstance), @interface.Methods);
 			this.HandleUsings(interfaceType.GetCustomAttributes<InsertUsingAttribute>(), @interface.Usings);
@@ -40,24 +41,23 @@ namespace AnotherPoint.Core
 			return @interface;
 		}
 
-		public string RenderUsings(Interface @interface)
+		public string RenderAccessModifyer(Interface model)
 		{
-			StringBuilder sb = new StringBuilder();
+			var accessModifyer = model.AccessModifyer;
 
-			foreach (var interfaceUsing in @interface.Usings)
+			// Interfaces method have abstract and virtual access modifiers by default, but I mustn't render it.
+
+			if (accessModifyer.HasFlag(AccessModifyer.Abstract))
 			{
-				sb.AppendLine($"using {interfaceUsing};");
+				accessModifyer -= AccessModifyer.Abstract;
 			}
 
-			return sb.ToString();
-		}
-
-		private void HandleUsings(IEnumerable<InsertUsingAttribute> getCustomAttributes, IList<string> interfaceUsings)
-		{
-			foreach (var insertUsingAttribute in getCustomAttributes)
+			if (accessModifyer.HasFlag(AccessModifyer.Virtual))
 			{
-				interfaceUsings.Add(insertUsingAttribute.Using);
+				accessModifyer -= AccessModifyer.Virtual;
 			}
+
+			return accessModifyer.AsString();
 		}
 
 		public string RenderCarrige(Interface @interface)
@@ -71,6 +71,28 @@ namespace AnotherPoint.Core
 
 			sb.Append(" : ");
 			sb.Append(string.Join(",", @interface.ImplementedInterfaces.Select(i => i.FullName)));
+
+			return sb.ToString();
+		}
+
+		public string RenderName(Interface model)
+		{
+			return model.Name;
+		}
+
+		public string RenderNamespace(Interface model)
+		{
+			return model.Namespace;
+		}
+
+		public string RenderUsings(Interface @interface)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var interfaceUsing in @interface.Usings)
+			{
+				sb.AppendLine($"using {interfaceUsing};");
+			}
 
 			return sb.ToString();
 		}
@@ -104,31 +126,12 @@ namespace AnotherPoint.Core
 			}
 		}
 
-		public string RenderAccessModifyer(Interface model)
+		private void HandleUsings(IEnumerable<InsertUsingAttribute> getCustomAttributes, IList<string> interfaceUsings)
 		{
-			var accessModifyer = model.AccessModifyer;
-
-			if (accessModifyer.HasFlag(AccessModifyer.Abstract))
+			foreach (var insertUsingAttribute in getCustomAttributes)
 			{
-				accessModifyer -= AccessModifyer.Abstract;
+				interfaceUsings.Add(insertUsingAttribute.Using);
 			}
-
-			if (accessModifyer.HasFlag(AccessModifyer.Virtual))
-			{
-				accessModifyer -= AccessModifyer.Virtual;
-			}
-
-			return accessModifyer.AsString();
-		}
-
-		public string RenderName(Interface model)
-		{
-			return model.Name;
-		}
-
-		public string RenderNamespace(Interface model)
-		{
-			return model.Namespace;
 		}
 	}
 }

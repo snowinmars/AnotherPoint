@@ -6,8 +6,8 @@ namespace AnotherPoint.Entities
 	{
 		public Endpoint()
 		{
-			this.BLLInterfaces = new List<Interface>();
-			this.DAOInterfaces = new List<Interface>();
+			this.BllInterfaces = new List<Interface>();
+			this.DaoInterfaces = new List<Interface>();
 		}
 
 		public IEnumerable<Class> Classes
@@ -16,8 +16,8 @@ namespace AnotherPoint.Entities
 			{
 				yield return this.CommonClass;
 				yield return this.EntityClass;
-				yield return this.BLLClass;
-				yield return this.DAOClass;
+				yield return this.BllClass;
+				yield return this.DaoClass;
 			}
 		}
 
@@ -25,12 +25,12 @@ namespace AnotherPoint.Entities
 		{
 			get
 			{
-				foreach (var bllInterface in this.BLLInterfaces)
+				foreach (var bllInterface in this.BllInterfaces)
 				{
 					yield return bllInterface;
 				}
 
-				foreach (var daoInterface in this.DAOInterfaces)
+				foreach (var daoInterface in this.DaoInterfaces)
 				{
 					yield return daoInterface;
 				}
@@ -39,10 +39,10 @@ namespace AnotherPoint.Entities
 
 		public string AppName { get; set; }
 		public Class EntityClass { get; set; }
-		public Class BLLClass { get; set; }
-		public Class DAOClass { get; set; }
-		public List<Interface> BLLInterfaces { get; private set; }
-		public List<Interface> DAOInterfaces { get; private set; }
+		public Class BllClass { get; set; }
+		public Class DaoClass { get; set; }
+		public List<Interface> BllInterfaces { get; private set; }
+		public List<Interface> DaoInterfaces { get; private set; }
 		public Class CommonClass { get; set; }
 	}
 }

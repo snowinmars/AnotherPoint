@@ -11,22 +11,23 @@ namespace AnotherPoint.Core
 {
 	public class EndpointCore : IEndpointCore
 	{
-		public string AppName { get; }
+		private Class common;
+		private Class entity;
 
 		public EndpointCore(string appName)
 		{
 			this.AppName = appName;
 		}
 
-		private Class entity;
-		private Class common;
+		public string AppName { get; }
 
-		public Endpoint ConstructEndpointFor(Class entityClass, bool includeEntityClass = true)
+		public Endpoint ConstructEndpointFor(Class entityClass)
 		{
+			// Have I to rewrite the namespace for true one? TODO ot TOTHINK
 			entityClass.Namespace = $"{this.AppName}.{Constant.Entities}";
-			this.entity = entityClass;
 
-			this.common = GetCommonClass();
+			this.entity = entityClass;
+			this.common = this.GetCommonClass();
 
 			Endpoint endpoint = new Endpoint
 			{
@@ -35,65 +36,20 @@ namespace AnotherPoint.Core
 				AppName = this.AppName,
 			};
 
-			endpoint.DAOInterfaces.AddRange(this.GetDAOInterfaces());
-			endpoint.BLLInterfaces.AddRange(this.GetBLLInterfaces());
-			endpoint.BLLClass = this.GetLogicClass(endpoint.BLLInterfaces, endpoint.DAOInterfaces.First(i => i.Name.EndsWith(Constant.DAO)));
-			endpoint.DAOClass = this.GetDaoClass(endpoint.DAOInterfaces);
-			endpoint.BLLClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.BLL}");
-			endpoint.DAOClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.DAO}");
+			endpoint.DaoInterfaces.AddRange(this.GetDaoInterfaces());
+			endpoint.BllInterfaces.AddRange(this.GetBllInterfaces());
+			endpoint.BllClass = this.GetLogicClass(endpoint.BllInterfaces, endpoint.DaoInterfaces.First(i => i.Name.EndsWith(Constant.Dao)));
+			endpoint.DaoClass = this.GetDaoClass(endpoint.DaoInterfaces);
+			endpoint.BllClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.Bll}");
+			endpoint.DaoClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.Dao}");
 
 			return endpoint;
 		}
 
-		private Interface GetICrud(string a)
+		private IEnumerable<Interface> GetBllInterfaces()
 		{
-			Interface iCrud = new Interface($"{this.AppName}.{a}.{Constant.Interfaces}.{Constant.ICrud}");
-
-			iCrud.AccessModifyer = AccessModifyer.Public;
-
-			iCrud.Namespace = $"{AppName}.{a}.{Constant.Interfaces}";
-
-			iCrud.Usings.Add($"{AppName}.{Constant.Common}");
-			iCrud.Usings.Add($"{AppName}.{Constant.Entities}");
-
-			var createMeth = new Method("Create", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
-			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-
-			var getMeth = new Method("Get", this.entity.FullName) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
-			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-
-			var removeMeth = new Method("Remove", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
-			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-
-			var updateMeth = new Method("Update", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
-			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-
-			iCrud.Methods.Add(createMeth);
-			iCrud.Methods.Add(getMeth);
-			iCrud.Methods.Add(removeMeth);
-			iCrud.Methods.Add(updateMeth);
-
-			return iCrud;
-		}
-
-		private Class GetCommonClass()
-		{
-			Class common = new Class($"{this.AppName}.{Constant._Constant}");
-			common.Namespace = $"{AppName}.{Constant.Common}";
-
-			common.Usings.Add($"{Constant.Usings.System}");
-			common.Constants.Add(new Field("ConnectionString", Constant.Types.System_String));
-
-			return common;
-		}
-
-		private IEnumerable<Interface> GetBLLInterfaces()
-		{
-			Interface iCrud = GetICrud(Constant.BLL);
-
-			Interface iEntityLogic = new Interface($"{this.AppName }.{Constant.BLL}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Logic}");
-			iEntityLogic.AccessModifyer = AccessModifyer.Public;
-			iEntityLogic.ImplementedInterfaces.Add(iCrud);
+			Interface iCrud = this.GetICrud(Constant.Bll);
+			Interface iEntityLogic = this.GetIEntityLogic(iCrud);
 
 			IList<Interface> result = new List<Interface>();
 
@@ -103,13 +59,36 @@ namespace AnotherPoint.Core
 			return result;
 		}
 
-		private IEnumerable<Interface> GetDAOInterfaces()
+		private Class GetCommonClass()
 		{
-			Interface iCrud = GetICrud(Constant.DAO);
+			Class common = new Class($"{this.AppName}.{Constant._Constant}")
+			{
+				Namespace = $"{this.AppName}.{Constant.Common}"
+			};
 
-			Interface iEntityDao = new Interface($"{this.AppName }.{Constant.DAO}.{Constant.Interfaces}.I{this.entity.Name}{Constant.DAO}");
-			iEntityDao.AccessModifyer = AccessModifyer.Public;
-			iEntityDao.ImplementedInterfaces.Add(iCrud);
+			common.Usings.Add($"{Constant.Usings.System}");
+			common.Constants.Add(new Field(Constant.ConnectionString, Constant.Types.SystemString));
+
+			return common;
+		}
+
+		private Class GetDaoClass(IEnumerable<Interface> implementedInterfaces)
+		{
+			Class dao = new Class($"{this.AppName}.{Constant.Dao}.{this.entity.Name}{Constant.Dao}");
+
+			this.SetupDaoUsings(dao);
+			this.SetupDaoInterfaces(implementedInterfaces, dao);
+			this.SetupDaoReferences(dao);
+			this.SetupDaoPackages(dao);
+			this.SetupDaoMethods(dao);
+
+			return dao;
+		}
+
+		private IEnumerable<Interface> GetDaoInterfaces()
+		{
+			Interface iCrud = this.GetICrud(Constant.Dao);
+			Interface iEntityDao = this.GetIEntityDao(iCrud);
 
 			IList<Interface> result = new List<Interface>();
 
@@ -119,10 +98,67 @@ namespace AnotherPoint.Core
 			return result;
 		}
 
-		private Class GetDaoClass(IEnumerable<Interface> implementedInterfaces)
+		private Interface GetICrud(string a)
 		{
-			Class dao = new Class($"{AppName}.{Constant.DAO}.{this.entity.Name}{Constant.DAO}");
+			Interface iCrud = new Interface($"{this.AppName}.{a}.{Constant.Interfaces}.{Constant.ICrud}")
+			{
+				AccessModifyer = AccessModifyer.Public,
+				Namespace = $"{this.AppName}.{a}.{Constant.Interfaces}"
+			};
+			this.SetupICrudUsings(iCrud);
+			this.SetupICrudMethods(iCrud);
 
+			return iCrud;
+		}
+
+		private Interface GetIEntityDao(Interface implementInterface) => this.GetIEntityDao(new[] { implementInterface });
+
+		private Interface GetIEntityDao(IEnumerable<Interface> implementInterfaces)
+		{
+			Interface iEntityDao = new Interface($"{this.AppName}.{Constant.Dao}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Dao}")
+			{
+				AccessModifyer = AccessModifyer.Public
+			};
+
+			foreach (var implementInterface in implementInterfaces)
+			{
+				iEntityDao.ImplementedInterfaces.Add(implementInterface);
+			}
+
+			return iEntityDao;
+		}
+
+		private Interface GetIEntityLogic(Interface implementedInterface) => this.GetIEntityLogic(new[] { implementedInterface });
+
+		private Interface GetIEntityLogic(IEnumerable<Interface> implementedInterfaces)
+		{
+			Interface iEntityLogic = new Interface($"{this.AppName}.{Constant.Bll}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Logic}")
+			{
+				AccessModifyer = AccessModifyer.Public
+			};
+
+			foreach (var implementedInterface in implementedInterfaces)
+			{
+				iEntityLogic.ImplementedInterfaces.Add(implementedInterface);
+			}
+
+			return iEntityLogic;
+		}
+
+		private Class GetLogicClass(IEnumerable<Interface> implementedInterfaces, Interface destinationInterface)
+		{
+			Class bll = new Class($"{this.AppName}.{Constant.Bll}.{this.entity.Name}{Constant.Logic}");
+
+			this.SetupLogicInterfaces(implementedInterfaces, bll);
+			this.SetupLogicEndpoint(destinationInterface, bll);
+			this.SetupLogicUsings(destinationInterface, bll);
+			this.SetupLogicMethods(bll);
+
+			return bll;
+		}
+
+		private void SetupDaoInterfaces(IEnumerable<Interface> implementedInterfaces, Class dao)
+		{
 			foreach (var implementedInterface in implementedInterfaces)
 			{
 				dao.ImplementedInterfaces.Add(implementedInterface);
@@ -132,57 +168,122 @@ namespace AnotherPoint.Core
 					dao.Usings.Add(implementedInterface.Namespace);
 				}
 			}
-
-			dao.Usings.Add(Constant.Usings.Dapper);
-			dao.Usings.Add(Constant.Usings.System);
-			dao.Usings.Add(Constant.Usings.System_Linq);
-			dao.Usings.Add(this.common.Namespace);
-			dao.Usings.Add(this.entity.Namespace);
-
-			dao.References.Add("System.Data");
-
-			dao.PackageAttributes.Add(new InsertNugetPackageAttribute("Dapper", 1, 50, 2, 0, "neutral", "MSIL"));
-
-			var createMeth = new Method("Create", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
-			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
-
-			var getMeth = new Method("Get", this.entity.FullName) { AccessModifyer = AccessModifyer.Public };
-			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
-
-			var removeMeth = new Method("Remove", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
-			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
-
-			var updateMeth = new Method("Update", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
-			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
-			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
-
-			dao.Methods.Add(createMeth);
-			dao.Methods.Add(getMeth);
-			dao.Methods.Add(removeMeth);
-			dao.Methods.Add(updateMeth);
-
-			return dao;
 		}
 
-		private Class GetLogicClass(IEnumerable<Interface> implementedInterfaces, Interface destinationInterface)
+		private void SetupDaoMethods(Class dao)
 		{
-			Class bll = new Class($"{AppName}.{Constant.BLL}.{this.entity.Name}{Constant.Logic}");
+			// The point of this formatting is to almost-split parts to methods. They are too small for methods, too different for a unique helper, but too big to have all them in one place.
 
-			foreach (var implementedInterface in implementedInterfaces)
 			{
-				bll.ImplementedInterfaces.Add(implementedInterface);
-
-				if (!bll.Usings.Contains(implementedInterface.Namespace))
-				{
-					bll.Usings.Add(implementedInterface.Namespace);
-				}
+				var createMeth = new Method("Create", Constant.Types.SystemVoid);
+				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
+				createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+				createMeth.AttributesForBodyGeneration.Add(
+					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
+				dao.Methods.Add(createMeth);
 			}
 
+			{
+				var getMeth = new Method("Get", this.entity.FullName);
+				getMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
+				getMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+				dao.Methods.Add(getMeth);
+			}
+
+			{
+				var removeMeth = new Method("Remove", Constant.Types.SystemVoid);
+
+				removeMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
+				removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+				dao.Methods.Add(removeMeth);
+			}
+
+			{
+				var updateMeth = new Method("Update", Constant.Types.SystemVoid);
+				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
+				updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+				updateMeth.AttributesForBodyGeneration.Add(
+					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
+				dao.Methods.Add(updateMeth);
+			}
+		}
+
+		private void SetupDaoPackages(Class dao)
+		{
+			dao.PackageAttributes.Add(NugetPackageRepository.Dapper);
+		}
+
+		private void SetupDaoReferences(Class dao)
+		{
+			dao.References.Add(Constant.Types.SystemData);
+		}
+
+		private void SetupDaoUsings(Class dao)
+		{
+			dao.Usings.Add(Constant.Usings.Dapper);
+			dao.Usings.Add(Constant.Usings.System);
+			dao.Usings.Add(Constant.Usings.SystemLinq);
+			dao.Usings.Add(this.common.Namespace);
+			dao.Usings.Add(this.entity.Namespace);
+		}
+
+		private void SetupICrudMethods(Interface iCrud)
+		{
+			// The point of this formatting is to almost-split parts to methods. They are too small for methods, too different for a unique helper, but too big to have all them in one place.
+			{
+				var createMeth = new Method("Create", Constant.Types.SystemVoid)
+				{
+					AccessModifyer = AccessModifyer.Abstract |
+									 AccessModifyer.Virtual
+				};
+				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
+				iCrud.Methods.Add(createMeth);
+			}
+
+			{
+				var getMeth = new Method("Get", this.entity.FullName)
+				{
+					AccessModifyer = AccessModifyer.Abstract |
+									 AccessModifyer.Virtual
+				};
+				getMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
+				iCrud.Methods.Add(getMeth);
+			}
+
+			{
+				var removeMeth = new Method("Remove", Constant.Types.SystemVoid)
+				{
+					AccessModifyer = AccessModifyer.Abstract |
+									 AccessModifyer.Virtual
+				};
+				removeMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
+
+				iCrud.Methods.Add(removeMeth);
+			}
+
+			{
+				var updateMeth = new Method("Update", Constant.Types.SystemVoid)
+				{
+					AccessModifyer = AccessModifyer.Abstract |
+									 AccessModifyer.Virtual
+				};
+				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
+				iCrud.Methods.Add(updateMeth);
+			}
+		}
+
+		private void SetupICrudUsings(Interface iCrud)
+		{
+			iCrud.Usings.Add($"{this.AppName}.{Constant.Common}");
+			iCrud.Usings.Add($"{this.AppName}.{Constant.Entities}");
+		}
+
+		private void SetupLogicEndpoint(Interface destinationInterface, Class bll)
+		{
 			bll.EntityPurposePair = new EntityPurposePair(this.entity.Type.Name, Constant.Logic);
 
 			bll.DestinationTypeName = destinationInterface.FullName;
@@ -193,49 +294,68 @@ namespace AnotherPoint.Core
 
 			var injectCtor = RenderEngine.ClassCore.GetInjectCtorForDestinationField(bll.FullName, destinationField);
 			bll.Ctors.Add(injectCtor);
+		}
 
+		private void SetupLogicInterfaces(IEnumerable<Interface> implementedInterfaces, Class bll)
+		{
+			foreach (var implementedInterface in implementedInterfaces)
+			{
+				bll.ImplementedInterfaces.Add(implementedInterface);
+
+				if (!bll.Usings.Contains(implementedInterface.Namespace))
+				{
+					bll.Usings.Add(implementedInterface.Namespace);
+				}
+			}
+		}
+
+		private void SetupLogicMethods(Class bll)
+		{
+			// The point of this formatting is to almost-split parts to methods. They are too small for methods, too different for a unique helper, but too big to have all them in one place.
+			{
+				var createMeth = new Method("Create", Constant.Types.SystemVoid);
+
+				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
+				createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
+				createMeth.AttributesForBodyGeneration.Add(
+					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
+				bll.Methods.Add(createMeth);
+			}
+
+			{
+				var getMeth = new Method("Get", this.entity.FullName);
+				getMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
+				getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
+				bll.Methods.Add(getMeth);
+			}
+
+			{
+				var removeMeth = new Method("Remove", Constant.Types.SystemVoid);
+				removeMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
+				removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
+				bll.Methods.Add(removeMeth);
+			}
+
+			{
+				var updateMeth = new Method("Update", Constant.Types.SystemVoid);
+
+				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
+				updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
+				updateMeth.AttributesForBodyGeneration.Add(
+					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
+				bll.Methods.Add(updateMeth);
+			}
+		}
+
+		private void SetupLogicUsings(Interface destinationInterface, Class bll)
+		{
 			bll.Usings.Add(Constant.Usings.System);
-			bll.Usings.Add(Constant.Usings.System_Linq);
+			bll.Usings.Add(Constant.Usings.SystemLinq);
 			bll.Usings.Add(destinationInterface.Namespace);
 			bll.Usings.Add(this.common.Namespace);
 			bll.Usings.Add(this.entity.Namespace);
-
-			var createMeth = new Method("Create", Constant.Types.System_Void)
-			{
-				AccessModifyer = AccessModifyer.Public,
-			};
-			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
-
-			var getMeth = new Method("Get", this.entity.FullName)
-			{
-				AccessModifyer = AccessModifyer.Public,
-			};
-			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
-
-			var removeMeth = new Method("Remove", Constant.Types.System_Void)
-			{
-				AccessModifyer = AccessModifyer.Public,
-			};
-			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
-
-			var updateMeth = new Method("Update", Constant.Types.System_Void)
-			{
-				AccessModifyer = AccessModifyer.Public,
-			};
-			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
-			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
-
-			bll.Methods.Add(createMeth);
-			bll.Methods.Add(getMeth);
-			bll.Methods.Add(removeMeth);
-			bll.Methods.Add(updateMeth);
-
-			return bll;
 		}
 	}
 }

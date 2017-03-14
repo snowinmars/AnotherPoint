@@ -11,7 +11,7 @@ namespace AnotherPoint.Common
 
 		public const string DefaultDestination = "DefaultDestination";
 
-		public const string MethodBody_ShutUp = " throw new System.NotImplementedException(); ";
+		public const string MethodBodyShutUp = " throw new System.NotImplementedException(); ";
 
 		public static readonly IDictionary<string, string> FullTypeNameHumanReadableBinding = new Dictionary<string, string>
 		{
@@ -20,18 +20,20 @@ namespace AnotherPoint.Common
 
 		public static class Types
 		{
-			public const string System_Guid = "System.Guid";
-			public const string System_Int32 = "System.Int32";
-			public const string System_String = "System.String";
-			public const string System_Void = "System.Void";
+			public const string SystemData = "System.Data";
+			public const string SystemGuid = "System.Guid";
+			public const string SystemInt32 = "System.Int32";
+			public const string SystemString = "System.String";
+			public const string SystemVoid = "System.Void";
+			public const string SystemDataSqlClientSqlConnection = "System.Data.SqlClient.SqlConnection";
 		}
 
 		public static class Usings
 		{
 			public const string Dapper = "Dapper";
 			public const string System = "System";
-			public const string System_Linq = "System.Linq";
-			public const string System_Text_RegularExpressions = "System.Text.RegularExpressions";
+			public const string SystemLinq = "System.Linq";
+			public const string SystemTextRegularExpressions = "System.Text.RegularExpressions";
 		}
 
 		#region constants for rendering
@@ -40,12 +42,14 @@ namespace AnotherPoint.Common
 
 		public const string Abstract = " abstract ";
 		public const string Internal = " internal ";
+		public const string New = " new ";
 		public const string Private = " private ";
 		public const string Protected = " protected ";
 		public const string ProtectedInternal = " protected internal ";
 		public const string Public = " public ";
 		public const string Sealed = " sealed ";
 		public const string Static = " static ";
+		public const string This = " this ";
 		public const string Todo = " TODO ";
 		public const string Virtual = " virtual ";
 
@@ -58,11 +62,11 @@ namespace AnotherPoint.Common
 		public const string _Constant = "Constant";
 		public const string AnotherPoint = "AnotherPoint";
 		public const string BackgroundEntityMark = "__";
-		public const string BLL = "BLL";
+		public const string Bll = "Bll";
 		public const string Common = "Common";
 		public const string ConnectionString = "ConnectionString";
-		public const string DAL = "DAL";
-		public const string DAO = "DAO";
+		public const string Dal = "DAL";
+		public const string Dao = "Dao";
 		public const string Entities = "Entities";
 		public const string Generic = "Generic";
 		public const string Get = "get";
@@ -70,6 +74,8 @@ namespace AnotherPoint.Common
 		public const string Interfaces = "Interfaces";
 		public const string Logic = "Logic";
 		public const string Set = "set";
+		public const string Void = " void ";
+		public const string Return = " return ";
 
 		//public const string Void = "Void";
 		public const string Validation = "Validation";

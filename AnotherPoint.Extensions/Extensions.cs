@@ -12,6 +12,14 @@ namespace AnotherPoint.Extensions
 {
 	public static class Extensions
 	{
+		public static void AddOnce<T>(this IList<T> list, T item)
+		{
+			if (!list.Contains(item))
+			{
+				list.Add(item);
+			}
+		}
+
 		public static void AddItems(this ProjectRootElement elem, string groupName, params string[] items)
 		{
 			var group = elem.AddItemGroup();

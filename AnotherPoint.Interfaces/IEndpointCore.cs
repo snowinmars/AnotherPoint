@@ -6,6 +6,6 @@ namespace AnotherPoint.Interfaces
 	{
 		string AppName { get; }
 
-		Endpoint ConstructEndpointFor(Class entityClass, bool includeEntityClass = true);
+		Endpoint ConstructEndpointFor(Class entityClass);
 	}
 }
