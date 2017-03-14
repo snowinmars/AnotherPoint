@@ -19,7 +19,6 @@ namespace AnotherPoint.Common
 			public const string System_Void = "System.Void";
 			public const string System_Guid = "System.Guid";
 			public const string System_Int32 = "System.Int32";
-
 		}
 
 		#region constants for rendering
@@ -75,6 +74,5 @@ namespace AnotherPoint.Common
 		{
 			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
 		};
-
 	}
 }

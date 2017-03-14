@@ -1,5 +1,4 @@
 ﻿using AnotherPoint.Common;
-using AnotherPoint.Engine;
 using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
@@ -9,10 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml;
-using System.Reflection;
-using Microsoft.Build.Evaluation;
 
 namespace AnotherPoint.Core
 {
@@ -34,7 +29,6 @@ namespace AnotherPoint.Core
 				this.ScaffoldToDirectory(endpoint, fullPathToDir);
 			}
 
-
 			foreach (var endpoint in endpoints)
 			{
 				this.internalReferences.Add(endpoint.CommonClass.Namespace, new List<string>());
@@ -53,7 +47,7 @@ namespace AnotherPoint.Core
 					foreach (var @using in @class.Usings)
 					{
 						if (@using.StartsWith(endpoint.AppName) &&
-						    !this.internalReferences[@class.Namespace].Contains(@using))
+							!this.internalReferences[@class.Namespace].Contains(@using))
 						{
 							this.internalReferences[@class.Namespace].Add(@using);
 						}
@@ -84,7 +78,6 @@ namespace AnotherPoint.Core
 					{
 						continue;
 					}
-
 
 					this.internalReferences.Add(@interface.Namespace, new List<string>());
 					foreach (var @using in @interface.Usings)
@@ -200,7 +193,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1");
 
-						Guid slnId = Guid.NewGuid();
+					Guid slnId = Guid.NewGuid();
 					foreach (var projectId in this.projectIds)
 					{
 						writer.WriteLine($"Project(\"{{{slnId}}}\") = \"{projectId.Key}\", \"{projectId.Key}\\{projectId.Key}.csproj\", \"{{{projectId.Value}}}\"");
@@ -252,8 +245,6 @@ EndGlobal");
 			{
 				using (TextWriter packageConfig = new StreamWriter(packageConfigStream))
 				{
-
-
 					ProjectItemGroupElement r = root.AddItemGroup();
 
 					foreach (var a in this.internalReferences[directoryInfo.Name])
@@ -261,10 +252,10 @@ EndGlobal");
 						IList<KeyValuePair<string, string>> asd = new List<KeyValuePair<string, string>>();
 
 						string destinationCsprojPath = $"{a}\\{a}.csproj";
-						
+
 						asd.Add(new KeyValuePair<string, string>("Project", $"{{{this.projectIds[a]}}}"));
 						asd.Add(new KeyValuePair<string, string>("Name", a));
-									
+
 						ProjectItemElement proh = r.AddItem("ProjectReference", $"..\\{destinationCsprojPath}", asd);
 					}
 
@@ -281,8 +272,8 @@ EndGlobal");
 						}
 					}
 
-							packageConfig.WriteLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
-							packageConfig.WriteLine("<packages>");
+					packageConfig.WriteLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
+					packageConfig.WriteLine("<packages>");
 					if (this.packages.ContainsKey(directoryInfo.Name))
 					{
 						foreach (var reference in this.packages[directoryInfo.Name])
@@ -294,11 +285,9 @@ EndGlobal");
 							});
 
 							packageConfig.WriteLine($"  <package id=\"{reference.Name}\" version=\"{reference.Version}\" targetFramework=\"net452\" />");
-							
-
 						}
 					}
-							packageConfig.WriteLine("</packages>");
+					packageConfig.WriteLine("</packages>");
 
 					root.AddItem("None", "packages.config");
 

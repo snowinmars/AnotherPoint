@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AnotherPoint.Entities
 {
@@ -16,10 +13,10 @@ namespace AnotherPoint.Entities
 			this.ProcessorArchitecture = processorArchitecture;
 		}
 
-		public string Name { get;  }
-		public Version Version { get;  }
-		public string Culture { get;  }
-		public string ProcessorArchitecture { get;  }
+		public string Name { get; }
+		public Version Version { get; }
+		public string Culture { get; }
+		public string ProcessorArchitecture { get; }
 
 		public string ReferenceInclude
 		{

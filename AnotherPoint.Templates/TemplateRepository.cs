@@ -7,10 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AnotherPoint.Engine;
-using AnotherPoint.Entities;
-using AnotherPoint.Extensions;
-using Microsoft.Build.Construction;
 
 namespace AnotherPoint.Templates
 {
@@ -43,8 +39,6 @@ namespace AnotherPoint.Templates
 
 			TemplateRepository.InitRazorEngineTemplates();
 		}
-
-		
 
 		public static string Compile(TemplateType template, object model)
 		{

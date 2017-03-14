@@ -1,4 +1,5 @@
 ﻿using AnotherPoint.Common;
+using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Microsoft.Build.Construction;
 
 namespace AnotherPoint.Extensions
 {

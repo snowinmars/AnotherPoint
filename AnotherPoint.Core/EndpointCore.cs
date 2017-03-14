@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Engine;
 using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AnotherPoint.Core
 {
@@ -30,7 +25,7 @@ namespace AnotherPoint.Core
 		{
 			entityClass.Namespace = $"{this.AppName}.{Constant.Entities}";
 			this.entity = entityClass;
-			
+
 			this.common = GetCommonClass();
 
 			Endpoint endpoint = new Endpoint
@@ -215,12 +210,11 @@ namespace AnotherPoint.Core
 			};
 			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] {this.entity.Name.FirstLetterToLower()}));
+			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
 
 			var getMeth = new Method("Get", this.entity.FullName)
 			{
 				AccessModifyer = AccessModifyer.Public,
-
 			};
 			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
 			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
