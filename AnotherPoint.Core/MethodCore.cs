@@ -185,7 +185,7 @@ namespace AnotherPoint.Core
 				? defaultDestination
 				: sendMeToAttribute.Destination;
 
-			if (!string.Equals(method.ReturnType.Name, Constant.Void, StringComparison.InvariantCultureIgnoreCase))
+			if (!string.Equals(method.ReturnType.FullName, Constant.Types.System_Void, StringComparison.InvariantCultureIgnoreCase))
 			{
 				body.Append(" return ");
 			}
@@ -204,7 +204,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
@@ -234,7 +234,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
@@ -271,12 +271,12 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)
 			{
-				sb.Append($"return sqlConnection.Query<{method.ReturnType.Name}>(");
+				sb.Append($"return sqlConnection.Query<{method.ReturnType.FullName}>(");
 
 				sb.Append("\"");
 				sb.Append(" select * from " +
@@ -301,7 +301,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder sb = new StringBuilder();
 
-			sb.AppendLine("using (var sqlConnection = new System.Data.SqlClient.SqlConnection(Constant.ConnectionString))");
+			sb.AppendLine($"using (var sqlConnection = new System.Data.SqlClient.SqlConnection({Constant._Constant}.{Constant.ConnectionString}))");
 			sb.AppendLine("{");
 
 			foreach (var argument in method.Arguments)

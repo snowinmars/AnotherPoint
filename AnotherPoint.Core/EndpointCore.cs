@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AnotherPoint.Common;
+using AnotherPoint.Engine;
 using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
@@ -43,6 +44,8 @@ namespace AnotherPoint.Core
 			endpoint.BLLInterfaces.AddRange(this.GetBLLInterfaces());
 			endpoint.BLLClass = this.GetLogicClass(endpoint.BLLInterfaces, endpoint.DAOInterfaces.First(i => i.Name.EndsWith(Constant.DAO)));
 			endpoint.DAOClass = this.GetDaoClass(endpoint.DAOInterfaces);
+			endpoint.BLLClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.BLL}");
+			endpoint.DAOClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.DAO}");
 
 			return endpoint;
 		}
@@ -51,21 +54,23 @@ namespace AnotherPoint.Core
 		{
 			Interface iCrud = new Interface($"{this.AppName}.{a}.{Constant.Interfaces}.{Constant.ICrud}");
 
+			iCrud.AccessModifyer = AccessModifyer.Public;
+
 			iCrud.Namespace = $"{AppName}.{a}.{Constant.Interfaces}";
 
 			iCrud.Usings.Add($"{AppName}.{Constant.Common}");
 			iCrud.Usings.Add($"{AppName}.{Constant.Entities}");
 
-			var createMeth = new Method("Create", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var createMeth = new Method("Create", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
 			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 
 			var getMeth = new Method("Get", this.entity.FullName) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
 			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
 
-			var removeMeth = new Method("Remove", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var removeMeth = new Method("Remove", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
 			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
 
-			var updateMeth = new Method("Update", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var updateMeth = new Method("Update", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
 			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 
 			iCrud.Methods.Add(createMeth);
@@ -78,7 +83,7 @@ namespace AnotherPoint.Core
 
 		private Class GetCommonClass()
 		{
-			Class common = new Class($"{this.AppName}.{Constant.Common}");
+			Class common = new Class($"{this.AppName}.{Constant._Constant}");
 			common.Namespace = $"{AppName}.{Constant.Common}";
 
 			common.Usings.Add($"{Constant.Usings.System}");
@@ -92,6 +97,7 @@ namespace AnotherPoint.Core
 			Interface iCrud = GetICrud(Constant.BLL);
 
 			Interface iEntityLogic = new Interface($"{this.AppName }.{Constant.BLL}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Logic}");
+			iEntityLogic.AccessModifyer = AccessModifyer.Public;
 			iEntityLogic.ImplementedInterfaces.Add(iCrud);
 
 			IList<Interface> result = new List<Interface>();
@@ -104,9 +110,10 @@ namespace AnotherPoint.Core
 
 		private IEnumerable<Interface> GetDAOInterfaces()
 		{
-			Interface iCrud = GetICrud(Constant.BLL);
+			Interface iCrud = GetICrud(Constant.DAO);
 
 			Interface iEntityDao = new Interface($"{this.AppName }.{Constant.DAO}.{Constant.Interfaces}.I{this.entity.Name}{Constant.DAO}");
+			iEntityDao.AccessModifyer = AccessModifyer.Public;
 			iEntityDao.ImplementedInterfaces.Add(iCrud);
 
 			IList<Interface> result = new List<Interface>();
@@ -137,22 +144,24 @@ namespace AnotherPoint.Core
 			dao.Usings.Add(this.common.Namespace);
 			dao.Usings.Add(this.entity.Namespace);
 
-			var createMeth = new Method("Create", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			dao.References.Add("System.Data");
+
+			var createMeth = new Method("Create", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
 			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
 
-			var getMeth = new Method("Get", this.entity.FullName) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var getMeth = new Method("Get", this.entity.FullName) { AccessModifyer = AccessModifyer.Public };
 			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 
-			var removeMeth = new Method("Remove", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var removeMeth = new Method("Remove", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
 			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+			removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 
-			var updateMeth = new Method("Update", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var updateMeth = new Method("Update", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
 			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
+			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
 
 			dao.Methods.Add(createMeth);
@@ -179,26 +188,43 @@ namespace AnotherPoint.Core
 
 			bll.DestinationTypeName = destinationInterface.FullName;
 
+			Field destinationField = new Field("Destination", destinationInterface.FullName);
+			destinationField.AccessModifyer = AccessModifyer.Private;
+			bll.Fields.Add(destinationField);
+
 			bll.Usings.Add(Constant.Usings.System);
 			bll.Usings.Add(Constant.Usings.System_Linq);
 			bll.Usings.Add(destinationInterface.Namespace);
 			bll.Usings.Add(this.common.Namespace);
 			bll.Usings.Add(this.entity.Namespace);
 
-			var createMeth = new Method("Create", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var createMeth = new Method("Create", Constant.Types.System_Void)
+			{
+				AccessModifyer = AccessModifyer.Public,
+			};
 			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] {this.entity.Name.FirstLetterToLower()}));
 
-			var getMeth = new Method("Get", this.entity.FullName) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var getMeth = new Method("Get", this.entity.FullName)
+			{
+				AccessModifyer = AccessModifyer.Public,
+
+			};
 			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
 			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
 
-			var removeMeth = new Method("Remove", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var removeMeth = new Method("Remove", Constant.Types.System_Void)
+			{
+				AccessModifyer = AccessModifyer.Public,
+			};
 			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
 			removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
 
-			var updateMeth = new Method("Update", Constant.Void) { AccessModifyer = AccessModifyer.Abstract | AccessModifyer.Virtual };
+			var updateMeth = new Method("Update", Constant.Types.System_Void)
+			{
+				AccessModifyer = AccessModifyer.Public,
+			};
 			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
 			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));

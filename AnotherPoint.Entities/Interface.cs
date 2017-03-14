@@ -10,13 +10,22 @@ namespace AnotherPoint.Entities
 		{
 			this.Type = new MyType(fullTypeName);
 
+			this.AccessModifyer = AccessModifyer.Public;
+
 			this.ImplementedInterfaces = new List<Interface>();
+			this.References = new List<string>();
 
 			this.Usings = new List<string>();
 			this.Methods = new List<Method>();
 		}
 
-		public string Namespace { get; set; }
+		public IEnumerable<string> References { get; private set; }
+
+		public string Namespace
+		{
+			get { return this.Type.Namespace; }
+			set { this.Type.Namespace = value; }
+		}
 
 		public string FullName
 		{

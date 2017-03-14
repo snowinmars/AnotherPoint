@@ -18,6 +18,7 @@ namespace AnotherPoint.Entities
 			this.ImplementedInterfaces = new List<Interface>();
 			this.Methods = new List<Method>();
 			this.Constants = new List<Field>();
+			this.References = new List<string>();
 
 			this.AccessModifyer = AccessModifyer.Public;
 
@@ -29,6 +30,8 @@ namespace AnotherPoint.Entities
 		public AccessModifyer AccessModifyer { get; set; }
 		public IList<Field> Constants { get; private set; }
 		public IList<Ctor> Ctors { get; private set; }
+		public IList<string> References { get; private set; }
+		public Class Validation { get; set; }
 		public string DestinationTypeName { get; set; }
 		public EntityPurposePair EntityPurposePair { get; set; }
 		public IList<Field> Fields { get; private set; }

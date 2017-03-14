@@ -21,6 +21,8 @@ namespace AnotherPoint.Core
 			@class.Usings.Add(Constant.Usings.System);
 			@class.Usings.Add(Constant.Usings.System_Text_RegularExpressions);
 
+			@class.References.Add(Constant.Usings.System);
+
 			foreach (var type in Bag.TypePocket.Values)
 			{
 				var props = type.GetProperties();
@@ -28,7 +30,7 @@ namespace AnotherPoint.Core
 				if (props.Length > 0)
 				{
 					Method m = new Method("Check", "System.Void");
-					m.AccessModifyer = AccessModifyer.Public;
+					m.AccessModifyer = AccessModifyer.Public | AccessModifyer.Static;
 					Argument argument = null;
 
 					foreach (var propertyInfo in props)

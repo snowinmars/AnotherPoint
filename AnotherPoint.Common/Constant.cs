@@ -51,7 +51,7 @@ namespace AnotherPoint.Common
 		public const string Generic = "Generic";
 		public const string Get = "get";
 		public const string Set = "set";
-		public const string Void = "Void";
+		//public const string Void = "Void";
 
 		public const string Logic = "Logic";
 		public const string DAO = "DAO";
@@ -62,6 +62,8 @@ namespace AnotherPoint.Common
 		public const string _Constant = "Constant";
 		public const string Common = "Common";
 		public const string ICrud = "ICRUD";
+		public const string Validation = "Validation";
+		public const string ConnectionString = "ConnectionString";
 
 		#endregion exact matching constants
 
