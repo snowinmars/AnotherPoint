@@ -14,12 +14,14 @@ namespace AnotherPoint.Entities.MethodImpl
 		[AttributeUsage(AttributeTargets.Method)]
 		public class SendMeToAttribute : Attribute
 		{
-			public SendMeToAttribute(string destination)
+			public SendMeToAttribute(string destination, string @from)
 			{
 				this.Destination = destination;
+				this.From = @from;
 			}
 
 			public string Destination { get; }
+			public string From { get; }
 
 			public override bool Equals(object obj)
 			{
@@ -40,7 +42,8 @@ namespace AnotherPoint.Entities.MethodImpl
 			}
 
 			public bool Equals(SendMeToAttribute other)
-				=> this.Destination == other.Destination;
+				=> this.Destination == other.Destination &&
+				this.From == other.From;
 
 			public override string ToString()
 			{
@@ -48,7 +51,7 @@ namespace AnotherPoint.Entities.MethodImpl
 
 				if (this.Destination != null)
 				{
-					sb.Append($"Send to {this.Destination}");
+					sb.Append($"Send from {this.From} to {this.Destination}");
 				}
 
 				return sb.ToString();

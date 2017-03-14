@@ -183,20 +183,16 @@ namespace AnotherPoint.Core
 				}
 			}
 
+			bll.EntityPurposePair = new EntityPurposePair(this.entity.Type.Name, Constant.Logic);
+
 			bll.DestinationTypeName = destinationInterface.FullName;
 			bll.IsEndpoint = true;
 
-			var injectCtor = new Ctor(bll.FullName);
-			injectCtor.AccessModifyer = AccessModifyer.Private;
-			injectCtor.IsCtorForInject = true;
-
-			var arg = new Argument("Destination", bll.DestinationTypeName, BindSettings.Exact);
-			injectCtor.ArgumentCollection.Add(arg);
-			bll.Ctors.Add(injectCtor);
-
-			Field destinationField = new Field("Destination", destinationInterface.FullName);
-			destinationField.AccessModifyer = AccessModifyer.Private;
+			Field destinationField = RenderEngine.ClassCore.GetDestinationFieldForInject(bll);
 			bll.Fields.Add(destinationField);
+
+			var injectCtor = RenderEngine.ClassCore.GetInjectCtorForDestinationField(bll.FullName, destinationField);
+			bll.Ctors.Add(injectCtor);
 
 			bll.Usings.Add(Constant.Usings.System);
 			bll.Usings.Add(Constant.Usings.System_Linq);
@@ -209,7 +205,7 @@ namespace AnotherPoint.Core
 				AccessModifyer = AccessModifyer.Public,
 			};
 			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
+			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
 
 			var getMeth = new Method("Get", this.entity.FullName)
@@ -217,21 +213,21 @@ namespace AnotherPoint.Core
 				AccessModifyer = AccessModifyer.Public,
 			};
 			getMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
+			getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 
 			var removeMeth = new Method("Remove", Constant.Types.System_Void)
 			{
 				AccessModifyer = AccessModifyer.Public,
 			};
 			removeMeth.Arguments.Add(new Argument("id", Constant.Types.System_Guid, BindSettings.None));
-			removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
+			removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 
 			var updateMeth = new Method("Update", Constant.Types.System_Void)
 			{
 				AccessModifyer = AccessModifyer.Public,
 			};
 			updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
-			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination));
+			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 			updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
 
 			bll.Methods.Add(createMeth);

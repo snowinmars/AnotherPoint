@@ -13,7 +13,7 @@ namespace AnotherPoint.Core
 {
 	public class ClassCore : IClassCore
 	{
-		private string[] asdsdsd =
+		private readonly string[] reserverClassNamePostfixes =
 		{
 			"Logic",
 			"DAO",
@@ -47,47 +47,12 @@ namespace AnotherPoint.Core
 			this.SetupCtors(type.GetConstructors(Constant.AllInstance), @class.Ctors);
 			this.SetupInterfaces(type.GetInterfaces(), @class.ImplementedInterfaces);
 			this.SetupMethods(type, @class);
-
-			foreach (var insertNugetPackageAttribute in type.GetCustomAttributes<InsertNugetPackageAttribute>())
-			{
-				@class.PackageAttributes.Add(insertNugetPackageAttribute);
-			}
+			this.SetupPackages(type, @class);
 
 			Bag.TypePocket.Add(type.FullName, type);
 			Bag.ClassPocket.Add(@class.Name, @class);
 
 			return @class;
-		}
-
-		private void SetupMethods(Type type, Class @class)
-		{
-			EntityPurposePair entityPurposePair = ClassCore.GetEntityPurposePair(type, @class);
-
-			this.SetupMethodsImplementation(type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
-								.Where(m => !m.Name.StartsWith(Constant.Get) &&
-											!m.Name.StartsWith(Constant.Set)),
-							@class.Methods,
-							entityPurposePair);
-		}
-
-		private static EntityPurposePair GetEntityPurposePair(Type type, Class @class)
-		{
-			string entity;
-			string purpose;
-
-			if (@class.EntityPurposePair.IsEmpty())
-			{
-				entity = type.Name;
-				purpose = "";
-			}
-			else
-			{
-				entity = @class.EntityPurposePair.Entity;
-				purpose = @class.EntityPurposePair.Purpose;
-			}
-
-			EntityPurposePair entityPurposePair = new EntityPurposePair(entity, purpose);
-			return entityPurposePair;
 		}
 
 		public string RenderAccessModifyer(Class @class)
@@ -99,11 +64,13 @@ namespace AnotherPoint.Core
 		{
 			if (@class.IsEndpoint)
 			{
-				return $"{@class.Name}Destination";
+				return Helpers.GetDefaultDestinationName(@class.Name);
 			}
 
 			throw new InvalidOperationException($"Class {@class.Name} is not an endpoint class, so it can't have destination field");
 		}
+
+		
 
 		public string RenderInterfaces(Class @class)
 		{
@@ -142,6 +109,26 @@ namespace AnotherPoint.Core
 			sb.AppendLine();
 
 			return sb.ToString();
+		}
+
+		private static EntityPurposePair GetEntityPurposePair(Type type, Class @class)
+		{
+			string entity;
+			string purpose;
+
+			if (@class.EntityPurposePair.IsEmpty())
+			{
+				entity = type.Name;
+				purpose = "";
+			}
+			else
+			{
+				entity = @class.EntityPurposePair.Entity;
+				purpose = @class.EntityPurposePair.Purpose;
+			}
+
+			EntityPurposePair entityPurposePair = new EntityPurposePair(entity, purpose);
+			return entityPurposePair;
 		}
 
 		private AccessModifyer GetAccessModifyer(Type type)
@@ -183,7 +170,7 @@ namespace AnotherPoint.Core
 			return accessModifyer;
 		}
 
-		private Field GetDestinationFieldForInject(Class @class)
+		public Field GetDestinationFieldForInject(Class @class)
 		{
 			Field destinationField = new Field(this.RenderDefaultDestinationName(@class), @class.DestinationTypeName)
 			{
@@ -195,7 +182,7 @@ namespace AnotherPoint.Core
 			return destinationField;
 		}
 
-		private Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField)
+		public Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField)
 		{
 			Ctor injectedCtor = new Ctor(typeFullName)
 			{
@@ -304,6 +291,17 @@ namespace AnotherPoint.Core
 			}
 		}
 
+		private void SetupMethods(Type type, Class @class)
+		{
+			EntityPurposePair entityPurposePair = ClassCore.GetEntityPurposePair(type, @class);
+
+			this.SetupMethodsImplementation(type.GetMethods(Constant.AllInstance | BindingFlags.DeclaredOnly)
+								.Where(m => !m.Name.StartsWith(Constant.Get) &&
+											!m.Name.StartsWith(Constant.Set)),
+							@class.Methods,
+							entityPurposePair);
+		}
+
 		private void SetupMethodsImplementation(IEnumerable<MethodInfo> systemTypeMethods, ICollection<Method> classMethods, EntityPurposePair entityPurposePair)
 		{
 			foreach (var methodInfo in systemTypeMethods)
@@ -322,6 +320,14 @@ namespace AnotherPoint.Core
 			}
 		}
 
+		private void SetupPackages(Type type, Class @class)
+		{
+			foreach (var insertNugetPackageAttribute in type.GetCustomAttributes<InsertNugetPackageAttribute>())
+			{
+				@class.PackageAttributes.Add(insertNugetPackageAttribute);
+			}
+		}
+
 		private void SetupProperties(IEnumerable<PropertyInfo> systemTypeProperties, ICollection<Property> classProperties)
 		{
 			foreach (var propertyInfo in systemTypeProperties)
@@ -332,7 +338,7 @@ namespace AnotherPoint.Core
 
 		private void TryToResolveNameAndPurpose(Type type, Class @class)
 		{
-			foreach (var item in this.asdsdsd)
+			foreach (var item in this.reserverClassNamePostfixes)
 			{
 				if (type.Name.EndsWith(item))
 				{

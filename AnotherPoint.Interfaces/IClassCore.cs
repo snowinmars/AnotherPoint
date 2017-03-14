@@ -17,6 +17,10 @@ namespace AnotherPoint.Interfaces
 
 		string RenderNamespace(Class @class);
 
+		Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField);
+
+		Field GetDestinationFieldForInject(Class @class);
+
 		string RenderUsings(Class @class);
 	}
 }

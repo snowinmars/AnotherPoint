@@ -22,6 +22,11 @@ namespace AnotherPoint.Core
 			return Helpers.CorrectCollectionTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
 
+		internal static string GetDefaultDestinationName(string className)
+		{
+			return $"{className}Destination";
+		}
+
 		public static string GetImplementTypeNaming(string key)
 		{
 			string value;

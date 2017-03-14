@@ -179,7 +179,7 @@ namespace AnotherPoint.Core
 		{
 			StringBuilder body = new StringBuilder();
 
-			string defaultDestination = $"{method.EntityPurposePair.Both.FirstLetterToLower()}Destination"; // TODO
+			string defaultDestination = Helpers.GetDefaultDestinationName(sendMeToAttribute.From);
 
 			string destination = sendMeToAttribute.Destination == Constant.DefaultDestination
 				? defaultDestination
