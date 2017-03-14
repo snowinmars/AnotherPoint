@@ -8,7 +8,7 @@ namespace AnotherPoint.Common
 		public static class Usings
 		{
 			public const string System = "System";
-			public const string Dapper = "System";
+			public const string Dapper = "Dapper";
 			public const string System_Linq = "System.Linq";
 			public const string System_Text_RegularExpressions = "System.Text.RegularExpressions";
 		}

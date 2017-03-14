@@ -19,6 +19,7 @@ namespace AnotherPoint.Entities
 			this.Methods = new List<Method>();
 			this.Constants = new List<Field>();
 			this.References = new List<string>();
+			this.PackageAttributes = new List<InsertNugetPackageAttribute>();
 
 			this.AccessModifyer = AccessModifyer.Public;
 
@@ -28,6 +29,7 @@ namespace AnotherPoint.Entities
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }
+		public IList<InsertNugetPackageAttribute> PackageAttributes { get; private set; }
 		public IList<Field> Constants { get; private set; }
 		public IList<Ctor> Ctors { get; private set; }
 		public IList<string> References { get; private set; }

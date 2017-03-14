@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Reflection;
 using Microsoft.Build.Evaluation;
 
 namespace AnotherPoint.Core
@@ -19,19 +20,25 @@ namespace AnotherPoint.Core
 	{
 		private readonly IDictionary<string, IList<string>> internalReferences = new Dictionary<string, IList<string>>();
 		private readonly IDictionary<string, IList<string>> externalReferences = new Dictionary<string, IList<string>>();
+		private readonly IDictionary<string, IList<InsertNugetPackageAttribute>> packages = new Dictionary<string, IList<InsertNugetPackageAttribute>>();
+		private readonly IDictionary<string, string> projectIds = new Dictionary<string, string>();
 		private string root;
+		private string appName;
 
 		public void ConstructSolution(IEnumerable<Endpoint> endpoints, string fullPathToDir)
 		{
 			this.root = fullPathToDir;
-
 			foreach (var endpoint in endpoints)
 			{
+				this.appName = endpoint.AppName;
 				this.ScaffoldToDirectory(endpoint, fullPathToDir);
 			}
 
+
 			foreach (var endpoint in endpoints)
 			{
+				this.internalReferences.Add(endpoint.CommonClass.Namespace, new List<string>());
+
 				foreach (var @class in endpoint.Classes)
 				{
 					if (this.internalReferences.ContainsKey(@class.Namespace))
@@ -41,6 +48,7 @@ namespace AnotherPoint.Core
 
 					this.internalReferences.Add(@class.Namespace, new List<string>());
 					this.externalReferences.Add(@class.Namespace, new List<string>());
+					this.packages.Add(@class.Namespace, new List<InsertNugetPackageAttribute>());
 
 					foreach (var @using in @class.Usings)
 					{
@@ -62,6 +70,11 @@ namespace AnotherPoint.Core
 						{
 							this.externalReferences[@class.Namespace].Add(reference);
 						}
+					}
+
+					foreach (var insertNugetPackageAttribute in @class.PackageAttributes)
+					{
+						this.packages[@class.Namespace].Add(insertNugetPackageAttribute);
 					}
 				}
 
@@ -90,7 +103,7 @@ namespace AnotherPoint.Core
 				}
 			}
 
-			this.WriteSolution(fullPathToDir);
+			this.WriteApplication(fullPathToDir);
 		}
 
 		private void ScaffoldToDirectory(Endpoint endpoint, string fullPathToDir)
@@ -156,7 +169,7 @@ namespace AnotherPoint.Core
 			File.WriteAllText(Path.Combine(this.root, endpoint.DAOClass.Validation.Namespace, $"{Constant.Validation}.cs"), TemplateRepository.Compile(TemplateType.Class, endpoint.DAOClass.Validation));
 		}
 
-		private void WriteSolution(string fullPathToDir)
+		private void WriteApplication(string fullPathToDir)
 		{
 			IList<DirectoryInfo> res = new List<DirectoryInfo>();
 
@@ -171,63 +184,132 @@ namespace AnotherPoint.Core
 			{
 				this.WriteProject(directoryInfo);
 			}
+
+			this.WriteSolution(fullPathToDir);
+		}
+
+		private void WriteSolution(string fullPathToDir)
+		{
+			using (var stream = File.Create(Path.Combine(fullPathToDir, $"{this.appName}.sln")))
+			{
+				using (StreamWriter writer = new StreamWriter(stream))
+				{
+					writer.WriteLine(@"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1");
+
+						Guid slnId = Guid.NewGuid();
+					foreach (var projectId in this.projectIds)
+					{
+						writer.WriteLine($"Project(\"{{{slnId}}}\") = \"{projectId.Key}\", \"{projectId.Key}\\{projectId.Key}.csproj\", \"{{{projectId.Value}}}\"");
+						writer.WriteLine("EndProject");
+					}
+
+					writer.WriteLine(@"
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution");
+
+					foreach (var projectId in this.projectIds)
+					{
+						writer.WriteLine($"{projectId.Value}.Debug|Any CPU.ActiveCfg = Debug|Any CPU");
+						writer.WriteLine($"{projectId.Value}.Debug|Any CPU.Build.0 = Debug|Any CPU");
+						writer.WriteLine($"{projectId.Value}.Release|Any CPU.ActiveCfg = Release|Any CPU");
+						writer.WriteLine($"{projectId.Value}.Release|Any CPU.Build.0 = Release|Any CPU");
+					}
+
+					writer.WriteLine(@"
+EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal");
+				}
+			}
 		}
 
 		private void WriteProject(DirectoryInfo directoryInfo)
 		{
 			var root = ProjectRootElement.Create();
-			this.SetUpDefaultPropertyGroup( root);
-			this.SetUpDebugPropertyGroup(directoryInfo, root);
-			this.SetUpReleasePropertyGroup( root);
 
-			// references
-			ProjectItemGroupElement r = root.AddItemGroup();
-			//var proh = r.AddItem("ProjectReference", this.internalReferences[directoryInfo.Name].Select(i => $"..\\{i}\\{i}.csproj").ToArray());
+			Guid projectId = Guid.NewGuid();
 
-			foreach (var a in this.internalReferences[directoryInfo.Name])
+			if (!this.projectIds.ContainsKey(directoryInfo.Name))
 			{
-				IList<KeyValuePair<string, string>> asd = new List<KeyValuePair<string, string>>();
+				this.projectIds.Add(directoryInfo.Name, projectId.ToString());
+			}
 
-				string destinationCsprojPath = $"{a}\\{a}.csproj";
+			this.SetUpDefaultPropertyGroup(root);
+			this.SetUpDebugPropertyGroup(directoryInfo, root, projectId);
+			this.SetUpReleasePropertyGroup(root);
 
-				string destinationCsprojGuid;
-
-				using (FileStream asdfg = File.OpenRead(Path.Combine(this.root, destinationCsprojPath)))
+			using (FileStream packageConfigStream = File.Create(Path.Combine(directoryInfo.FullName, "packages.config")))
+			{
+				using (TextWriter packageConfig = new StreamWriter(packageConfigStream))
 				{
-					using (StreamReader reader = new StreamReader(asdfg))
+
+
+					ProjectItemGroupElement r = root.AddItemGroup();
+
+					foreach (var a in this.internalReferences[directoryInfo.Name])
 					{
-						string line;
+						IList<KeyValuePair<string, string>> asd = new List<KeyValuePair<string, string>>();
 
-						while ((line = reader.ReadLine()) != null)
+						string destinationCsprojPath = $"{a}\\{a}.csproj";
+						
+						asd.Add(new KeyValuePair<string, string>("Project", $"{{{this.projectIds[a]}}}"));
+						asd.Add(new KeyValuePair<string, string>("Name", a));
+									
+						ProjectItemElement proh = r.AddItem("ProjectReference", $"..\\{destinationCsprojPath}", asd);
+					}
+
+					if (this.externalReferences.ContainsKey(directoryInfo.Name))
+					{
+						var group = root.AddItemGroup();
+
+						foreach (var item in this.externalReferences[directoryInfo.Name].ToArray())
 						{
-							if (line.Trim().StartsWith("<ProjectGuid>"))
+							if (item != null)
 							{
-								destinationCsprojGuid = Regex.Match(line, ">(.*)<").Groups[1].Value;
-
-								asd.Add(new KeyValuePair<string, string>("Project", destinationCsprojGuid));
-								asd.Add(new KeyValuePair<string, string>("Name", a));
+								group.AddItem("Reference", item);
 							}
 						}
-
 					}
+
+							packageConfig.WriteLine(@"<?xml version=""1.0"" encoding=""utf-8""?>");
+							packageConfig.WriteLine("<packages>");
+					if (this.packages.ContainsKey(directoryInfo.Name))
+					{
+						foreach (var reference in this.packages[directoryInfo.Name])
+						{
+							root.AddItem("Reference", reference.ReferenceInclude, new[]
+							{
+								new KeyValuePair<string, string>("HintPath", reference.HintPath),
+								new KeyValuePair<string, string>("Private", "True"),
+							});
+
+							packageConfig.WriteLine($"  <package id=\"{reference.Name}\" version=\"{reference.Version}\" targetFramework=\"net452\" />");
+							
+
+						}
+					}
+							packageConfig.WriteLine("</packages>");
+
+					root.AddItem("None", "packages.config");
+
+					// items to compile
+					root.AddItems("Compile", directoryInfo.GetFiles("*.cs").Select(f => f.Name).ToArray());
+
+					root.AddImport(@"$(MSBuildToolsPath)\Microsoft.CSharp.targets");
+
+					root.Save(Path.Combine(directoryInfo.FullName, $"{directoryInfo.Name}.csproj"));
 				}
-
-				ProjectItemElement proh = r.AddItem("ProjectReference", $"..\\{destinationCsprojPath}", asd);
-
 			}
-
-			if (this.externalReferences.ContainsKey(directoryInfo.Name))
-			{
-				root.AddItems("Reference", this.externalReferences[directoryInfo.Name].ToArray());
-			}
-
-
-			// items to compile
-			root.AddItems("Compile", directoryInfo.GetFiles("*.cs").Select(f => f.Name).ToArray());
-
-			root.AddImport(@"$(MSBuildToolsPath)\Microsoft.CSharp.targets");
-
-			root.Save(Path.Combine(directoryInfo.FullName, $"{directoryInfo.Name}.csproj"));
 		}
 
 		private void SetUpReleasePropertyGroup(ProjectRootElement root)
@@ -244,7 +326,7 @@ namespace AnotherPoint.Core
 			group.AddProperty("WarningLevel", "4");
 		}
 
-		private void SetUpDebugPropertyGroup(DirectoryInfo directoryInfo, ProjectRootElement root)
+		private void SetUpDebugPropertyGroup(DirectoryInfo directoryInfo, ProjectRootElement root, Guid projectId)
 		{
 			ProjectPropertyGroupElement group = root.AddPropertyGroup();
 
@@ -254,7 +336,7 @@ namespace AnotherPoint.Core
 			var platformProperty = group.AddProperty("Platform", "x64");
 			platformProperty.Condition = " '$(Platform)' == '' ";
 
-			group.AddProperty("ProjectGuid", $"{{{Guid.NewGuid()}}}");
+			group.AddProperty("ProjectGuid", $"{{{projectId}}}");
 			group.AddProperty("OutputType", "Library");
 			group.AddProperty("RootNamespace", directoryInfo.Name);
 			group.AddProperty("TargetFrameworkVersion", "4.6.2");

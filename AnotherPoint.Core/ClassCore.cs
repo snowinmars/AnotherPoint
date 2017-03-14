@@ -48,6 +48,11 @@ namespace AnotherPoint.Core
 			this.SetupInterfaces(type.GetInterfaces(), @class.ImplementedInterfaces);
 			this.SetupMethods(type, @class);
 
+			foreach (var insertNugetPackageAttribute in type.GetCustomAttributes<InsertNugetPackageAttribute>())
+			{
+				@class.PackageAttributes.Add(insertNugetPackageAttribute);
+			}
+
 			Bag.TypePocket.Add(type.FullName, type);
 			Bag.ClassPocket.Add(@class.Name, @class);
 

@@ -146,6 +146,8 @@ namespace AnotherPoint.Core
 
 			dao.References.Add("System.Data");
 
+			dao.PackageAttributes.Add(new InsertNugetPackageAttribute("Dapper", 1, 50, 2, 0, "neutral", "MSIL"));
+
 			var createMeth = new Method("Create", Constant.Types.System_Void) { AccessModifyer = AccessModifyer.Public };
 			createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName, BindSettings.None));
 			createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
@@ -187,6 +189,15 @@ namespace AnotherPoint.Core
 			}
 
 			bll.DestinationTypeName = destinationInterface.FullName;
+			bll.IsEndpoint = true;
+
+			var injectCtor = new Ctor(bll.FullName);
+			injectCtor.AccessModifyer = AccessModifyer.Private;
+			injectCtor.IsCtorForInject = true;
+
+			var arg = new Argument("Destination", bll.DestinationTypeName, BindSettings.Exact);
+			injectCtor.ArgumentCollection.Add(arg);
+			bll.Ctors.Add(injectCtor);
 
 			Field destinationField = new Field("Destination", destinationInterface.FullName);
 			destinationField.AccessModifyer = AccessModifyer.Private;
