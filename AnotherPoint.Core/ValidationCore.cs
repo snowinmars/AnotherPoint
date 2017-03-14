@@ -6,6 +6,7 @@ using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -40,6 +41,8 @@ namespace AnotherPoint.Core
 
 			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
 			{
+				//Debugger.Launch();
+
 				t = asm.GetType(qualifiedTypeName);
 
 				if (t != null)
