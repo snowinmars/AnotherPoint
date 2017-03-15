@@ -3,6 +3,7 @@ using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace AnotherPoint.Core
@@ -15,6 +16,10 @@ namespace AnotherPoint.Core
 
 		public Property Map(PropertyInfo propertyInfo)
 		{
+			Log.Info($"Mapping field {propertyInfo.DeclaringType.FullName} {propertyInfo.Name}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			string propertyName = propertyInfo.Name;
 			string propertyType = Helpers.GetCorrectCollectionTypeNaming(propertyInfo.PropertyType.FullName);
 
@@ -31,6 +36,10 @@ namespace AnotherPoint.Core
 
 			// saving field name and type for further appeals from ctor
 			Bag.MyTypePocket[propertyName.ToUpperInvariant()] = property.Type;
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return property;
 		}

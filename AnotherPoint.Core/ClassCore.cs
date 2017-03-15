@@ -5,6 +5,7 @@ using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -59,6 +60,12 @@ namespace AnotherPoint.Core
 				throw new ArgumentException($"Type {type.FullName} is an interface, use InterfaceCore::Map for this type.");
 			}
 
+			string logString = $"Mapping class {type.FullName}";
+
+			Log.Info($"{logString}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			Class @class = new Class(type.FullName)
 			{
 				AccessModifyer = this.GetAccessModifyer(type),
@@ -80,6 +87,10 @@ namespace AnotherPoint.Core
 
 			Bag.TypePocket.Add(type.FullName, type);
 			Bag.ClassPocket.Add(@class.Name, @class);
+
+			sw.Stop();
+			
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return @class;
 		}

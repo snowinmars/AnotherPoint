@@ -31,6 +31,8 @@ namespace AnotherPoint.Common
 
 		public static void ForgeAll()
 		{
+			Log.Info("Forging assemblies...");
+
 			foreach (var assemblyName in AssemblyForge.AssemblyNames)
 			{
 				Assembly.Load(assemblyName);
@@ -40,6 +42,8 @@ namespace AnotherPoint.Common
 			{
 				Assembly.LoadFile(assemblyPath);
 			}
+
+			Log.iDone();
 		}
 	}
 }

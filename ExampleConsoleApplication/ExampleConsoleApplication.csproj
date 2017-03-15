@@ -4,16 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6BC87FEC-7F9E-4486-B15A-39CE845D277B}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{B40A492F-562C-4BD9-BFF0-7DEAADD262D6}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AnotherPoint.Engine</RootNamespace>
-    <AssemblyName>AnotherPoint.Engine</AssemblyName>
+    <RootNamespace>ExampleConsoleApplication</RootNamespace>
+    <AssemblyName>ExampleConsoleApplication</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +25,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -36,6 +39,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,13 +49,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RenderEngine.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnotherPoint.Common\AnotherPoint.Common.csproj">
       <Project>{df3e702e-4a73-48ee-8373-4c4529a15436}</Project>
       <Name>AnotherPoint.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Core\AnotherPoint.Core.csproj">
+      <Project>{d1358c0a-d566-42b6-8242-9f4be201adab}</Project>
+      <Name>AnotherPoint.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AnotherPoint.Engine\AnotherPoint.Engine.csproj">
+      <Project>{6bc87fec-7f9e-4486-b15a-39ce845d277b}</Project>
+      <Name>AnotherPoint.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\AnotherPoint.Entities\AnotherPoint.Entities.csproj">
       <Project>{27769e9b-0950-43f3-930c-719abd457bdb}</Project>
@@ -61,9 +77,10 @@
       <Project>{23f0572b-61e6-414a-a6b7-4ede549e0bfb}</Project>
       <Name>AnotherPoint.Interfaces</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\AnotherPoint.Templates\AnotherPoint.Templates.csproj">
+      <Project>{df78cbe2-b94a-42e2-96d7-f5c9a3d70612}</Project>
+      <Name>AnotherPoint.Templates</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

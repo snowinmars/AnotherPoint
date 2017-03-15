@@ -56,6 +56,10 @@ namespace AnotherPoint.Core
 
 		public Class ConstructValidationClass(string @namespace)
 		{
+			Log.Info($"Constructing validation class for {@namespace}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			Class @class = new Class(Constant.Validation)
 			{
 				Type = { Namespace = @namespace },
@@ -87,6 +91,10 @@ namespace AnotherPoint.Core
 					@class.Methods.Add(checkMethod);
 				}
 			}
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return @class;
 		}

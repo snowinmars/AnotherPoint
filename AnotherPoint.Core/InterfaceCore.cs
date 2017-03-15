@@ -5,6 +5,7 @@ using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -24,6 +25,10 @@ namespace AnotherPoint.Core
 				throw new ArgumentException($"Type {interfaceType.FullName} is not an interface");
 			}
 
+			Log.Info($"Mapping interface {interfaceType.FullName}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			Interface @interface = new Interface(interfaceType.FullName)
 			{
 				AccessModifyer = this.GetAccessModifyer(interfaceType),
@@ -37,6 +42,10 @@ namespace AnotherPoint.Core
 			{
 				@interface.ImplementedInterfaces.Add(this.Map(implementInterface));
 			}
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return @interface;
 		}

@@ -4,6 +4,7 @@ using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,6 +19,10 @@ namespace AnotherPoint.Core
 
 		public Ctor Map(ConstructorInfo constructorInfo)
 		{
+			Log.Info($"Mapping ctor for {constructorInfo.DeclaringType.FullName}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			Type declaringType = constructorInfo.DeclaringType;
 
 			if (declaringType == null)
@@ -31,6 +36,10 @@ namespace AnotherPoint.Core
 			};
 
 			this.HandleCtorArguments(constructorInfo, ctor.ArgumentCollection);
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return ctor;
 		}

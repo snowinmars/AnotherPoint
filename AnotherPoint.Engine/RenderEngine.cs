@@ -1,4 +1,5 @@
-﻿using AnotherPoint.Interfaces;
+﻿using AnotherPoint.Common;
+using AnotherPoint.Interfaces;
 
 namespace AnotherPoint.Engine
 {
@@ -14,6 +15,7 @@ namespace AnotherPoint.Engine
 			IEndpointCore endpointCore,
 			ISolutionCore solutionCore)
 		{
+				Log.Info("Initializing RenderEngine");
 			RenderEngine.ClassCore = classCore;
 			RenderEngine.CtorCore = ctorCore;
 			RenderEngine.FieldCore = fieldCore;
@@ -23,7 +25,9 @@ namespace AnotherPoint.Engine
 			RenderEngine.ValidationCore = validationCore;
 			RenderEngine.EndpointCore = endpointCore;
 			RenderEngine.SolutionCore = solutionCore;
-		}
+			Log.iDone();
+		}	
+
 
 		public static ISolutionCore SolutionCore { get; set; }
 		public static IClassCore ClassCore { get; private set; }
@@ -37,12 +41,14 @@ namespace AnotherPoint.Engine
 
 		public static void Dispose()
 		{
+				Log.Info("Disposing RenderEngine");
 			RenderEngine.ClassCore.Dispose();
 			RenderEngine.CtorCore.Dispose();
 			RenderEngine.FieldCore.Dispose();
 			RenderEngine.InterfaceCore.Dispose();
 			RenderEngine.MethodCore.Dispose();
 			RenderEngine.PropertyCore.Dispose();
+			Log.iDone();
 		}
 	}
 }

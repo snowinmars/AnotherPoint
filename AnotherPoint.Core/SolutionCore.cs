@@ -6,6 +6,7 @@ using AnotherPoint.Templates;
 using Microsoft.Build.Construction;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,11 +24,19 @@ namespace AnotherPoint.Core
 
 		public void ConstructSolution(IEnumerable<Endpoint> endpoints, string fullPathToDir)
 		{
+			Log.Info($"Constructing solution to {fullPathToDir}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			this.root = fullPathToDir;
 			this.ScaffoldEndpoints(endpoints, fullPathToDir);
 			this.SetupReferences(endpoints);
 
 			this.WriteApplication(fullPathToDir);
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 		}
 
 		private void DeclareExistance(string classNamespace)

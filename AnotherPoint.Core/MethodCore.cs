@@ -5,6 +5,7 @@ using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -27,6 +28,10 @@ namespace AnotherPoint.Core
 
 		public Method Map(MethodInfo methodInfo, EntityPurposePair entityPurposePair)
 		{
+			Log.Info($"Mapping method {methodInfo.ReturnType.FullName} {methodInfo.Name}(?)...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+			
 			Method method = new Method(methodInfo.Name, methodInfo.ReturnType.FullName)
 			{
 				AccessModifyer = this.GetAccessModifyer(methodInfo)
@@ -37,6 +42,10 @@ namespace AnotherPoint.Core
 			method.EntityPurposePair = entityPurposePair;
 
 			this.HandleArguments(methodInfo.GetParameters(), method.Arguments);
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return method;
 		}

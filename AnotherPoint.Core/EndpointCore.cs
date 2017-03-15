@@ -5,6 +5,7 @@ using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AnotherPoint.Core
@@ -23,6 +24,10 @@ namespace AnotherPoint.Core
 
 		public Endpoint ConstructEndpointFor(Class entityClass)
 		{
+			Log.Info($"Constructing endpoint for {entityClass.FullName}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			// Have I to rewrite the namespace for true one? TODO ot TOTHINK
 			entityClass.Namespace = $"{this.AppName}.{Constant.Entities}";
 
@@ -42,6 +47,10 @@ namespace AnotherPoint.Core
 			endpoint.DaoClass = this.GetDaoClass(endpoint.DaoInterfaces);
 			endpoint.BllClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.Bll}");
 			endpoint.DaoClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.Dao}");
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return endpoint;
 		}

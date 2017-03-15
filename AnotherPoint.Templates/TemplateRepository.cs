@@ -19,29 +19,43 @@ namespace AnotherPoint.Templates
 
 		public static void Init()
 		{
+			Log.Info($"Initing {nameof(TemplateRepository)}");
+			Log.iDone();
 		}
 
 		public static void Finit()
 		{
+			Log.Info($"Finiting {nameof(TemplateRepository)}");
+			Log.iDone();
 		}
 
 		static TemplateRepository()
 		{
+			Log.Info($"Cctoring for {nameof(TemplateRepository)}...");
+
 			TemplateRepository.RootFolder = Directory.GetCurrentDirectory();
 			TemplateRepository.DynamicViewBag = new DynamicViewBag();
 
 			TemplateRepository.InitializeNameFileBinding();
 			TemplateRepository.SelfValidate();
 
+			Log.Info("Initializing RazorEngine...");
+
 			TemplateServiceConfiguration config = TemplateRepository.GetDefaultConfig();
 
 			TemplateRepository.razorService = RazorEngineService.Create(config);
 
+			Log.iDone();
+
 			TemplateRepository.InitRazorEngineTemplates();
+
+			Log.iDone($"Cctoring for {nameof(TemplateRepository)} was done");
 		}
 
 		public static string Compile(TemplateType template, object model)
 		{
+			Log.Info($"Compiling template {template}");
+
 			NameOnlyTemplateKey nameOnlyTemplateKey = new NameOnlyTemplateKey(template.AsString(),
 															ResolveType.Layout,
 															context: null);
@@ -53,6 +67,8 @@ namespace AnotherPoint.Templates
 
 			str = str.Replace("&gt;", ">").Replace("&lt;", "<").Replace("&quot;", "\"").Replace("&amp;", "&");
 
+			Log.iDone();
+
 			return str;
 		}
 
@@ -61,6 +77,8 @@ namespace AnotherPoint.Templates
 			TemplateServiceConfiguration config = new TemplateServiceConfiguration
 			{
 				Language = Language.CSharp,
+				DisableTempFileLocking = true, // TODO
+				CachingProvider = new DefaultCachingProvider(t => { }),
 			};
 
 			return config;

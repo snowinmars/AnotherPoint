@@ -3,6 +3,7 @@ using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
 using AnotherPoint.Interfaces;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace AnotherPoint.Core
@@ -15,6 +16,10 @@ namespace AnotherPoint.Core
 
 		public Field Map(FieldInfo fieldInfo)
 		{
+			Log.Info($"Mapping field {fieldInfo.FieldType.FullName} {fieldInfo.Name}...");
+
+			Stopwatch sw = Stopwatch.StartNew();
+
 			string fieldName = fieldInfo.Name;
 			string fieldType = Helpers.GetCorrectCollectionTypeNaming(fieldInfo.FieldType.Name);
 
@@ -27,6 +32,10 @@ namespace AnotherPoint.Core
 
 			// saving field name and type for further appeals from ctor
 			Bag.MyTypePocket[fieldName.ToUpperInvariant()] = field.Type;
+
+			sw.Stop();
+
+			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return field;
 		}
