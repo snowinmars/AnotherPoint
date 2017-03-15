@@ -43,7 +43,7 @@ namespace ExampleConsoleApplication
 
 		private static void Main()
 		{
-			const string outputPath = @"D:\tmp"; // set this path to the directory you dont need. Directory will be fully eraze
+			const string outputPath = null; // set this path to the directory you dont need. Directory will be fully eraze
 
 			if (outputPath == null)
 			{
