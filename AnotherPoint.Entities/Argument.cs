@@ -1,9 +1,10 @@
-﻿using AnotherPoint.Common;
+﻿using System;
+using AnotherPoint.Common;
 using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class Argument
+	public class Argument : AnotherPointObject
 	{
 		public Argument(string name, string typeName, BindSettings bindAttribute)
 		{
@@ -35,6 +36,17 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(argument);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = (int) this.BindAttribute;
+				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				return hashCode;
+			}
 		}
 
 		public bool Equals(Argument other)

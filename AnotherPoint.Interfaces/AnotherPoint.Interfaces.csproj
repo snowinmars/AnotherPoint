@@ -49,6 +49,7 @@
     <Compile Include="IMethodCore.cs" />
     <Compile Include="IPropertyCore.cs" />
     <Compile Include="ISolutionCore.cs" />
+    <Compile Include="ISqlCore.cs" />
     <Compile Include="IValidationCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

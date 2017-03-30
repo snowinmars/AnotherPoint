@@ -13,7 +13,8 @@ namespace AnotherPoint.Engine
 			IPropertyCore propertyCore,
 			IValidationCore validationCore,
 			IEndpointCore endpointCore,
-			ISolutionCore solutionCore)
+			ISolutionCore solutionCore,
+			ISqlCore sqlCore)
 		{
 				Log.Info("Initializing RenderEngine");
 			RenderEngine.ClassCore = classCore;
@@ -25,10 +26,11 @@ namespace AnotherPoint.Engine
 			RenderEngine.ValidationCore = validationCore;
 			RenderEngine.EndpointCore = endpointCore;
 			RenderEngine.SolutionCore = solutionCore;
+			RenderEngine.SqlCore = sqlCore;
 			Log.iDone();
-		}	
+		}
 
-
+		public static ISqlCore SqlCore { get; set; }
 		public static ISolutionCore SolutionCore { get; set; }
 		public static IClassCore ClassCore { get; private set; }
 		public static ICtorCore CtorCore { get; private set; }

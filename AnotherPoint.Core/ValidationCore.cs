@@ -201,20 +201,12 @@ namespace AnotherPoint.Core
 			{
 				string d = "NOPE";
 
-				try
-				{
 					d = dataAnnotationAttributeFullName;
 
 					foreach (var customAttribute in prop.GetCustomAttributes(ValidationCore.FindType(dataAnnotationAttributeFullName)))
 					{
 						this.propertyAttributeBinding[property].Add(customAttribute);
 					}
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(d);
-					throw;
-				}
 			}
 		}
 	}

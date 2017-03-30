@@ -79,14 +79,48 @@ namespace AnotherPoint.Core
 			StringBuilder sb = new StringBuilder();
 
 			sb.Append(" : ");
-			sb.Append(string.Join(",", @interface.ImplementedInterfaces.Select(i => i.FullName)));
+
+			if (@interface.OverrideGenericTypes.Count > 0)
+			{
+				string genericTypes = InterfaceCore.OverrideGenericTypes(@interface);
+
+				sb.Append(string.Join(",", @interface.ImplementedInterfaces.Select(i => $"{i.Namespace}.{i.Name}<{genericTypes}>")));
+			}
+			else
+			{
+				sb.Append(string.Join(",", @interface.ImplementedInterfaces.Select(i => i.FullName)));
+			}
 
 			return sb.ToString();
 		}
 
+		private static string OverrideGenericTypes(Interface @interface)
+		{
+			StringBuilder s = new StringBuilder();
+
+			foreach (var implementedInterface in @interface.ImplementedInterfaces)
+			{
+				foreach (var genericType in implementedInterface.Type.GenericTypes)
+				{
+					if (@interface.OverrideGenericTypes.ContainsKey(genericType))
+					{
+						s.Append($" {@interface.OverrideGenericTypes[genericType]} ");
+					}
+					else
+					{
+						s.Append($" {genericType} ");
+					}
+				}
+			}
+
+			return s.ToString();
+		}
+
 		public string RenderName(Interface model)
 		{
-			return model.Name;
+			return model.Type.IsGeneric.IsTrue() ? 
+				$"{model.Name}<{string.Join(",", model.Type.GenericTypes)}>"
+				: model.Name;
 		}
 
 		public string RenderNamespace(Interface model)

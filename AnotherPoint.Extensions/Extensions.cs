@@ -20,6 +20,11 @@ namespace AnotherPoint.Extensions
 			}
 		}
 
+		public static bool IsTrue(this bool? item)
+		{
+			return item.HasValue && item.Value;
+		}
+
 		public static void AddItems(this ProjectRootElement elem, string groupName, params string[] items)
 		{
 			var group = elem.AddItemGroup();

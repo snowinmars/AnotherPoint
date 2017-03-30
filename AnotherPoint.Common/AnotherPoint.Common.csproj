@@ -94,6 +94,7 @@
     <Compile Include="Constant.cs" />
     <Compile Include="BindSettings.cs" />
     <Compile Include="EnumExtensions.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

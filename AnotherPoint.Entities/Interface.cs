@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AnotherPoint.Entities
 {
-	public class Interface
+	public class Interface : AnotherPointObject
 	{
 		public Interface(string fullTypeName)
 		{
@@ -14,6 +14,7 @@ namespace AnotherPoint.Entities
 
 			this.ImplementedInterfaces = new List<Interface>();
 			this.References = new List<string>();
+			this.OverrideGenericTypes = new Dictionary<string, string>();
 
 			this.Usings = new List<string>();
 			this.Methods = new List<Method>();
@@ -44,6 +45,8 @@ namespace AnotherPoint.Entities
 
 		public IList<Interface> ImplementedInterfaces { get; private set; }
 
+		public IDictionary<string, string> OverrideGenericTypes { get; private set; }
+
 		public AccessModifyer AccessModifyer { get; set; }
 
 		public MyType Type { get; set; }
@@ -64,6 +67,21 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(@interface);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = this.References?.GetHashCode() ?? 0;
+				hashCode = (hashCode * 397) ^ (this.Usings?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Methods?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.ImplementedInterfaces?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.OverrideGenericTypes?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (int) this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				return hashCode;
+			}
 		}
 
 		public bool Equals(Interface other)

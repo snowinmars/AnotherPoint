@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class MyType
+	public class MyType : AnotherPointObject
 	{
 		public MyType(string fullName)
 		{
@@ -16,7 +16,10 @@ namespace AnotherPoint.Entities
 			this.Name = this.ParseName();
 			this.Namespace = this.ParseNamespace();
 			this.IsGeneric = null;
+			this.IsCollection = null;
 		}
+
+		public bool? IsCollection { get; set; }
 
 		public string FullName { get; set; }
 
@@ -44,6 +47,20 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(myType);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = this.IsCollection.GetHashCode();
+				hashCode = (hashCode * 397) ^ (this.FullName?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.GenericTypes?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ this.IsGeneric.GetHashCode();
+				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Namespace?.GetHashCode() ?? 0);
+				return hashCode;
+			}
 		}
 
 		public bool Equals(MyType other)
@@ -99,13 +116,17 @@ namespace AnotherPoint.Entities
 
 		private string ParseName()
 		{
-			return this.FullName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
+			int index = this.FullName.IndexOf("<");
+
+			string n = index > 0 ? this.FullName.Substring(0, index) : this.FullName;
+
+			return n.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
 							.Last();
 		}
 
 		private string ParseNamespace()
 		{
-			int v = this.FullName.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase);
+			int v = Helpers.NameWithoutGeneric(this.FullName).LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase);
 
 			return v >= 0 ? this.FullName.Substring(0, v) : this.FullName;
 		}

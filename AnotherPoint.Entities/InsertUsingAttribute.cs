@@ -3,7 +3,7 @@
 namespace AnotherPoint.Entities
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = true)]
-	public class InsertUsingAttribute : Attribute
+	public class InsertUsingAttribute : AnotherPointAttribute
 	{
 		public InsertUsingAttribute(string @using)
 		{
@@ -28,6 +28,14 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(insertUsingAttribute);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return (base.GetHashCode() * 397) ^ (this.Using?.GetHashCode() ?? 0);
+			}
 		}
 
 		public bool Equals(InsertUsingAttribute other)

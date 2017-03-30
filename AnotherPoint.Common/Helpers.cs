@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text;
 
-namespace AnotherPoint.Core
+namespace AnotherPoint.Common
 {
 	public static class Helpers
 	{
@@ -15,6 +15,29 @@ namespace AnotherPoint.Core
 			{ "System.Collections.Generic.IEnumerable", "System.Collections.Generic.List" },
 		};
 
+		
+
+		public static string CutNamespaceToInterface(string classNamespace)
+		{
+			string folderName = Helpers.NameWithoutGeneric(classNamespace);
+
+			int index = folderName.IndexOf(Constant.Interfaces);
+
+			if (index > 0)
+			{
+				folderName = folderName.Substring(0, index + Constant.Interfaces.Length);
+			}
+
+			return folderName;
+		}
+
+		public static string NameWithoutGeneric(string str)
+		{
+			int index = str.IndexOf("<");
+
+			return index > 0 ? str.Substring(0, index) : str;
+		}
+
 		public static string GetCorrectCollectionTypeNaming(string key) // TODO unify dicts
 		{
 			string value;
@@ -22,7 +45,7 @@ namespace AnotherPoint.Core
 			return Helpers.CorrectCollectionTypeNaming.TryGetValue(key, out value) ? value : key;
 		}
 
-		internal static string GetDefaultDestinationName(string className)
+		public static string GetDefaultDestinationName(string className)
 		{
 			return $"{className}Destination";
 		}
@@ -31,16 +54,7 @@ namespace AnotherPoint.Core
 		{
 			string value;
 
-			// removing generic info
-
-			int v = key.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
-
-			if (v >= 0)
-			{
-				key = key.Remove(v);
-			}
-
-			return Helpers.ImplementTypeNaming.TryGetValue(key, out value) ? value : key;
+			return Helpers.ImplementTypeNaming.TryGetValue(Helpers.NameWithoutGeneric(key), out value) ? value : key;
 		}
 	}
 }

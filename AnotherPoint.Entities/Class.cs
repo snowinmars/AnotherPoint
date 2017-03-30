@@ -1,11 +1,12 @@
-﻿using AnotherPoint.Common;
+﻿using System;
+using AnotherPoint.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class Class
+	public class Class : AnotherPointObject
 	{
 		public Class(string fullTypeName)
 		{
@@ -20,13 +21,17 @@ namespace AnotherPoint.Entities
 			this.Constants = new List<Field>();
 			this.References = new List<string>();
 			this.PackageAttributes = new List<InsertNugetPackageAttribute>();
+			this.OverrideGenericTypes = new Dictionary<string, string>();
 
 			this.AccessModifyer = AccessModifyer.Public;
 
 			this.EntityPurposePair = new EntityPurposePair("", "");
 			this.DestinationTypeName = "";
 			this.IsEndpoint = false;
+
 		}
+
+		public IDictionary<string, string> OverrideGenericTypes { get; private set; }
 
 		public AccessModifyer AccessModifyer { get; set; }
 		public IList<InsertNugetPackageAttribute> PackageAttributes { get; private set; }
@@ -88,6 +93,30 @@ namespace AnotherPoint.Entities
 			return this.Equals(@class);
 		}
 
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = this.OverrideGenericTypes?.GetHashCode() ?? 0;
+				hashCode = (hashCode * 397) ^ (int) this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (this.PackageAttributes?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Constants?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Ctors?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.References?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Validation?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.DestinationTypeName?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.EntityPurposePair?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Fields?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.ImplementedInterfaces?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ this.IsEndpoint.GetHashCode();
+				hashCode = (hashCode * 397) ^ (this.Methods?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Properties?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Usings?.GetHashCode() ?? 0);
+				return hashCode;
+			}
+		}
+
 		public bool Equals(Class other)
 			=>
 				this.AccessModifyer == other.AccessModifyer &&
@@ -121,5 +150,6 @@ namespace AnotherPoint.Entities
 
 			return sb.ToString();
 		}
+
 	}
 }

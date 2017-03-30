@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class Method
+	public class Method : AnotherPointObject
 	{
 		public Method(string name, string fullNameOfReturnType)
 		{
@@ -52,6 +52,21 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(method);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = this.AdditionalBody?.GetHashCode() ?? 0;
+				hashCode = (hashCode * 397) ^ (int) this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (this.Arguments?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.AttributesForBodyGeneration?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.EntityPurposePair?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.ReturnType?.GetHashCode() ?? 0);
+				return hashCode;
+			}
 		}
 
 		public bool Equals(Method other)

@@ -75,6 +75,7 @@ namespace AnotherPoint.Core
 
 			this.SetupEndpoint(type, @class);
 			this.SetupGeneric(type, @class.Type);
+			this.SetupCollection(type, @class.Type);
 
 			this.SetupConstants(type.GetConstants(), @class.Constants);
 			this.SetupNamespaces(type.GetCustomAttributes<InsertUsingAttribute>(), @class.Usings);
@@ -93,6 +94,11 @@ namespace AnotherPoint.Core
 			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return @class;
+		}
+
+		private void SetupCollection(Type type, MyType classType)
+		{
+			classType.IsCollection = type.GetInterface(Constant.IEnumerable) != null;
 		}
 
 		public string RenderAccessModifyer(Class @class)
@@ -120,9 +126,41 @@ namespace AnotherPoint.Core
 			StringBuilder sb = new StringBuilder();
 
 			sb.Append(" : ");
-			sb.AppendLine(string.Join(",", @class.ImplementedInterfaces.Select(i => i.FullName)));
+
+			if (@class.OverrideGenericTypes.Count > 0)
+			{
+				string genericTypes = ClassCore.OverrideGenericTypes(@class);
+
+				sb.Append(string.Join(",", @class.ImplementedInterfaces.Select(i => $"{i.Namespace}.{i.Name}{(i.Type.IsGeneric.IsTrue() ? $"<{genericTypes}>" : "")}")));
+			}
+			else
+			{
+				sb.AppendLine(string.Join(",", @class.ImplementedInterfaces.Select(i => i.FullName)));
+			}
 
 			return sb.ToString();
+		}
+
+		private static string OverrideGenericTypes(Class @class)
+		{
+			StringBuilder s = new StringBuilder();
+
+			foreach (var implementedInterface in @class.ImplementedInterfaces)
+			{
+				foreach (var genericType in implementedInterface.Type.GenericTypes)
+				{
+					if (@class.OverrideGenericTypes.ContainsKey(genericType))
+					{
+						s.Append($" {@class.OverrideGenericTypes[genericType]} ");
+					}
+					else
+					{
+						s.Append($" {genericType} ");
+					}
+				}
+			}
+
+			return s.ToString();
 		}
 
 		public string RenderName(Class @class)

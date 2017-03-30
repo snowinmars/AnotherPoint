@@ -3,7 +3,7 @@ using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class Property
+	public class Property : AnotherPointObject
 	{
 		public Property(string name, string typeName)
 		{
@@ -41,6 +41,18 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(property);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = this.GetMethod?.GetHashCode() ?? 0;
+				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.SetMethod?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				return hashCode;
+			}
 		}
 
 		public bool Equals(Property other)

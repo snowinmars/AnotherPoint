@@ -1,11 +1,12 @@
-﻿using AnotherPoint.Common;
+﻿using System;
+using AnotherPoint.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class Ctor
+	public class Ctor : AnotherPointObject
 	{
 		public Ctor(string fullTypeName)
 		{
@@ -14,6 +15,7 @@ namespace AnotherPoint.Entities
 			this.ArgumentCollection = new List<Argument>();
 
 			this.IsCtorForInject = false;
+
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }
@@ -42,6 +44,18 @@ namespace AnotherPoint.Entities
 			return this.Equals(ctor);
 		}
 
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = (int) this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (this.ArgumentCollection?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ this.IsCtorForInject.GetHashCode();
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				return hashCode;
+			}
+		}
+
 		public bool Equals(Ctor other)
 			=> this.IsCtorForInject == other.IsCtorForInject &&
 			   this.Type.Equals(other.Type) &&
@@ -66,5 +80,6 @@ namespace AnotherPoint.Entities
 
 			return sb.ToString();
 		}
+
 	}
 }

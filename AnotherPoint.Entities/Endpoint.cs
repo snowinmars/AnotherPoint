@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AnotherPoint.Entities
 {
-	public class Endpoint
+	public class Endpoint : AnotherPointObject
 	{
 		public Endpoint()
 		{
@@ -44,5 +45,11 @@ namespace AnotherPoint.Entities
 		public List<Interface> BllInterfaces { get; private set; }
 		public List<Interface> DaoInterfaces { get; private set; }
 		public Class CommonClass { get; set; }
+
+		public override string ToString()
+		{
+			return $"{this.AppName}: {this.EntityClass.Name}";
+		}
+
 	}
 }

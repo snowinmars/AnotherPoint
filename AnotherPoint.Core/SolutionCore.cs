@@ -29,8 +29,16 @@ namespace AnotherPoint.Core
 			Stopwatch sw = Stopwatch.StartNew();
 
 			this.root = fullPathToDir;
-			this.ScaffoldEndpoints(endpoints, fullPathToDir);
-			this.SetupReferences(endpoints);
+
+			DirectoryInfo rootDirectory = this.PrepareDirectory(fullPathToDir);
+
+			this.appName = endpoints.First().AppName;
+
+			foreach (var endpoint in endpoints)
+			{
+				this.ScaffoldEndpoint(endpoint, rootDirectory);
+				this.SetupReferences(endpoint);
+			}
 
 			this.WriteApplication(fullPathToDir);
 
@@ -41,10 +49,25 @@ namespace AnotherPoint.Core
 
 		private void DeclareExistance(string classNamespace)
 		{
-			this.internalReferences.Add(classNamespace, new List<string>());
-			this.externalReferences.Add(classNamespace, new List<string>());
-			this.packages.Add(classNamespace, new List<InsertNugetPackageAttribute>());
+			string folderName = Helpers.CutNamespaceToInterface(classNamespace);
+
+			if (!this.internalReferences.ContainsKey(folderName))
+			{
+				this.internalReferences.Add(folderName, new List<string>());
+			}
+
+			if (!this.externalReferences.ContainsKey(folderName))
+			{
+				this.externalReferences.Add(folderName, new List<string>());
+			}
+
+			if (!this.packages.ContainsKey(folderName))
+			{
+				this.packages.Add(folderName, new List<InsertNugetPackageAttribute>());
+			}
 		}
+
+		
 
 		private string GetPackagesConfigBody(DirectoryInfo directoryInfo, ProjectRootElement root)
 		{
@@ -125,7 +148,7 @@ EndGlobal";
 			return sb.ToString();
 		}
 
-		private DirectoryInfo PrepareDirectory(string fullPathToDir, Endpoint endpoint)
+		private DirectoryInfo PrepareDirectory(string fullPathToDir)
 		{
 			if (!Directory.Exists(fullPathToDir))
 			{
@@ -154,7 +177,9 @@ EndGlobal";
 
 			foreach (var ibll in renderedBllInterfaces)
 			{
-				File.WriteAllText(Path.Combine(bllInterfacesDir.FullName, $"{ibll.Key}.cs"), ibll.Value);
+				string fileName = Helpers.NameWithoutGeneric(ibll.Key);
+
+				File.WriteAllText(Path.Combine(bllInterfacesDir.FullName, $"{fileName}.cs"), ibll.Value);
 			}
 		}
 
@@ -221,7 +246,9 @@ EndGlobal";
 
 			foreach (var idao in renderedDaoInterfaces)
 			{
-				File.WriteAllText(Path.Combine(daoInterfacesDir.FullName, $"{idao.Key}.cs"), idao.Value);
+				string fileName = Helpers.NameWithoutGeneric(idao.Key);
+
+				File.WriteAllText(Path.Combine(daoInterfacesDir.FullName, $"{fileName}.cs"), idao.Value);
 			}
 		}
 
@@ -242,9 +269,8 @@ EndGlobal";
 			root.Save(Path.Combine(directoryInfo.FullName, $"{directoryInfo.Name}.csproj"));
 		}
 
-		private void ScaffoldEndpoint(Endpoint endpoint, string fullPathToDir)
+		private void ScaffoldEndpoint(Endpoint endpoint, DirectoryInfo rootDirectory)
 		{
-			DirectoryInfo rootDirectory = this.PrepareDirectory(fullPathToDir, endpoint);
 			IDictionary<string, string> renderedBllInterfaces = this.RenderBllInterfaces(endpoint);
 			IDictionary<string, string> renderedDaoInterfaces = this.RenderDaoInterfaces(endpoint);
 
@@ -258,15 +284,6 @@ EndGlobal";
 			// validation classes have to be rendered after its' parent classes
 			this.RenderValidationForBll(endpoint, endpoint.BllClass.Validation.Namespace);
 			this.RenderValidationForDao(endpoint, endpoint.DaoClass.Validation.Namespace);
-		}
-
-		private void ScaffoldEndpoints(IEnumerable<Endpoint> endpoints, string fullPathToDir)
-		{
-			foreach (var endpoint in endpoints)
-			{
-				this.appName = endpoint.AppName;
-				this.ScaffoldEndpoint(endpoint, fullPathToDir);
-			}
 		}
 
 		private void SetupCompileTargets(DirectoryInfo directoryInfo, ProjectRootElement root)
@@ -363,36 +380,36 @@ EndGlobal";
 			root.AddItem("None", "packages.config");
 		}
 
-		private void SetupReferences(IEnumerable<Endpoint> endpoints)
+		private void SetupReferences(Endpoint endpoint)
 		{
-			foreach (var endpoint in endpoints)
+			if (!this.internalReferences.ContainsKey(endpoint.CommonClass.Namespace))
 			{
 				this.internalReferences.Add(endpoint.CommonClass.Namespace, new List<string>());
+			}
 
-				foreach (var @class in endpoint.Classes)
+			foreach (var @class in endpoint.Classes)
+			{
+				if (this.internalReferences.ContainsKey(@class.Namespace))
 				{
-					if (this.internalReferences.ContainsKey(@class.Namespace))
-					{
-						continue;
-					}
-
-					this.DeclareExistance(@class.Namespace);
-
-					this.SetupInternalReferences(endpoint, @class);
-					this.SetupExternalReferences(@class);
-					this.SetupPackages(@class);
+					continue;
 				}
 
-				foreach (var @interface in endpoint.Interfaces)
-				{
-					if (this.internalReferences.ContainsKey(@interface.Namespace))
-					{
-						continue;
-					}
+				this.DeclareExistance(@class.Namespace);
 
-					this.DeclareExistance(@interface.Namespace);
-					this.SetupInternalPackages(endpoint, @interface);
+				this.SetupInternalReferences(endpoint, @class);
+				this.SetupExternalReferences(@class);
+				this.SetupPackages(@class);
+			}
+
+			foreach (var @interface in endpoint.Interfaces)
+			{
+				if (this.internalReferences.ContainsKey(@interface.Namespace))
+				{
+					continue;
 				}
+
+				this.DeclareExistance(@interface.Namespace);
+				this.SetupInternalPackages(endpoint, @interface);
 			}
 		}
 
@@ -422,7 +439,7 @@ EndGlobal";
 
 				IList<KeyValuePair<string, string>> metadata = new List<KeyValuePair<string, string>>();
 
-				metadata.Add(new KeyValuePair<string, string>("Project", $"{{{this.projectIds[projectName]}}}"));
+				metadata.Add(new KeyValuePair<string, string>("Project", $"{{{this.projectIds[Helpers.CutNamespaceToInterface(projectName)]}}}"));
 				metadata.Add(new KeyValuePair<string, string>("Name", projectName));
 
 				projectReferenceGroup.AddItem("ProjectReference", $"..\\{destinationCsprojPath}", metadata);
@@ -452,7 +469,7 @@ EndGlobal";
 
 			foreach (var directoryInfo in this.internalReferences
 											.OrderBy(ir => ir.Value.Count)
-											.Select(i => new DirectoryInfo(Path.Combine(fullPathToDir, i.Key)))
+											.Select(i => new DirectoryInfo(Path.Combine(fullPathToDir, Helpers.NameWithoutGeneric(i.Key))))
 											.ToList())
 			{
 				this.WriteProject(directoryInfo);

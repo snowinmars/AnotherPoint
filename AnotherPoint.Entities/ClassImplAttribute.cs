@@ -2,12 +2,13 @@
 
 namespace AnotherPoint.Entities
 {
-	public class ClassImplAttribute : Attribute
+	public class ClassImplAttribute : AnotherPointAttribute
 	{
 		public ClassImplAttribute(string destinationTypeName = null)
 		{
 			this.DestinationTypeName = destinationTypeName;
 			this.IsEndPoint = destinationTypeName != null;
+
 		}
 
 		public string DestinationTypeName { get; }
@@ -31,6 +32,17 @@ namespace AnotherPoint.Entities
 			return this.Equals(classImplAttribute);
 		}
 
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = base.GetHashCode();
+				hashCode = (hashCode * 397) ^ (this.DestinationTypeName?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ this.IsEndPoint.GetHashCode();
+				return hashCode;
+			}
+		}
+
 		public bool Equals(ClassImplAttribute other)
 			=> this.IsEndPoint == other.IsEndPoint &&
 			   this.DestinationTypeName == other.DestinationTypeName;
@@ -39,5 +51,6 @@ namespace AnotherPoint.Entities
 		{
 			return $"Is {(this.IsEndPoint ? "" : "not")} endpoint";
 		}
+
 	}
 }

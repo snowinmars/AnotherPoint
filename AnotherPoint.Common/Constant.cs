@@ -59,6 +59,7 @@ namespace AnotherPoint.Common
 
 		// I use this constants for exact matching in a code, so don't space it
 
+		public const string IEnumerable = "IEnumerable";
 		public const string _Constant = "Constant";
 		public const string AnotherPoint = "AnotherPoint";
 		public const string BackgroundEntityMark = "__";

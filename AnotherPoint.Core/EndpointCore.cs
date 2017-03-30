@@ -1,4 +1,5 @@
-﻿using AnotherPoint.Common;
+﻿using System;
+using AnotherPoint.Common;
 using AnotherPoint.Engine;
 using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;
@@ -43,7 +44,7 @@ namespace AnotherPoint.Core
 
 			endpoint.DaoInterfaces.AddRange(this.GetDaoInterfaces());
 			endpoint.BllInterfaces.AddRange(this.GetBllInterfaces());
-			endpoint.BllClass = this.GetLogicClass(endpoint.BllInterfaces, endpoint.DaoInterfaces.First(i => i.Name.EndsWith(Constant.Dao)));
+			endpoint.BllClass = this.GetLogicClass(endpoint.BllInterfaces, endpoint.DaoInterfaces.First(i => Helpers.NameWithoutGeneric(i.FullName).EndsWith(Constant.Dao)));
 			endpoint.DaoClass = this.GetDaoClass(endpoint.DaoInterfaces);
 			endpoint.BllClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.Bll}");
 			endpoint.DaoClass.Validation = RenderEngine.ValidationCore.ConstructValidationClass($"{endpoint.AppName}.{Constant.Dao}");
@@ -59,6 +60,7 @@ namespace AnotherPoint.Core
 		{
 			Interface iCrud = this.GetICrud(Constant.Bll);
 			Interface iEntityLogic = this.GetIEntityLogic(iCrud);
+			iEntityLogic.OverrideGenericTypes.Add("T", this.entity.FullName);
 
 			IList<Interface> result = new List<Interface>();
 
@@ -91,6 +93,8 @@ namespace AnotherPoint.Core
 			this.SetupDaoPackages(dao);
 			this.SetupDaoMethods(dao);
 
+			dao.OverrideGenericTypes.Add("T", this.entity.FullName);
+
 			return dao;
 		}
 
@@ -98,6 +102,7 @@ namespace AnotherPoint.Core
 		{
 			Interface iCrud = this.GetICrud(Constant.Dao);
 			Interface iEntityDao = this.GetIEntityDao(iCrud);
+			iEntityDao.OverrideGenericTypes.Add("T", this.entity.FullName);
 
 			IList<Interface> result = new List<Interface>();
 
@@ -109,11 +114,15 @@ namespace AnotherPoint.Core
 
 		private Interface GetICrud(string a)
 		{
-			Interface iCrud = new Interface($"{this.AppName}.{a}.{Constant.Interfaces}.{Constant.ICrud}")
+			Interface iCrud = new Interface($"{this.AppName}.{a}.{Constant.Interfaces}.{Constant.ICrud}<T>")
 			{
 				AccessModifyer = AccessModifyer.Public,
-				Namespace = $"{this.AppName}.{a}.{Constant.Interfaces}"
+				Namespace = $"{this.AppName}.{a}.{Constant.Interfaces}",
 			};
+
+			iCrud.Type.IsGeneric = true;
+			iCrud.Type.GenericTypes.Add("T");
+
 			this.SetupICrudUsings(iCrud);
 			this.SetupICrudMethods(iCrud);
 
@@ -124,7 +133,7 @@ namespace AnotherPoint.Core
 
 		private Interface GetIEntityDao(IEnumerable<Interface> implementInterfaces)
 		{
-			Interface iEntityDao = new Interface($"{this.AppName}.{Constant.Dao}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Dao}")
+			Interface iEntityDao = new Interface($"{this.AppName}.{Constant.Dao}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Dao}<{this.entity.FullName}>")
 			{
 				AccessModifyer = AccessModifyer.Public
 			};
@@ -141,7 +150,7 @@ namespace AnotherPoint.Core
 
 		private Interface GetIEntityLogic(IEnumerable<Interface> implementedInterfaces)
 		{
-			Interface iEntityLogic = new Interface($"{this.AppName}.{Constant.Bll}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Logic}")
+			Interface iEntityLogic = new Interface($"{this.AppName}.{Constant.Bll}.{Constant.Interfaces}.I{this.entity.Name}{Constant.Logic}<{this.entity.FullName}>")
 			{
 				AccessModifyer = AccessModifyer.Public
 			};
@@ -162,6 +171,8 @@ namespace AnotherPoint.Core
 			this.SetupLogicEndpoint(destinationInterface, bll);
 			this.SetupLogicUsings(destinationInterface, bll);
 			this.SetupLogicMethods(bll);
+
+			bll.OverrideGenericTypes.Add("T", this.entity.FullName);
 
 			return bll;
 		}
@@ -247,13 +258,13 @@ namespace AnotherPoint.Core
 					AccessModifyer = AccessModifyer.Abstract |
 									 AccessModifyer.Virtual
 				};
-				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), "T",
 					BindSettings.None));
 				iCrud.Methods.Add(createMeth);
 			}
 
 			{
-				var getMeth = new Method("Get", this.entity.FullName)
+				var getMeth = new Method("Get", "T")
 				{
 					AccessModifyer = AccessModifyer.Abstract |
 									 AccessModifyer.Virtual
@@ -279,7 +290,7 @@ namespace AnotherPoint.Core
 					AccessModifyer = AccessModifyer.Abstract |
 									 AccessModifyer.Virtual
 				};
-				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), "T",
 					BindSettings.None));
 				iCrud.Methods.Add(updateMeth);
 			}
@@ -295,7 +306,7 @@ namespace AnotherPoint.Core
 		{
 			bll.EntityPurposePair = new EntityPurposePair(this.entity.Type.Name, Constant.Logic);
 
-			bll.DestinationTypeName = destinationInterface.FullName;
+			bll.DestinationTypeName = Helpers.NameWithoutGeneric(destinationInterface.FullName);
 			bll.IsEndpoint = true;
 
 			Field destinationField = RenderEngine.ClassCore.GetDestinationFieldForInject(bll);

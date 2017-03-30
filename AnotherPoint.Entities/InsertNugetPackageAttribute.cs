@@ -3,7 +3,7 @@ using System.Text;
 
 namespace AnotherPoint.Entities
 {
-	public class InsertNugetPackageAttribute : Attribute
+	public class InsertNugetPackageAttribute : AnotherPointAttribute
 	{
 		public InsertNugetPackageAttribute(string name, int majorVersion, int minorVersion, int revisionVersion, int buildVersion, string culture, string processorArchitecture)
 		{

@@ -1,6 +1,8 @@
-﻿namespace AnotherPoint.Entities
+﻿using System;
+
+namespace AnotherPoint.Entities
 {
-	public class EntityPurposePair
+	public class EntityPurposePair : AnotherPointObject
 	{
 		public EntityPurposePair(string entity, string purpose)
 		{
@@ -33,6 +35,14 @@
 			}
 
 			return this.Equals(entityPurposePair);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return ((this.Entity?.GetHashCode() ?? 0) * 397) ^ (this.Purpose?.GetHashCode() ?? 0);
+			}
 		}
 
 		public bool Equals(EntityPurposePair other)

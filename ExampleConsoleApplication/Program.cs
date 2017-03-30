@@ -22,7 +22,6 @@ namespace ExampleConsoleApplication
 
 				AssemblyForge.ForgeAll();
 
-
 				RenderEngine.Init(new ClassCore(),
 					new CtorCore(),
 					new FieldCore(),
@@ -31,7 +30,8 @@ namespace ExampleConsoleApplication
 					new PropertyCore(),
 					new ValidationCore(),
 					new EndpointCore("FirstApp"),
-					new SolutionCore());
+					new SolutionCore(),
+					new SqlCore());
 
 				Log.iDone();
 			}
@@ -43,7 +43,7 @@ namespace ExampleConsoleApplication
 
 		private static void Main()
 		{
-			const string outputPath = null; // set this path to the directory you dont need. Directory will be fully eraze
+			const string outputPath = @"D:\tmp"; // set this path to the directory you dont need. Directory will be fully eraze
 
 			if (outputPath == null)
 			{
@@ -59,8 +59,13 @@ namespace ExampleConsoleApplication
 			TemplateRepository.Init();
 
 			Class userClass = RenderEngine.ClassCore.Map(typeof(User));
-			var endpoint = RenderEngine.EndpointCore.ConstructEndpointFor(userClass);
-			RenderEngine.SolutionCore.ConstructSolution(new[] { endpoint }, outputPath);
+			Class awardClass = RenderEngine.ClassCore.Map(typeof(Award));
+
+			var userEndpoint = RenderEngine.EndpointCore.ConstructEndpointFor(userClass);
+			var awardEndpoint = RenderEngine.EndpointCore.ConstructEndpointFor(awardClass);
+
+			RenderEngine.SolutionCore.ConstructSolution(new[] { userEndpoint, awardEndpoint }, outputPath);
+			//RenderEngine.SqlCore.ConstructSqlScripts(new[] { endpoint }, outputPath);
 
 			TemplateRepository.Finit();
 
@@ -81,36 +86,60 @@ namespace FirstApp.Entities
 	[InsertUsing("System")]
 	[InsertUsing("FirstApp.Common")]
 	[InsertUsing("System.Linq")]
-	public class User : IComparable
+	public class User
 	{
 		[Bind(BindSettings.None, "name")]
+		[Bind(BindSettings.None, "age")]
 		[Bind(BindSettings.CallThis, "name")]
-		[Bind(BindSettings.CallThis, "0")]
-		public User(string name)
-		{
-		}
-
-		[Bind(BindSettings.Exact, "name")]
-		[Bind(BindSettings.Exact, "age")]
-		[Bind(BindSettings.New, "children")]
+		[Bind(BindSettings.CallThis, "\"\"")]
+		[Bind(BindSettings.CallThis, "age")]
 		public User(string name, int age)
 		{
 		}
 
-		[Range(7, 12)]
-		public int Age { get; set; }
+		[Bind(BindSettings.Exact, "name")]
+		[Bind(BindSettings.Exact, "surname")]
+		[Bind(BindSettings.Exact, "age")]
+		public User(string name, string surname, int age)
+		{
+		}
 
-		public IEnumerable<User> Children { get; private set; }
+		[SqlBinding(SqlBindingType.ManyToMany)]
+		public IEnumerable<Award> Awards { get; private set; }
 
 		public Guid Id { get; set; }
 
-		[RegularExpression(".*")]
-		public string Name { get; private set; }
+		[Range(14, 99)]
+		public int Age { get; set; }
 
-		[MethodImpl.ShutMeUp]
-		public int CompareTo(object obj)
+		public string Name { get; set; }
+
+		public string Surname { get; set; }
+	}
+
+	[InsertUsing("System")]
+	[InsertUsing("FirstApp.Common")]
+	[InsertUsing("System.Linq")]
+	public class Award
+	{
+		[Bind(BindSettings.None, "name")]
+		[Bind(BindSettings.CallThis, "name")]
+		[Bind(BindSettings.CallThis, "100")]
+		public Award(string name)
 		{
-			throw new NotImplementedException();
+			
 		}
+
+		[Bind(BindSettings.Exact, "name")]
+		[Bind(BindSettings.Exact, "rate")]
+		public Award(string name, int rate)
+		{
+			
+		}
+
+		public string Name { get; set; }
+
+		[Range(100, 10000)]
+		public int Rate { get; set; }
 	}
 }
