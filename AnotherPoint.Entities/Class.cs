@@ -36,10 +36,7 @@ namespace AnotherPoint.Entities
 		public EntityPurposePair EntityPurposePair { get; set; }
 		public IList<Field> Fields { get; }
 
-		public string FullName
-		{
-			get { return $"{this.Namespace}.{this.Name}"; }
-		}
+		public string FullName => $"{this.Namespace}.{this.Name}";
 
 		public IList<Interface> ImplementedInterfaces { get; }
 		public bool IsEndpoint { get; set; }
@@ -61,8 +58,8 @@ namespace AnotherPoint.Entities
 
 		public string Namespace
 		{
-			get { return this.Type.Namespace; }
-			set { this.Type.Namespace = value; }
+			get => this.Type.Namespace;
+			set => this.Type.Namespace = value;
 		}
 
 		public IDictionary<string, string> OverrideGenericTypes { get; }

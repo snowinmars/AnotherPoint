@@ -8,10 +8,7 @@
 			this.Purpose = purpose;
 		}
 
-		public string Both
-		{
-			get { return this.Entity + this.Purpose; }
-		}
+		public string Both => this.Entity + this.Purpose;
 
 		public string Entity { get; set; }
 

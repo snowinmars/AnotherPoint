@@ -24,8 +24,8 @@ namespace AnotherPoint.Entities
 
 		public string FullName
 		{
-			get { return this.Type.FullName; }
-			set { this.Type.FullName = value; }
+			get => this.Type.FullName;
+			set => this.Type.FullName = value;
 		}
 
 		public IList<Interface> ImplementedInterfaces { get; private set; }
@@ -33,14 +33,14 @@ namespace AnotherPoint.Entities
 
 		public string Name
 		{
-			get { return this.Type.Name; }
-			set { this.Type.Name = value; }
+			get => this.Type.Name;
+			set => this.Type.Name = value;
 		}
 
 		public string Namespace
 		{
-			get { return this.Type.Namespace; }
-			set { this.Type.Namespace = value; }
+			get => this.Type.Namespace;
+			set => this.Type.Namespace = value;
 		}
 
 		public IDictionary<string, string> OverrideGenericTypes { get; private set; }

@@ -16,8 +16,8 @@ namespace AnotherPoint.Entities
 
 		public AccessModifyer AccessModifyer
 		{
-			get { return this.GetMethod.AccessModifyer; }
-			set { this.GetMethod.AccessModifyer = value; }
+			get => this.GetMethod.AccessModifyer;
+			set => this.GetMethod.AccessModifyer = value;
 		}
 
 		public Method GetMethod { get; set; }

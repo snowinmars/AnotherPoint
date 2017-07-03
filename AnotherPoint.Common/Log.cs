@@ -14,10 +14,7 @@ namespace AnotherPoint.Common
 	{
 		private static ILog log;
 
-		public static ILogger Logger
-		{
-			get { return Log.log.Logger; }
-		}
+		public static ILogger Logger => Log.log.Logger;
 
 		private static int deep;
 
@@ -220,11 +217,11 @@ namespace AnotherPoint.Common
 			Log.log.FatalFormat( provider, format, args);
 		}
 
-		public static bool IsDebugEnabled { get { return Log.log.IsDebugEnabled; } }
-		public static bool IsInfoEnabled { get { return Log.log.IsInfoEnabled; } }
-		public static bool IsWarnEnabled { get { return Log.log.IsWarnEnabled; } }
-		public static bool IsErrorEnabled { get { return Log.log.IsErrorEnabled; } }
-		public static bool IsFatalEnabled { get { return Log.log.IsFatalEnabled; } }
+		public static bool IsDebugEnabled => Log.log.IsDebugEnabled;
+		public static bool IsInfoEnabled => Log.log.IsInfoEnabled;
+		public static bool IsWarnEnabled => Log.log.IsWarnEnabled;
+		public static bool IsErrorEnabled => Log.log.IsErrorEnabled;
+		public static bool IsFatalEnabled => Log.log.IsFatalEnabled;
 
 		public static void iDone()
 		{

@@ -34,10 +34,7 @@ namespace AnotherPoint.Entities
 		public string Name { get; }
 		public string ProcessorArchitecture { get; }
 
-		public string ReferenceInclude
-		{
-			get { return $"{this.Name}, Version={this.Version}, Culture={this.Culture}, processorArchitecture={this.ProcessorArchitecture}"; }
-		}
+		public string ReferenceInclude => $"{this.Name}, Version={this.Version}, Culture={this.Culture}, processorArchitecture={this.ProcessorArchitecture}";
 
 		public Version Version { get; }
 	}
