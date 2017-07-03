@@ -310,7 +310,7 @@ EndGlobal";
 			group.AddProperty("ProjectGuid", $"{{{projectId}}}");
 			group.AddProperty("OutputType", "Library");
 			group.AddProperty("RootNamespace", directoryInfo.Name);
-			group.AddProperty("TargetFrameworkVersion", "4.6.2");
+			group.AddProperty("TargetFrameworkVersion", Constant.TargetFrameworkVersion);
 		}
 
 		private void SetUpDefaultPropertyGroup(ProjectRootElement root)
@@ -326,6 +326,7 @@ EndGlobal";
 			group.AddProperty("DefineConstants", "DEBUG;TRACE");
 			group.AddProperty("ErrorReport", "prompt");
 			group.AddProperty("WarningLevel", "4");
+			group.AddProperty("TargetFrameworkVersion", Constant.TargetFrameworkVersion);
 		}
 
 		private void SetupExternalReferences(Class @class)
@@ -464,6 +465,7 @@ EndGlobal";
 			group.AddProperty("DefineConstants", "TRACE");
 			group.AddProperty("ErrorReport", "prompt");
 			group.AddProperty("WarningLevel", "4");
+			group.AddProperty("TargetFrameworkVersion", Constant.TargetFrameworkVersion);
 		}
 
 		private void WriteApplication(string fullPathToDir)
