@@ -15,19 +15,19 @@ namespace AnotherPoint.Core
 {
 	public class ValidationCore : IValidationCore
 	{
-		private readonly string[] dataAnnotationAttributesFullName =
-		{
-			"System.ComponentModel.DataAnnotations.DataTypeAttribute",
-			"System.ComponentModel.DataAnnotations.RangeAttribute",
-			"System.ComponentModel.DataAnnotations.RegularExpressionAttribute",
-			"System.ComponentModel.DataAnnotations.StringLengthAttribute",
-		};
+		private readonly string[] dataAnnotationAttributesFullName;
 
 		private readonly IDictionary<Property, ICollection<Attribute>> propertyAttributeBinding;
 
 		public ValidationCore()
 		{
 			this.propertyAttributeBinding = new Dictionary<Property, ICollection<Attribute>>();
+			this.dataAnnotationAttributesFullName = new[] {
+				"System.ComponentModel.DataAnnotations.DataTypeAttribute",
+				"System.ComponentModel.DataAnnotations.RangeAttribute",
+				"System.ComponentModel.DataAnnotations.RegularExpressionAttribute",
+				"System.ComponentModel.DataAnnotations.StringLengthAttribute",
+			};
 		}
 
 		public static Type FindType(string qualifiedTypeName)
@@ -199,14 +199,10 @@ namespace AnotherPoint.Core
 
 			foreach (var dataAnnotationAttributeFullName in this.dataAnnotationAttributesFullName)
 			{
-				string d = "NOPE";
-
-					d = dataAnnotationAttributeFullName;
-
-					foreach (var customAttribute in prop.GetCustomAttributes(ValidationCore.FindType(dataAnnotationAttributeFullName)))
-					{
-						this.propertyAttributeBinding[property].Add(customAttribute);
-					}
+				foreach (var customAttribute in prop.GetCustomAttributes(ValidationCore.FindType(dataAnnotationAttributeFullName)))
+				{
+					this.propertyAttributeBinding[property].Add(customAttribute);
+				}
 			}
 		}
 	}

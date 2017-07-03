@@ -1,5 +1,4 @@
-﻿using System;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +14,6 @@ namespace AnotherPoint.Entities
 			this.ArgumentCollection = new List<Argument>();
 
 			this.IsCtorForInject = false;
-
 		}
 
 		public AccessModifyer AccessModifyer { get; set; }
@@ -44,23 +42,23 @@ namespace AnotherPoint.Entities
 			return this.Equals(ctor);
 		}
 
+		public bool Equals(Ctor other)
+			=> this.IsCtorForInject == other.IsCtorForInject &&
+			   this.Type.Equals(other.Type) &&
+			   this.AccessModifyer == other.AccessModifyer &&
+			   this.ArgumentCollection.OrderBy(a => a).SequenceEqual(other.ArgumentCollection.OrderBy(a => a));
+
 		public override int GetHashCode()
 		{
 			unchecked
 			{
-				var hashCode = (int) this.AccessModifyer;
+				var hashCode = (int)this.AccessModifyer;
 				hashCode = (hashCode * 397) ^ (this.ArgumentCollection?.GetHashCode() ?? 0);
 				hashCode = (hashCode * 397) ^ this.IsCtorForInject.GetHashCode();
 				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
 				return hashCode;
 			}
 		}
-
-		public bool Equals(Ctor other)
-			=> this.IsCtorForInject == other.IsCtorForInject &&
-			   this.Type.Equals(other.Type) &&
-			   this.AccessModifyer == other.AccessModifyer &&
-			   this.ArgumentCollection.OrderBy(a => a).SequenceEqual(other.ArgumentCollection.OrderBy(a => a));
 
 		public bool IsDefaultCtor(AccessModifyer? withAccessModifyer = null)
 		{
@@ -80,6 +78,5 @@ namespace AnotherPoint.Entities
 
 			return sb.ToString();
 		}
-
 	}
 }

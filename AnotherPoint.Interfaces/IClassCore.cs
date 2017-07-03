@@ -5,6 +5,10 @@ namespace AnotherPoint.Interfaces
 {
 	public interface IClassCore : IDisposable
 	{
+		Field GetDestinationFieldForInject(Class @class);
+
+		Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField);
+
 		Class Map(Type type);
 
 		string RenderAccessModifyer(Class @class);
@@ -16,10 +20,6 @@ namespace AnotherPoint.Interfaces
 		string RenderName(Class @class);
 
 		string RenderNamespace(Class @class);
-
-		Ctor GetInjectCtorForDestinationField(string typeFullName, Field destinationField);
-
-		Field GetDestinationFieldForInject(Class @class);
 
 		string RenderUsings(Class @class);
 	}

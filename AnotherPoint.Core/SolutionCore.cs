@@ -15,12 +15,20 @@ namespace AnotherPoint.Core
 {
 	public class SolutionCore : ISolutionCore
 	{
-		private readonly IDictionary<string, IList<string>> externalReferences = new Dictionary<string, IList<string>>();
-		private readonly IDictionary<string, IList<string>> internalReferences = new Dictionary<string, IList<string>>();
-		private readonly IDictionary<string, IList<InsertNugetPackageAttribute>> packages = new Dictionary<string, IList<InsertNugetPackageAttribute>>();
-		private readonly IDictionary<string, string> projectIds = new Dictionary<string, string>();
+		private readonly IDictionary<string, IList<string>> externalReferences;
+		private readonly IDictionary<string, IList<string>> internalReferences;
+		private readonly IDictionary<string, IList<InsertNugetPackageAttribute>> packages;
+		private readonly IDictionary<string, string> projectIds;
 		private string appName;
 		private string root;
+
+		public SolutionCore()
+		{
+			this.externalReferences = new Dictionary<string, IList<string>>();
+			this.internalReferences = new Dictionary<string, IList<string>>();
+			this.packages = new Dictionary<string, IList<InsertNugetPackageAttribute>>();
+			this.projectIds = new Dictionary<string, string>();
+		}
 
 		public void ConstructSolution(IEnumerable<Endpoint> endpoints, string fullPathToDir)
 		{
@@ -66,8 +74,6 @@ namespace AnotherPoint.Core
 				this.packages.Add(folderName, new List<InsertNugetPackageAttribute>());
 			}
 		}
-
-		
 
 		private string GetPackagesConfigBody(DirectoryInfo directoryInfo, ProjectRootElement root)
 		{
@@ -484,7 +490,7 @@ EndGlobal";
 			{
 				using (TextWriter writer = new StreamWriter(stream))
 				{
-					writer.WriteLine(packagesConfigBody.ToString());
+					writer.WriteLine(packagesConfigBody);
 				}
 			}
 		}

@@ -43,6 +43,13 @@ namespace AnotherPoint.Entities
 			return this.Equals(property);
 		}
 
+		public bool Equals(Property other)
+			=> this.Name == other.Name &&
+			   this.AccessModifyer == other.AccessModifyer &&
+			   this.Type.Equals(other.Type) &&
+			   this.GetMethod.Equals(other.GetMethod) &&
+			   this.SetMethod.Equals(other.SetMethod);
+
 		public override int GetHashCode()
 		{
 			unchecked
@@ -54,13 +61,6 @@ namespace AnotherPoint.Entities
 				return hashCode;
 			}
 		}
-
-		public bool Equals(Property other)
-			=> this.Name == other.Name &&
-			   this.AccessModifyer == other.AccessModifyer &&
-			   this.Type.Equals(other.Type) &&
-			   this.GetMethod.Equals(other.GetMethod) &&
-			   this.SetMethod.Equals(other.SetMethod);
 
 		public override string ToString()
 		{

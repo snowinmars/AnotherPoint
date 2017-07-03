@@ -14,13 +14,21 @@ namespace AnotherPoint.Core
 {
 	public class MethodCore : IMethodCore
 	{
-		private readonly string[] deleteSynonyms = { "REMOVE", "DELETE" };
+		private readonly string[] deleteSynonyms;
 
-		private readonly string[] insertSynonyms = { "CREATE" };
+		private readonly string[] insertSynonyms;
 
-		private readonly string[] selectSynonyms = { "GET", "READ" };
+		private readonly string[] selectSynonyms;
 
-		private readonly string[] updateSynonyms = { "UPDATE" };
+		private readonly string[] updateSynonyms;
+
+		public MethodCore()
+		{
+			this.deleteSynonyms = new[] { "REMOVE", "DELETE" };
+			this.insertSynonyms = new[] { "CREATE" };
+			this.selectSynonyms = new[] { "GET", "READ" };
+			this.updateSynonyms = new[] { "UPDATE" };
+		}
 
 		public void Dispose()
 		{
@@ -31,7 +39,7 @@ namespace AnotherPoint.Core
 			Log.Info($"Mapping method {methodInfo.ReturnType.FullName} {methodInfo.Name}(?)...");
 
 			Stopwatch sw = Stopwatch.StartNew();
-			
+
 			Method method = new Method(methodInfo.Name, methodInfo.ReturnType.FullName)
 			{
 				AccessModifyer = this.GetAccessModifyer(methodInfo)

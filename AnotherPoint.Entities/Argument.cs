@@ -1,5 +1,4 @@
-﻿using System;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using System.Text;
 
 namespace AnotherPoint.Entities
@@ -38,17 +37,6 @@ namespace AnotherPoint.Entities
 			return this.Equals(argument);
 		}
 
-		public override int GetHashCode()
-		{
-			unchecked
-			{
-				var hashCode = (int) this.BindAttribute;
-				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
-				return hashCode;
-			}
-		}
-
 		public bool Equals(Argument other)
 			=> this.Type.Equals(other.Type) &&
 			   this.Name == other.Name &&
@@ -72,6 +60,17 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Type.FullName;
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = (int)this.BindAttribute;
+				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				return hashCode;
+			}
 		}
 
 		public override string ToString()

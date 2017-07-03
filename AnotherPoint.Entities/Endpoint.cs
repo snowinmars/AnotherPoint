@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AnotherPoint.Entities
 {
@@ -11,6 +10,12 @@ namespace AnotherPoint.Entities
 			this.DaoInterfaces = new List<Interface>();
 		}
 
+		public string AppName { get; set; }
+
+		public Class BllClass { get; set; }
+
+		public List<Interface> BllInterfaces { get; }
+
 		public IEnumerable<Class> Classes
 		{
 			get
@@ -21,6 +26,14 @@ namespace AnotherPoint.Entities
 				yield return this.DaoClass;
 			}
 		}
+
+		public Class CommonClass { get; set; }
+
+		public Class DaoClass { get; set; }
+
+		public List<Interface> DaoInterfaces { get; }
+
+		public Class EntityClass { get; set; }
 
 		public IEnumerable<Interface> Interfaces
 		{
@@ -38,18 +51,9 @@ namespace AnotherPoint.Entities
 			}
 		}
 
-		public string AppName { get; set; }
-		public Class EntityClass { get; set; }
-		public Class BllClass { get; set; }
-		public Class DaoClass { get; set; }
-		public List<Interface> BllInterfaces { get; private set; }
-		public List<Interface> DaoInterfaces { get; private set; }
-		public Class CommonClass { get; set; }
-
 		public override string ToString()
 		{
 			return $"{this.AppName}: {this.EntityClass.Name}";
 		}
-
 	}
 }

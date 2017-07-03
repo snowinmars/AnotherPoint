@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AnotherPoint.Entities
+﻿namespace AnotherPoint.Entities
 {
 	public class ClassImplAttribute : AnotherPointAttribute
 	{
@@ -8,7 +6,6 @@ namespace AnotherPoint.Entities
 		{
 			this.DestinationTypeName = destinationTypeName;
 			this.IsEndPoint = destinationTypeName != null;
-
 		}
 
 		public string DestinationTypeName { get; }
@@ -32,6 +29,10 @@ namespace AnotherPoint.Entities
 			return this.Equals(classImplAttribute);
 		}
 
+		public bool Equals(ClassImplAttribute other)
+			=> this.IsEndPoint == other.IsEndPoint &&
+			   this.DestinationTypeName == other.DestinationTypeName;
+
 		public override int GetHashCode()
 		{
 			unchecked
@@ -43,14 +44,9 @@ namespace AnotherPoint.Entities
 			}
 		}
 
-		public bool Equals(ClassImplAttribute other)
-			=> this.IsEndPoint == other.IsEndPoint &&
-			   this.DestinationTypeName == other.DestinationTypeName;
-
 		public override string ToString()
 		{
 			return $"Is {(this.IsEndPoint ? "" : "not")} endpoint";
 		}
-
 	}
 }

@@ -20,13 +20,7 @@ namespace AnotherPoint.Entities
 			this.Methods = new List<Method>();
 		}
 
-		public IEnumerable<string> References { get; private set; }
-
-		public string Namespace
-		{
-			get { return this.Type.Namespace; }
-			set { this.Type.Namespace = value; }
-		}
+		public AccessModifyer AccessModifyer { get; set; }
 
 		public string FullName
 		{
@@ -34,7 +28,7 @@ namespace AnotherPoint.Entities
 			set { this.Type.FullName = value; }
 		}
 
-		public IList<string> Usings { get; }
+		public IList<Interface> ImplementedInterfaces { get; private set; }
 		public IList<Method> Methods { get; }
 
 		public string Name
@@ -43,13 +37,16 @@ namespace AnotherPoint.Entities
 			set { this.Type.Name = value; }
 		}
 
-		public IList<Interface> ImplementedInterfaces { get; private set; }
+		public string Namespace
+		{
+			get { return this.Type.Namespace; }
+			set { this.Type.Namespace = value; }
+		}
 
 		public IDictionary<string, string> OverrideGenericTypes { get; private set; }
-
-		public AccessModifyer AccessModifyer { get; set; }
-
+		public IEnumerable<string> References { get; private set; }
 		public MyType Type { get; set; }
+		public IList<string> Usings { get; }
 
 		public override bool Equals(object obj)
 		{
@@ -69,6 +66,15 @@ namespace AnotherPoint.Entities
 			return this.Equals(@interface);
 		}
 
+		public bool Equals(Interface other)
+			=> this.FullName == other.FullName &&
+			   this.Methods.OrderBy(a => a).SequenceEqual(other.Methods.OrderBy(a => a)) &&
+			   this.Name == other.Name &&
+				this.AccessModifyer == other.AccessModifyer &&
+			this.ImplementedInterfaces.OrderBy(a => a).SequenceEqual(other.ImplementedInterfaces.OrderBy(a => a)) &&
+			this.Namespace == other.Namespace &&
+			   this.Type.Equals(other.Type);
+
 		public override int GetHashCode()
 		{
 			unchecked
@@ -78,19 +84,10 @@ namespace AnotherPoint.Entities
 				hashCode = (hashCode * 397) ^ (this.Methods?.GetHashCode() ?? 0);
 				hashCode = (hashCode * 397) ^ (this.ImplementedInterfaces?.GetHashCode() ?? 0);
 				hashCode = (hashCode * 397) ^ (this.OverrideGenericTypes?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (int) this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (int)this.AccessModifyer;
 				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
 				return hashCode;
 			}
 		}
-
-		public bool Equals(Interface other)
-			=> this.FullName == other.FullName &&
-			   this.Methods.OrderBy(a => a).SequenceEqual(other.Methods.OrderBy(a => a)) &&
-			   this.Name == other.Name &&
-				this.AccessModifyer == other.AccessModifyer &&
-			this.ImplementedInterfaces.OrderBy(a => a).SequenceEqual(other.ImplementedInterfaces.OrderBy(a => a)) &&
-			this.Namespace == other.Namespace &&
-			   this.Type.Equals(other.Type);
 	}
 }

@@ -12,7 +12,7 @@ namespace AnotherPoint.Common
 {
 	public static class Log
 	{
-		private static ILog log = LogManager.GetLogger("LOGGER");
+		private static ILog log;
 
 		public static ILogger Logger
 		{
@@ -21,25 +21,30 @@ namespace AnotherPoint.Common
 
 		private static int deep;
 
+		static Log()
+		{
+			Log.log = LogManager.GetLogger("LOGGER");
+		}
+
 		private static string GetSpaces
 		{
 			get
 			{
 				StringBuilder sb = new StringBuilder();
-				sb.Append(' ', deep);
+				sb.Append(' ', Log.deep);
 				return sb.ToString();
 			}
 		}
 		public static void Debug(object message)
 		{
 			Log.deep++;
-			Log.log.Debug(GetSpaces + message);
+			Log.log.Debug(Log.GetSpaces + message);
 		}
 
 		public static void Debug(object message, Exception exception)
 		{
 			Log.deep++;
-			Log.log.Debug(GetSpaces + message, exception);
+			Log.log.Debug(Log.GetSpaces + message, exception);
 		}
 
 		public static void DebugFormat(string format, params object[] args)
@@ -70,13 +75,13 @@ namespace AnotherPoint.Common
 		public static void Info(object message)
 		{
 			Log.deep++;
-			Log.log.Info(GetSpaces + message);
+			Log.log.Info(Log.GetSpaces + message);
 		}
 
 		public static void Info(object message, Exception exception)
 		{ 
 			Log.deep++;
-			Log.log.Info(GetSpaces + message, exception);
+			Log.log.Info(Log.GetSpaces + message, exception);
 		}
 
 		public static void InfoFormat(string format, params object[] args)
@@ -107,13 +112,13 @@ namespace AnotherPoint.Common
 		public static void Warn(object message)
 		{
 			Log.deep++;
-			Log.log.Warn(GetSpaces + message);
+			Log.log.Warn(Log.GetSpaces + message);
 		}
 
 		public static void Warn(object message, Exception exception)
 		{
 			Log.deep++;
-			Log.log.Warn(GetSpaces + message,  exception);
+			Log.log.Warn(Log.GetSpaces + message,  exception);
 		}
 
 		public static void WarnFormat(string format, params object[] args)
@@ -144,13 +149,13 @@ namespace AnotherPoint.Common
 		public static void Error(object message)
 		{
 			Log.deep++;
-			Log.log.Error(GetSpaces + message);
+			Log.log.Error(Log.GetSpaces + message);
 		}
 
 		public static void Error(object message, Exception exception)
 		{
 			Log.deep++;
-			Log.log.Error(GetSpaces + message,  exception);
+			Log.log.Error(Log.GetSpaces + message,  exception);
 		}
 
 		public static void ErrorFormat(string format, params object[] args)
@@ -181,13 +186,13 @@ namespace AnotherPoint.Common
 		public static void Fatal(object message)
 		{
 			Log.deep++;
-			Log.log.Fatal(GetSpaces + message);
+			Log.log.Fatal(Log.GetSpaces + message);
 		}
 
 		public static void Fatal(object message, Exception exception)
 		{
 			Log.deep++;
-			Log.log.Fatal(GetSpaces + message,  exception);
+			Log.log.Fatal(Log.GetSpaces + message,  exception);
 		}
 
 		public static void FatalFormat(string format, params object[] args)
@@ -254,22 +259,22 @@ namespace AnotherPoint.Common
 
 		public static void iDone(this ILog log)
 		{
-			log.Info(GetSpaces + "done");
+			log.Info(Log.GetSpaces + "done");
 		}
 
 		public static void iDone(this ILog log, string additionalInfo)
 		{
-			log.Info(GetSpaces + $"done, {additionalInfo}");
+			log.Info(Log.GetSpaces + $"done, {additionalInfo}");
 		}
 
 		public static void iDone(this ILog log, int elapsedSeconds)
 		{
-			log.Info(GetSpaces + $"done, it takes {elapsedSeconds} sec");
+			log.Info(Log.GetSpaces + $"done, it takes {elapsedSeconds} sec");
 		}
 
 		public static void iDone(this ILog log, double elapsedMilliseconds)
 		{
-			log.Info(GetSpaces + $"done, it takes {elapsedMilliseconds} ms");
+			log.Info(Log.GetSpaces + $"done, it takes {elapsedMilliseconds} ms");
 		}
 	}
 }

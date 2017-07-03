@@ -74,23 +74,23 @@ namespace AnotherPoint.Core
 			{
 				switch (bind.BindAttribute)
 				{
-					case BindSettings.Exact:
-						body.Append(this.GetExactBindingArgumentString(bind.Name));
-						break;
+				case BindSettings.Exact:
+					body.Append(this.GetExactBindingArgumentString(bind.Name));
+					break;
 
-					case BindSettings.New:
-						body.Append(this.GetNewBindingArgumentString(bind.Name));
-						break;
+				case BindSettings.New:
+					body.Append(this.GetNewBindingArgumentString(bind.Name));
+					break;
 
-					case BindSettings.CallThis:
-						// do nothing here: I handle it in GetCtorCarriage()
-						break;
+				case BindSettings.CallThis:
+					// do nothing here: I handle it in GetCtorCarriage()
+					break;
 
-					case BindSettings.None:
-						break;
+				case BindSettings.None:
+					break;
 
-					default:
-						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
+				default:
+					throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
 				}
 
 				body.AppendLine();
@@ -107,23 +107,23 @@ namespace AnotherPoint.Core
 			{
 				switch (bind.BindAttribute)
 				{
-					case BindSettings.CallThis:
-						carriage.Append($"{bind.Name.FirstLetterToLower()},");
-						break;
+				case BindSettings.CallThis:
+					carriage.Append($"{bind.Name.FirstLetterToLower()},");
+					break;
 
-					case BindSettings.Exact:
-						// do nothing here: I handle it in GetBodyAsString()
-						break;
+				case BindSettings.Exact:
+					// do nothing here: I handle it in GetBodyAsString()
+					break;
 
-					case BindSettings.New:
-						// do nothing here: I handle it in GetBodyAsString()
-						break;
+				case BindSettings.New:
+					// do nothing here: I handle it in GetBodyAsString()
+					break;
 
-					case BindSettings.None:
-						break;
+				case BindSettings.None:
+					break;
 
-					default:
-						throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
+				default:
+					throw new ArgumentOutOfRangeException(nameof(bind), bind, $"Enum {nameof(BindSettings)} is out of range");
 				}
 			}
 

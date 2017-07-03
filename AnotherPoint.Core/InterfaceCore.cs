@@ -94,6 +94,30 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
+		public string RenderName(Interface model)
+		{
+			return model.Type.IsGeneric.IsTrue() ?
+				$"{model.Name}<{string.Join(",", model.Type.GenericTypes)}>"
+				: model.Name;
+		}
+
+		public string RenderNamespace(Interface model)
+		{
+			return model.Namespace;
+		}
+
+		public string RenderUsings(Interface @interface)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var interfaceUsing in @interface.Usings)
+			{
+				sb.AppendLine($"using {interfaceUsing};");
+			}
+
+			return sb.ToString();
+		}
+
 		private static string OverrideGenericTypes(Interface @interface)
 		{
 			StringBuilder s = new StringBuilder();
@@ -114,30 +138,6 @@ namespace AnotherPoint.Core
 			}
 
 			return s.ToString();
-		}
-
-		public string RenderName(Interface model)
-		{
-			return model.Type.IsGeneric.IsTrue() ? 
-				$"{model.Name}<{string.Join(",", model.Type.GenericTypes)}>"
-				: model.Name;
-		}
-
-		public string RenderNamespace(Interface model)
-		{
-			return model.Namespace;
-		}
-
-		public string RenderUsings(Interface @interface)
-		{
-			StringBuilder sb = new StringBuilder();
-
-			foreach (var interfaceUsing in @interface.Usings)
-			{
-				sb.AppendLine($"using {interfaceUsing};");
-			}
-
-			return sb.ToString();
 		}
 
 		private AccessModifyer GetAccessModifyer(Type interfaceType)

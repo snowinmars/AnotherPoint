@@ -30,6 +30,9 @@ namespace AnotherPoint.Entities
 			return this.Equals(insertUsingAttribute);
 		}
 
+		public bool Equals(InsertUsingAttribute other)
+			=> this.Using == other.Using;
+
 		public override int GetHashCode()
 		{
 			unchecked
@@ -37,8 +40,5 @@ namespace AnotherPoint.Entities
 				return (base.GetHashCode() * 397) ^ (this.Using?.GetHashCode() ?? 0);
 			}
 		}
-
-		public bool Equals(InsertUsingAttribute other)
-			=> this.Using == other.Using;
 	}
 }

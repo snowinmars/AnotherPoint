@@ -17,18 +17,6 @@ namespace AnotherPoint.Templates
 		private static IDictionary<TemplateType, string> nameFileBinding;
 		private static IRazorEngineService razorService;
 
-		public static void Init()
-		{
-			Log.Info($"Initing {nameof(TemplateRepository)}");
-			Log.iDone();
-		}
-
-		public static void Finit()
-		{
-			Log.Info($"Finiting {nameof(TemplateRepository)}");
-			Log.iDone();
-		}
-
 		static TemplateRepository()
 		{
 			Log.Info($"Cctoring for {nameof(TemplateRepository)}...");
@@ -72,6 +60,18 @@ namespace AnotherPoint.Templates
 			return str;
 		}
 
+		public static void Finit()
+		{
+			Log.Info($"Finiting {nameof(TemplateRepository)}");
+			Log.iDone();
+		}
+
+		public static void Init()
+		{
+			Log.Info($"Initing {nameof(TemplateRepository)}");
+			Log.iDone();
+		}
+
 		private static TemplateServiceConfiguration GetDefaultConfig()
 		{
 			TemplateServiceConfiguration config = new TemplateServiceConfiguration
@@ -91,9 +91,7 @@ namespace AnotherPoint.Templates
 			foreach (string enumName in Enum.GetNames(typeof(TemplateType))
 											.Where(e => e != TemplateType.None.ToString()))
 			{
-				TemplateType templateType;
-
-				if (!Enum.TryParse(enumName, out templateType))
+				if (!Enum.TryParse(enumName, out TemplateType templateType))
 				{
 					throw new InvalidOperationException($"Can't parse enum {nameof(TemplateType)}: string enum value is wrong: it's {enumName}");
 				}

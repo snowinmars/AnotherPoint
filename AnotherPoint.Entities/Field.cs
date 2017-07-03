@@ -37,21 +37,21 @@ namespace AnotherPoint.Entities
 			return this.Equals(field);
 		}
 
+		public bool Equals(Field other)
+			=> this.Type.Equals(other.Type) &&
+			   this.AccessModifyer == other.AccessModifyer &&
+			   this.Name == other.Name;
+
 		public override int GetHashCode()
 		{
 			unchecked
 			{
-				var hashCode = (int) this.AccessModifyer;
+				var hashCode = (int)this.AccessModifyer;
 				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
 				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
 				return hashCode;
 			}
 		}
-
-		public bool Equals(Field other)
-			=> this.Type.Equals(other.Type) &&
-			   this.AccessModifyer == other.AccessModifyer &&
-			   this.Name == other.Name;
 
 		public override string ToString()
 		{

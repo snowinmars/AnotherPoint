@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AnotherPoint.Entities
+﻿namespace AnotherPoint.Entities
 {
 	public class EntityPurposePair : AnotherPointObject
 	{
@@ -37,6 +35,11 @@ namespace AnotherPoint.Entities
 			return this.Equals(entityPurposePair);
 		}
 
+		public bool Equals(EntityPurposePair other)
+			=> this.Entity == other.Entity &&
+			   this.Purpose == other.Purpose &&
+			   this.Both == other.Both;
+
 		public override int GetHashCode()
 		{
 			unchecked
@@ -45,14 +48,9 @@ namespace AnotherPoint.Entities
 			}
 		}
 
-		public bool Equals(EntityPurposePair other)
-			=> this.Entity == other.Entity &&
-			   this.Purpose == other.Purpose &&
-			   this.Both == other.Both;
-
 		public bool IsEmpty()
 		{
-			return string.IsNullOrWhiteSpace(this.Entity) || // or
+			return string.IsNullOrWhiteSpace(this.Entity) || 
 				string.IsNullOrWhiteSpace(this.Purpose);
 		}
 	}

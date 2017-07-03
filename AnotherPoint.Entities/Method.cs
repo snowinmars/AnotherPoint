@@ -22,9 +22,9 @@ namespace AnotherPoint.Entities
 			this.AdditionalBody = "";
 		}
 
-		public string AdditionalBody { get; set; }
-
 		public AccessModifyer AccessModifyer { get; set; }
+
+		public string AdditionalBody { get; set; }
 
 		public IList<Argument> Arguments { get; }
 
@@ -54,12 +54,20 @@ namespace AnotherPoint.Entities
 			return this.Equals(method);
 		}
 
+		public bool Equals(Method other)
+			=> this.Name == other.Name &&
+			   this.AccessModifyer == other.AccessModifyer &&
+			   this.Arguments.OrderBy(a => a).SequenceEqual(other.Arguments.OrderBy(a => a)) &&
+			   this.ReturnType.Equals(other.ReturnType) &&
+			   this.AttributesForBodyGeneration.OrderBy(a => a).SequenceEqual(other.AttributesForBodyGeneration.OrderBy(a => a)) &&
+			   this.EntityPurposePair.Equals(other.EntityPurposePair);
+
 		public override int GetHashCode()
 		{
 			unchecked
 			{
 				var hashCode = this.AdditionalBody?.GetHashCode() ?? 0;
-				hashCode = (hashCode * 397) ^ (int) this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (int)this.AccessModifyer;
 				hashCode = (hashCode * 397) ^ (this.Arguments?.GetHashCode() ?? 0);
 				hashCode = (hashCode * 397) ^ (this.AttributesForBodyGeneration?.GetHashCode() ?? 0);
 				hashCode = (hashCode * 397) ^ (this.EntityPurposePair?.GetHashCode() ?? 0);
@@ -68,14 +76,6 @@ namespace AnotherPoint.Entities
 				return hashCode;
 			}
 		}
-
-		public bool Equals(Method other)
-			=> this.Name == other.Name &&
-			   this.AccessModifyer == other.AccessModifyer &&
-			   this.Arguments.OrderBy(a => a).SequenceEqual(other.Arguments.OrderBy(a => a)) &&
-			   this.ReturnType.Equals(other.ReturnType) &&
-			   this.AttributesForBodyGeneration.OrderBy(a => a).SequenceEqual(other.AttributesForBodyGeneration.OrderBy(a => a)) &&
-			   this.EntityPurposePair.Equals(other.EntityPurposePair);
 
 		public override string ToString()
 		{

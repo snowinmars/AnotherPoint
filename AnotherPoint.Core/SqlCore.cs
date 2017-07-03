@@ -1,23 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnotherPoint.Engine;
-using AnotherPoint.Entities;
-using AnotherPoint.Interfaces;
-using System.IO;
+﻿using AnotherPoint.Entities;
 using AnotherPoint.Extensions;
+using AnotherPoint.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace AnotherPoint.Core
 {
 	public class SqlCore : ISqlCore
 	{
+		private static readonly IDictionary<string, string> SqlTypeMapping;
+
+		static SqlCore()
+		{
+			SqlCore.SqlTypeMapping = new Dictionary<string, string>
+			{
+				{"Boolean", "bit"},
+				{"Byte", "tinyint"},
+				{"Byte[]", "binary"},
+				{"Char[]", "char (1000)"},
+				{"DateTime", "datetime2"},
+				{"DateTimeOffset", "datetimeoffset"},
+				{"Decimal", "decimal"},
+				{"Double", "float"},
+				{"Guid", "uniqueidentifier"},
+				{"Int16", "smallint"},
+				{"Int32", "int"},
+				{"Int64", "bigint"},
+				{"Object", "sql_variant"},
+				{"Single", "real"},
+				{"String", "char (1000)"},
+				{"TimeSpan", "time"},
+				{"Xml", "xml"},
+			};
+		}
+
 		public void ConstructSqlScripts(IEnumerable<Endpoint> endpoints, string fullPathToDir)
 		{
 			foreach (var endpoint in endpoints)
 			{
-				ConstructSqlScript(endpoint, fullPathToDir);
+				this.ConstructSqlScript(endpoint, fullPathToDir);
 			}
 		}
 
@@ -60,32 +83,10 @@ namespace AnotherPoint.Core
 			return sb.ToString();
 		}
 
-		private static readonly IDictionary<string, string> SqlTypeMapping = new Dictionary<string, string>
-		{
-			{"Boolean", "bit"},
-			{"Byte", "tinyint"},
-			{"Byte[]", "binary"},
-			{"Char[]", "char (1000)"},
-			{"DateTime", "datetime2"},
-			{"DateTimeOffset", "datetimeoffset"},
-			{"Decimal", "decimal"},
-			{"Double", "float"},
-			{"Guid", "uniqueidentifier"},
-			{"Int16", "smallint"},
-			{"Int32", "int"},
-			{"Int64", "bigint"},
-			{"Object", "sql_variant"},
-			{"Single", "real"},
-			{"String", "char (1000)"},
-			{"TimeSpan", "time"},
-			{"Xml", "xml"},
-		};
-
 		private string MapType(string input)
 		{
-			string output;
 
-			if (SqlCore.SqlTypeMapping.TryGetValue(input, out output))
+			if (SqlCore.SqlTypeMapping.TryGetValue(input, out string output))
 			{
 				return output;
 			}

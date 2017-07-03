@@ -9,12 +9,12 @@ namespace AnotherPoint.Interfaces
 
 		string RenderAccessModifyer(Interface model);
 
+		string RenderCarrige(Interface @interface);
+
 		string RenderName(Interface model);
 
 		string RenderNamespace(Interface model);
 
 		string RenderUsings(Interface @interface);
-
-		string RenderCarrige(Interface @interface);
 	}
 }

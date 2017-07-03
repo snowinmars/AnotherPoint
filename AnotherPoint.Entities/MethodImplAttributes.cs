@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AnotherPoint.Entities.MethodImpl
 {
-	public abstract class MethodImpl 
+	public abstract class MethodImpl
 	{
 		private MethodImpl()
 		{
@@ -21,6 +21,7 @@ namespace AnotherPoint.Entities.MethodImpl
 			}
 
 			public string Destination { get; }
+
 			public string From { get; }
 
 			public override bool Equals(object obj)
@@ -41,6 +42,10 @@ namespace AnotherPoint.Entities.MethodImpl
 				return this.Equals(sendMeToAttribute);
 			}
 
+			public bool Equals(SendMeToAttribute other)
+				=> this.Destination == other.Destination &&
+				this.From == other.From;
+
 			public override int GetHashCode()
 			{
 				unchecked
@@ -51,10 +56,6 @@ namespace AnotherPoint.Entities.MethodImpl
 					return hashCode;
 				}
 			}
-
-			public bool Equals(SendMeToAttribute other)
-				=> this.Destination == other.Destination &&
-				this.From == other.From;
 
 			public override string ToString()
 			{
@@ -107,6 +108,11 @@ namespace AnotherPoint.Entities.MethodImpl
 				return this.Equals(validateAttribute);
 			}
 
+			public bool Equals(ValidateAttribute other)
+				=>
+					this.NamesOfInputParametersToValidate.OrderBy(a => a)
+						.SequenceEqual(other.NamesOfInputParametersToValidate.OrderBy(a => a));
+
 			public override int GetHashCode()
 			{
 				unchecked
@@ -114,11 +120,6 @@ namespace AnotherPoint.Entities.MethodImpl
 					return (base.GetHashCode() * 397) ^ (this.NamesOfInputParametersToValidate?.GetHashCode() ?? 0);
 				}
 			}
-
-			public bool Equals(ValidateAttribute other)
-				=>
-					this.NamesOfInputParametersToValidate.OrderBy(a => a)
-						.SequenceEqual(other.NamesOfInputParametersToValidate.OrderBy(a => a));
 
 			public override string ToString()
 			{

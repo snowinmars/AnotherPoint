@@ -19,11 +19,11 @@ namespace AnotherPoint.Entities
 			this.IsCollection = null;
 		}
 
-		public bool? IsCollection { get; set; }
-
 		public string FullName { get; set; }
 
 		public IList<string> GenericTypes { get; }
+
+		public bool? IsCollection { get; set; }
 
 		public bool? IsGeneric { get; set; }
 
@@ -49,6 +49,28 @@ namespace AnotherPoint.Entities
 			return this.Equals(myType);
 		}
 
+		public bool Equals(MyType other)
+			=> this.FullName == other.FullName &&
+			   this.Name == other.Name &&
+			   this.Namespace == other.Namespace &&
+			   this.GenericTypes.OrderBy(a => a).SequenceEqual(other.GenericTypes.OrderBy(a => a)) &&
+			   this.IsGeneric == other.IsGeneric &&
+			   this.IsGeneric.HasValue == other.IsGeneric.HasValue &&
+			   (!this.IsGeneric.HasValue || !other.IsGeneric.HasValue || this.IsGeneric.Value == other.IsGeneric.Value);
+
+		public string GetFullNameWithoutAssemblyInfo(string fullName)
+		{
+			return fullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
+		}
+
+		// if there's values - they are equals
+		public string GetFullTypeNameHumanReadable(string fullTypeNameWithoutAssemblyInfo)
+		{
+			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out string f) ?
+				f :
+				fullTypeNameWithoutAssemblyInfo;
+		}
+
 		public override int GetHashCode()
 		{
 			unchecked
@@ -61,29 +83,6 @@ namespace AnotherPoint.Entities
 				hashCode = (hashCode * 397) ^ (this.Namespace?.GetHashCode() ?? 0);
 				return hashCode;
 			}
-		}
-
-		public bool Equals(MyType other)
-			=> this.FullName == other.FullName &&
-			   this.Name == other.Name &&
-			   this.Namespace == other.Namespace &&
-			   this.GenericTypes.OrderBy(a => a).SequenceEqual(other.GenericTypes.OrderBy(a => a)) &&
-			   this.IsGeneric == other.IsGeneric &&
-			   this.IsGeneric.HasValue == other.IsGeneric.HasValue &&
-			   (!this.IsGeneric.HasValue || !other.IsGeneric.HasValue || this.IsGeneric.Value == other.IsGeneric.Value); // if there's values - they are equals
-
-		public string GetFullNameWithoutAssemblyInfo(string fullName)
-		{
-			return fullName.Split(new[] { '[' }, StringSplitOptions.RemoveEmptyEntries).First();
-		}
-
-		public string GetFullTypeNameHumanReadable(string fullTypeNameWithoutAssemblyInfo)
-		{
-			string f;
-
-			return Constant.FullTypeNameHumanReadableBinding.TryGetValue(fullTypeNameWithoutAssemblyInfo, out f) ?
-				f :
-				fullTypeNameWithoutAssemblyInfo;
 		}
 
 		public override string ToString()
@@ -116,7 +115,7 @@ namespace AnotherPoint.Entities
 
 		private string ParseName()
 		{
-			int index = this.FullName.IndexOf("<");
+			int index = this.FullName.IndexOf("<", StringComparison.InvariantCultureIgnoreCase);
 
 			string n = index > 0 ? this.FullName.Substring(0, index) : this.FullName;
 

@@ -34,20 +34,20 @@ namespace AnotherPoint.Entities
 			return this.Equals(bindAttribute);
 		}
 
+		public bool Equals(BindAttribute other)
+			=> this.Name == other.Name &&
+			   this.Settings == other.Settings;
+
 		public override int GetHashCode()
 		{
 			unchecked
 			{
 				int hashCode = base.GetHashCode();
 				hashCode = (hashCode * 397) ^ (this.Name?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (int) this.Settings;
+				hashCode = (hashCode * 397) ^ (int)this.Settings;
 				return hashCode;
 			}
 		}
-
-		public bool Equals(BindAttribute other)
-			=> this.Name == other.Name &&
-			   this.Settings == other.Settings;
 
 		public override string ToString()
 		{
@@ -57,6 +57,5 @@ namespace AnotherPoint.Entities
 
 			return sb.ToString();
 		}
-
 	}
 }

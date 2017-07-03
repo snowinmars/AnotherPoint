@@ -1,5 +1,4 @@
-﻿using System;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using AnotherPoint.Engine;
 using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;

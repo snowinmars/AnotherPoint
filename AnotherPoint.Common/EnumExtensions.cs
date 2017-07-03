@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace AnotherPoint.Common
 {
 	public static class EnumExtensions
 	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string AsString(this TemplateType templateType)
 		{
 			switch (templateType)
@@ -41,6 +43,7 @@ namespace AnotherPoint.Common
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static string AsString(this AccessModifyer accessModifyer)
 		{
 			if (accessModifyer == AccessModifyer.None)

@@ -13,15 +13,7 @@ namespace AnotherPoint.Entities
 			this.ProcessorArchitecture = processorArchitecture;
 		}
 
-		public string Name { get; }
-		public Version Version { get; }
 		public string Culture { get; }
-		public string ProcessorArchitecture { get; }
-
-		public string ReferenceInclude
-		{
-			get { return $"{this.Name}, Version={this.Version}, Culture={this.Culture}, processorArchitecture={this.ProcessorArchitecture}"; }
-		}
 
 		public string HintPath
 		{
@@ -38,5 +30,15 @@ namespace AnotherPoint.Entities
 				return $"..\\packages\\{this.Name}.{sb}\\lib\\net451\\{this.Name}.dll";
 			}
 		}
+
+		public string Name { get; }
+		public string ProcessorArchitecture { get; }
+
+		public string ReferenceInclude
+		{
+			get { return $"{this.Name}, Version={this.Version}, Culture={this.Culture}, processorArchitecture={this.ProcessorArchitecture}"; }
+		}
+
+		public Version Version { get; }
 	}
 }

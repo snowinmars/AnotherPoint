@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AnotherPoint.Entities
+﻿namespace AnotherPoint.Entities
 {
 	public enum SqlBindingType
 	{
@@ -15,11 +9,11 @@ namespace AnotherPoint.Entities
 
 	public class SqlBindingAttribute : AnotherPointAttribute
 	{
-		public SqlBindingType SqlBindingType { get; }
-
 		public SqlBindingAttribute(SqlBindingType sqlBindingType)
 		{
 			this.SqlBindingType = sqlBindingType;
 		}
+
+		public SqlBindingType SqlBindingType { get; }
 	}
 }

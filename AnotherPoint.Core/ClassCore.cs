@@ -14,11 +14,15 @@ namespace AnotherPoint.Core
 {
 	public class ClassCore : IClassCore
 	{
-		private readonly string[] reserverClassNamePostfixes =
+		private readonly string[] reserverClassNamePostfixes;
+
+		public ClassCore()
 		{
-			"Logic",
-			"Dao",
-		};
+			this.reserverClassNamePostfixes = new[] {
+				"Logic",
+				"Dao",
+			};
+		}
 
 		public void Dispose()
 		{
@@ -90,15 +94,10 @@ namespace AnotherPoint.Core
 			Bag.ClassPocket.Add(@class.Name, @class);
 
 			sw.Stop();
-			
+
 			Log.iDone(sw.Elapsed.TotalMilliseconds);
 
 			return @class;
-		}
-
-		private void SetupCollection(Type type, MyType classType)
-		{
-			classType.IsCollection = type.GetInterface(Constant.IEnumerable) != null;
 		}
 
 		public string RenderAccessModifyer(Class @class)
@@ -139,28 +138,6 @@ namespace AnotherPoint.Core
 			}
 
 			return sb.ToString();
-		}
-
-		private static string OverrideGenericTypes(Class @class)
-		{
-			StringBuilder s = new StringBuilder();
-
-			foreach (var implementedInterface in @class.ImplementedInterfaces)
-			{
-				foreach (var genericType in implementedInterface.Type.GenericTypes)
-				{
-					if (@class.OverrideGenericTypes.ContainsKey(genericType))
-					{
-						s.Append($" {@class.OverrideGenericTypes[genericType]} ");
-					}
-					else
-					{
-						s.Append($" {genericType} ");
-					}
-				}
-			}
-
-			return s.ToString();
 		}
 
 		public string RenderName(Class @class)
@@ -207,6 +184,28 @@ namespace AnotherPoint.Core
 			return entityPurposePair;
 		}
 
+		private static string OverrideGenericTypes(Class @class)
+		{
+			StringBuilder s = new StringBuilder();
+
+			foreach (var implementedInterface in @class.ImplementedInterfaces)
+			{
+				foreach (var genericType in implementedInterface.Type.GenericTypes)
+				{
+					if (@class.OverrideGenericTypes.ContainsKey(genericType))
+					{
+						s.Append($" {@class.OverrideGenericTypes[genericType]} ");
+					}
+					else
+					{
+						s.Append($" {genericType} ");
+					}
+				}
+			}
+
+			return s.ToString();
+		}
+
 		private AccessModifyer GetAccessModifyer(Type type)
 		{
 			AccessModifyer accessModifyer = AccessModifyer.None;
@@ -244,6 +243,11 @@ namespace AnotherPoint.Core
 			}
 
 			return accessModifyer;
+		}
+
+		private void SetupCollection(Type type, MyType classType)
+		{
+			classType.IsCollection = type.GetInterface(Constant.IEnumerable) != null;
 		}
 
 		private void SetupConstants(IEnumerable<FieldInfo> getConstants, IList<Field> classConstants)

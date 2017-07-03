@@ -13,21 +13,26 @@ namespace AnotherPoint.Common
 
 		// And forging assemblies by name is here due to Razor engine need all referenced assemblies forged to memory
 
-		private static readonly string[] AssemblyNames =
-		{
-			"AnotherPoint.Common",
-			"AnotherPoint.Core",
-			"AnotherPoint.Engine",
-			"AnotherPoint.Entities",
-			"AnotherPoint.Extensions",
-			"AnotherPoint.Interfaces",
-			"AnotherPoint.Templates",
-		};
+		private static readonly string[] AssemblyNames;
 
-		private static readonly string[] assemblyPathes =
+		private static readonly string[] AssemblyPathes;
+
+		static AssemblyForge()
 		{
-			@"C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.ComponentModel.DataAnnotations\v4.0_4.0.0.0__31bf3856ad364e35\System.ComponentModel.DataAnnotations.dll",
-		};
+			AssemblyForge.AssemblyNames = new[] {
+				"AnotherPoint.Common",
+				"AnotherPoint.Core",
+				"AnotherPoint.Engine",
+				"AnotherPoint.Entities",
+				"AnotherPoint.Extensions",
+				"AnotherPoint.Interfaces",
+				"AnotherPoint.Templates",
+			};
+
+			AssemblyForge.AssemblyPathes = new[] {
+				@"C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.ComponentModel.DataAnnotations\v4.0_4.0.0.0__31bf3856ad364e35\System.ComponentModel.DataAnnotations.dll",
+			};
+		}
 
 		public static void ForgeAll()
 		{
@@ -38,7 +43,7 @@ namespace AnotherPoint.Common
 				Assembly.Load(assemblyName);
 			}
 
-			foreach (var assemblyPath in AssemblyForge.assemblyPathes)
+			foreach (var assemblyPath in AssemblyForge.AssemblyPathes)
 			{
 				Assembly.LoadFile(assemblyPath);
 			}

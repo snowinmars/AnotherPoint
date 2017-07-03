@@ -10,6 +10,8 @@ namespace AnotherPoint.Interfaces
 
 		string RenderAccessModifyer(Method method);
 
+		string RenderAdditionalBody(Method method);
+
 		string RenderArguments(Method method);
 
 		string RenderBody(Method method);
@@ -17,7 +19,5 @@ namespace AnotherPoint.Interfaces
 		string RenderMethodName(Method method);
 
 		string RenderReturnTypeName(Method method);
-
-		string RenderAdditionalBody(Method method);
 	}
 }

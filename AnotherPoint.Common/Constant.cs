@@ -13,10 +13,15 @@ namespace AnotherPoint.Common
 
 		public const string MethodBodyShutUp = " throw new System.NotImplementedException(); ";
 
-		public static readonly IDictionary<string, string> FullTypeNameHumanReadableBinding = new Dictionary<string, string>
+		public static readonly IDictionary<string, string> FullTypeNameHumanReadableBinding;
+
+		static Constant()
 		{
-			{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
-		};
+			Constant.FullTypeNameHumanReadableBinding = new Dictionary<string, string>
+			{
+				{ "System.Collections.Generic.IEnumerable`1", "System.Collections.Generic.IEnumerable" }
+			};
+		}
 
 		public static class Types
 		{

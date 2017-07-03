@@ -1,5 +1,4 @@
-﻿using System;
-using AnotherPoint.Common;
+﻿using AnotherPoint.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,20 +27,20 @@ namespace AnotherPoint.Entities
 			this.EntityPurposePair = new EntityPurposePair("", "");
 			this.DestinationTypeName = "";
 			this.IsEndpoint = false;
-
 		}
 
-		public IDictionary<string, string> OverrideGenericTypes { get; private set; }
-
 		public AccessModifyer AccessModifyer { get; set; }
-		public IList<InsertNugetPackageAttribute> PackageAttributes { get; private set; }
-		public IList<Field> Constants { get; private set; }
-		public IList<Ctor> Ctors { get; private set; }
-		public IList<string> References { get; private set; }
-		public Class Validation { get; set; }
+		public IList<Field> Constants { get; }
+		public IList<Ctor> Ctors { get; }
 		public string DestinationTypeName { get; set; }
 		public EntityPurposePair EntityPurposePair { get; set; }
-		public IList<Field> Fields { get; private set; }
+		public IList<Field> Fields { get; }
+
+		public string FullName
+		{
+			get { return $"{this.Namespace}.{this.Name}"; }
+		}
+
 		public IList<Interface> ImplementedInterfaces { get; }
 		public bool IsEndpoint { get; set; }
 		public IList<Method> Methods { get; }
@@ -60,20 +59,19 @@ namespace AnotherPoint.Entities
 			}
 		}
 
-		public string FullName
-		{
-			get { return $"{this.Namespace}.{this.Name}"; }
-		}
-
 		public string Namespace
 		{
 			get { return this.Type.Namespace; }
 			set { this.Type.Namespace = value; }
 		}
 
-		public IList<Property> Properties { get; private set; }
+		public IDictionary<string, string> OverrideGenericTypes { get; }
+		public IList<InsertNugetPackageAttribute> PackageAttributes { get; }
+		public IList<Property> Properties { get; }
+		public IList<string> References { get; }
 		public MyType Type { get; set; }
-		public IList<string> Usings { get; private set; }
+		public IList<string> Usings { get; }
+		public Class Validation { get; set; }
 
 		public override bool Equals(object obj)
 		{
@@ -91,30 +89,6 @@ namespace AnotherPoint.Entities
 			}
 
 			return this.Equals(@class);
-		}
-
-		public override int GetHashCode()
-		{
-			unchecked
-			{
-				var hashCode = this.OverrideGenericTypes?.GetHashCode() ?? 0;
-				hashCode = (hashCode * 397) ^ (int) this.AccessModifyer;
-				hashCode = (hashCode * 397) ^ (this.PackageAttributes?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Constants?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Ctors?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.References?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Validation?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.DestinationTypeName?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.EntityPurposePair?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Fields?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.ImplementedInterfaces?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ this.IsEndpoint.GetHashCode();
-				hashCode = (hashCode * 397) ^ (this.Methods?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Properties?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
-				hashCode = (hashCode * 397) ^ (this.Usings?.GetHashCode() ?? 0);
-				return hashCode;
-			}
 		}
 
 		public bool Equals(Class other)
@@ -135,6 +109,30 @@ namespace AnotherPoint.Entities
 				this.Properties.OrderBy(a => a).SequenceEqual(other.Properties.OrderBy(a => a)) &&
 				this.Usings.OrderBy(a => a).SequenceEqual(other.Usings.OrderBy(a => a));
 
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = this.OverrideGenericTypes?.GetHashCode() ?? 0;
+				hashCode = (hashCode * 397) ^ (int)this.AccessModifyer;
+				hashCode = (hashCode * 397) ^ (this.PackageAttributes?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Constants?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Ctors?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.References?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Validation?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.DestinationTypeName?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.EntityPurposePair?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Fields?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.ImplementedInterfaces?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ this.IsEndpoint.GetHashCode();
+				hashCode = (hashCode * 397) ^ (this.Methods?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Properties?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Type?.GetHashCode() ?? 0);
+				hashCode = (hashCode * 397) ^ (this.Usings?.GetHashCode() ?? 0);
+				return hashCode;
+			}
+		}
+
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -150,6 +148,5 @@ namespace AnotherPoint.Entities
 
 			return sb.ToString();
 		}
-
 	}
 }
