@@ -4,6 +4,7 @@ using AnotherPoint.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace AnotherPoint.Core
@@ -16,23 +17,30 @@ namespace AnotherPoint.Core
 		{
 			SqlCore.SqlTypeMapping = new Dictionary<string, string>
 			{
-				{"Boolean", "bit"},
-				{"Byte", "tinyint"},
-				{"Byte[]", "binary"},
-				{"Char[]", "char (1000)"},
-				{"DateTime", "datetime2"},
-				{"DateTimeOffset", "datetimeoffset"},
-				{"Decimal", "decimal"},
-				{"Double", "float"},
-				{"Guid", "uniqueidentifier"},
-				{"Int16", "smallint"},
-				{"Int32", "int"},
-				{"Int64", "bigint"},
-				{"Object", "sql_variant"},
-				{"Single", "real"},
-				{"String", "char (1000)"},
-				{"TimeSpan", "time"},
-				{"Xml", "xml"},
+				{"Boolean", "bit"}, // bool
+				{"Byte", "tinyint"}, // byte
+				{"Byte[]", "binary"}, // byte[]
+				{"Char[]", "char (1000)"}, // char[]
+				{"Char", "char (1)"}, // char
+				{"DateTime", "datetime2"}, // DateTime
+				{"DateTimeOffset", "datetimeoffset"}, // DateTimeOffset
+				{"Decimal", "decimal"}, // decimal
+				{"Double", "float"}, // double
+				{"Enum", "int"}, // enum-like
+				{"Float", "float"}, // float
+				{"Guid", "uniqueidentifier"}, // Guid
+				{"Int32", "int"}, // int
+				{"Int16", "smallint"}, // shout
+				{"SByte", "smallint"}, // sbyte
+				{"Int64", "bigint"}, // long
+				{"UInt32", "bigint"}, // uint
+				{"UInt64", "bigint"}, // ulong BUG: overflow. But how uses ulong, cmon
+				{"UInt16", "int"}, // ushort
+				{"Object", "sql_variant"}, // object
+				{"Single", "real"}, // single
+				{"String", "char (1000)"}, // string
+				{"TimeSpan", "time"}, // TimeSpan
+				{"Xml", "xml"}, // Xml
 			};
 		}
 

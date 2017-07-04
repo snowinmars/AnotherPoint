@@ -32,6 +32,10 @@ namespace AnotherPoint.Core
 				},
 			};
 
+			property.Type.IsCollection = 
+				propertyInfo.PropertyType.FullName != Constant.Types.SystemString &&
+				propertyInfo.PropertyType.GetInterface(Constant.IEnumerable) != null;
+
 			this.SetupGeneric(propertyInfo.PropertyType, property.Type);
 
 			// saving field name and type for further appeals from ctor
