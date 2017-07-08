@@ -10,11 +10,11 @@ namespace AnotherPoint.Core
 		{
 			Bag.ClassPocket = new Dictionary<Guid, Class>();
 			Bag.MyTypePocket = new Dictionary<string, MyType>();
-			Bag.TypePocket = new Dictionary<Guid, Type>();
+			Bag.TypePocket = new Dictionary<string, Type>();
 		}
 
 		public static IDictionary<Guid, Class> ClassPocket { get; set; }
 		public static IDictionary<string, MyType> MyTypePocket { get; set; }
-		public static IDictionary<Guid, Type> TypePocket { get; set; }
+		public static IDictionary<string, Type> TypePocket { get; set; }
 	}
 }
