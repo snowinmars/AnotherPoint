@@ -15,7 +15,7 @@ namespace AnotherPoint.Common
 
 		public static readonly IDictionary<string, string> FullTypeNameHumanReadableBinding;
 
-		public const string TargetFrameworkVersion = "4.6.2";
+		public const string TargetFrameworkVersion = "4.7.0";
 
 		static Constant()
 		{

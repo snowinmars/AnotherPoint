@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FirstApp.Entities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using AnotherPoint.Common;
@@ -8,7 +9,6 @@ using AnotherPoint.Entities;
 using AnotherPoint.Entities.MethodImpl;
 using AnotherPoint.Templates;
 using System.ComponentModel.DataAnnotations;
-using Snowinmars.Entities;
 
 namespace ExampleConsoleApplication
 {
@@ -29,7 +29,7 @@ namespace ExampleConsoleApplication
 					new MethodCore(),
 					new PropertyCore(),
 					new ValidationCore(),
-					new EndpointCore("Snowinmars"),
+					new EndpointCore("FirstApp"),
 					new SolutionCore(),
 					new SqlCore());
 
@@ -43,7 +43,7 @@ namespace ExampleConsoleApplication
 
 		private static void Main()
 		{
-			const string outputPath = @"C:\prg\SnowinmarsTmp"; // set this path to the directory you dont need. Directory will be fully eraze
+			const string outputPath = @"D:\tmp"; // set this path to the directory you dont need. Directory will be fully eraze
 
 			if (outputPath == null)
 			{
@@ -58,13 +58,13 @@ namespace ExampleConsoleApplication
 
 			TemplateRepository.Init();
 
-			Class authorClass = RenderEngine.ClassCore.Map(typeof(Author));
-			Class bookClass = RenderEngine.ClassCore.Map(typeof(Book));
+			Class userClass = RenderEngine.ClassCore.Map(typeof(User));
+			Class awardClass = RenderEngine.ClassCore.Map(typeof(Award));
 
-			var authorEndpoint = RenderEngine.EndpointCore.ConstructEndpointFor(authorClass);
-			var bookEndpoint = RenderEngine.EndpointCore.ConstructEndpointFor(bookClass);
+			var userEndpoint = RenderEngine.EndpointCore.ConstructEndpointFor(userClass);
+			var awardEndpoint = RenderEngine.EndpointCore.ConstructEndpointFor(awardClass);
 
-			RenderEngine.SolutionCore.ConstructSolution(new[] { authorEndpoint, bookEndpoint }, outputPath);
+			RenderEngine.SolutionCore.ConstructSolution(new[] { userEndpoint, awardEndpoint }, outputPath);
 			//RenderEngine.SqlCore.ConstructSqlScripts(new[] { endpoint }, outputPath);
 
 			TemplateRepository.Finit();
@@ -81,102 +81,65 @@ namespace ExampleConsoleApplication
 	}
 }
 
-namespace Snowinmars.Entities
+namespace FirstApp.Entities
 {
-	[InsertUsing("Snowinmars.Common")]
-	public class Author
+	[InsertUsing("System")]
+	[InsertUsing("FirstApp.Common")]
+	[InsertUsing("System.Linq")]
+	public class User
 	{
+		[Bind(BindSettings.None, "name")]
+		[Bind(BindSettings.None, "age")]
+		[Bind(BindSettings.CallThis, "name")]
+		[Bind(BindSettings.CallThis, "\"\"")]
+		[Bind(BindSettings.CallThis, "age")]
+		public User(string name, int age)
+		{
+		}
+
 		[Bind(BindSettings.Exact, "name")]
 		[Bind(BindSettings.Exact, "surname")]
-		public Author(string name, string surname)
+		[Bind(BindSettings.Exact, "age")]
+		public User(string name, string surname, int age)
+		{
+		}
+
+		[SqlBinding(SqlBindingType.ManyToMany)]
+		public IEnumerable<Award> Awards { get; private set; }
+
+		public Guid Id { get; set; }
+
+		[Range(14, 99)]
+		public int Age { get; set; }
+
+		public string Name { get; set; }
+
+		public string Surname { get; set; }
+	}
+
+	[InsertUsing("System")]
+	[InsertUsing("FirstApp.Common")]
+	[InsertUsing("System.Linq")]
+	public class Award
+	{
+		[Bind(BindSettings.None, "name")]
+		[Bind(BindSettings.CallThis, "name")]
+		[Bind(BindSettings.CallThis, "100")]
+		public Award(string name)
+		{
+			
+		}
+
+		[Bind(BindSettings.Exact, "name")]
+		[Bind(BindSettings.Exact, "rate")]
+		public Award(string name, int rate)
 		{
 			
 		}
 
 		public string Name { get; set; }
-		public string Surname { get; set; }
-		public string Tag { get; set; }
-		public Guid Id { get; set; }
-	}
 
-	[InsertUsing("Snowinmars.Common")]
-	public class Book
-	{
-		[Bind(BindSettings.Exact, "title")]
-		[Bind(BindSettings.Exact, "pageCount")]
-		[Bind(BindSettings.New, "authors")]
-		public Book(string title, uint pageCount)
-		{
-			
-		}
-
-		public string Title { get; set; }
-		public uint PageCount { get; set; }
-		public int Year { get; set; }
-		public IEnumerable<Author> Authors { get; set; }
-		public Guid Id { get; set; }
+		[Range(100, 10000)]
+		public int Rate { get; set; }
 	}
 }
-
-//namespace FirstApp.Entities
-//{
-//	[InsertUsing("System")]
-//	[InsertUsing("FirstApp.Common")]
-//	[InsertUsing("System.Linq")]
-//	public class User
-//	{
-//		[Bind(BindSettings.None, "name")]
-//		[Bind(BindSettings.None, "age")]
-//		[Bind(BindSettings.CallThis, "name")]
-//		[Bind(BindSettings.CallThis, "\"\"")]
-//		[Bind(BindSettings.CallThis, "age")]
-//		public User(string name, int age)
-//		{
-//		}
-
-//		[Bind(BindSettings.Exact, "name")]
-//		[Bind(BindSettings.Exact, "surname")]
-//		[Bind(BindSettings.Exact, "age")]
-//		public User(string name, string surname, int age)
-//		{
-//		}
-
-//		[SqlBinding(SqlBindingType.ManyToMany)]
-//		public IEnumerable<Award> Awards { get; private set; }
-
-//		public Guid Id { get; set; }
-
-//		[Range(14, 99)]
-//		public int Age { get; set; }
-
-//		public string Name { get; set; }
-
-//		public string Surname { get; set; }
-//	}
-
-//	[InsertUsing("System")]
-//	[InsertUsing("FirstApp.Common")]
-//	[InsertUsing("System.Linq")]
-//	public class Award
-//	{
-//		[Bind(BindSettings.None, "name")]
-//		[Bind(BindSettings.CallThis, "name")]
-//		[Bind(BindSettings.CallThis, "100")]
-//		public Award(string name)
-//		{
-			
-//		}
-
-//		[Bind(BindSettings.Exact, "name")]
-//		[Bind(BindSettings.Exact, "rate")]
-//		public Award(string name, int rate)
-//		{
-			
-//		}
-
-//		public string Name { get; set; }
-
-//		[Range(100, 10000)]
-//		public int Rate { get; set; }
-//	}
-//}

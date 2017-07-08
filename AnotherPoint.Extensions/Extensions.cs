@@ -33,14 +33,6 @@ namespace AnotherPoint.Extensions
 			}
 		}
 
-		public static void AddOnce<T1, T2>(this IDictionary<T1, T2> dictionary, T1 key, T2 value)
-		{
-			if (!dictionary.ContainsKey(key))
-			{
-				dictionary.Add(key, value);
-			}
-		}
-
 		public static void Clear(this DirectoryInfo directory)
 		{
 			foreach (FileInfo file in directory.GetFiles())

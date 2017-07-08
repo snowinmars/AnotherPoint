@@ -41,16 +41,6 @@ namespace AnotherPoint.Entities
 
 		public string Namespace { get; set; }
 
-		public Argument ToArgument(BindSettings bindSettings)
-		{
-			var argument = new Argument(this.Name, this, bindSettings)
-			{
-				Id = this.Id,
-			};
-
-			return argument;
-		}
-
 		public override bool Equals(object obj)
 		{
 			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions

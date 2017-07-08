@@ -70,16 +70,6 @@ namespace AnotherPoint.Entities
 		public IList<string> Usings { get; }
 		public Class Validation { get; set; }
 
-		public Argument ToArgument(BindSettings bindSettings)
-		{
-			var argument = new Argument(this.Name, this.Type, bindSettings)
-			{
-				Id = this.Id,
-			};
-
-			return argument;
-		}
-
 		public override bool Equals(object obj)
 		{
 			// ReSharper disable once ConditionIsAlwaysTrueOrFalse : it depends from compiler, google about callvirt and call CLR instructions

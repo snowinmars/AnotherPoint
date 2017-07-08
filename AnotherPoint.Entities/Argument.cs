@@ -5,15 +5,12 @@ namespace AnotherPoint.Entities
 {
 	public class Argument : AnotherPointObject
 	{
-		public Argument(string name, MyType type, BindSettings bindAttribute)
+		public Argument(string name, string typeName, BindSettings bindAttribute)
 		{
 			this.Name = name;
 			this.BindAttribute = bindAttribute;
-			this.Type = type;
-		}
 
-		public Argument(string name, string typeName, BindSettings bindAttribute) : this(name, new MyType(typeName), bindAttribute)
-		{
+			this.Type = new MyType(typeName);
 		}
 
 		public BindSettings BindAttribute { get; set; }

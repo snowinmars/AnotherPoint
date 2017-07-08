@@ -195,9 +195,8 @@ namespace AnotherPoint.Core
 
 			{
 				var createMeth = new Method("Create", Constant.Types.SystemVoid);
-				Argument argument = this.entity.ToArgument(BindSettings.None);
-
-				createMeth.Arguments.Add(argument);
+				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
 				createMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 				createMeth.AttributesForBodyGeneration.Add(
 					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
@@ -206,27 +205,23 @@ namespace AnotherPoint.Core
 
 			{
 				var getMeth = new Method("Get", this.entity.FullName);
-				Argument argument = Bag.MyTypePocket["ID"].ToArgument(BindSettings.None);
-
-				getMeth.Arguments.Add(argument);
+				getMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
 				getMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 				dao.Methods.Add(getMeth);
 			}
 
 			{
 				var removeMeth = new Method("Remove", Constant.Types.SystemVoid);
-				Argument argument = Bag.MyTypePocket["ID"].ToArgument(BindSettings.None);
 
-				removeMeth.Arguments.Add(argument);
+				removeMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
 				removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 				dao.Methods.Add(removeMeth);
 			}
 
 			{
 				var updateMeth = new Method("Update", Constant.Types.SystemVoid);
-				Argument argument = this.entity.ToArgument(BindSettings.None);
-
-				updateMeth.Arguments.Add(argument);
+				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
 				updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.ToSqlAttribute());
 				updateMeth.AttributesForBodyGeneration.Add(
 					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
@@ -338,9 +333,9 @@ namespace AnotherPoint.Core
 			// The point of this formatting is to almost-split parts to methods. They are too small for methods, too different for a unique helper, but too big to have all them in one place.
 			{
 				var createMeth = new Method("Create", Constant.Types.SystemVoid);
-				Argument argument = this.entity.ToArgument(BindSettings.None);
 
-				createMeth.Arguments.Add(argument);
+				createMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
 				createMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 				createMeth.AttributesForBodyGeneration.Add(
 					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));
@@ -349,27 +344,23 @@ namespace AnotherPoint.Core
 
 			{
 				var getMeth = new Method("Get", this.entity.FullName);
-				Argument argument = Bag.MyTypePocket["ID"].ToArgument(BindSettings.None);
-
-				getMeth.Arguments.Add(argument);
+				getMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
 				getMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 				bll.Methods.Add(getMeth);
 			}
 
 			{
 				var removeMeth = new Method("Remove", Constant.Types.SystemVoid);
-				Argument argument = Bag.MyTypePocket["ID"].ToArgument(BindSettings.None);
-
-				removeMeth.Arguments.Add(argument);
+				removeMeth.Arguments.Add(new Argument("id", Constant.Types.SystemGuid, BindSettings.None));
 				removeMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 				bll.Methods.Add(removeMeth);
 			}
 
 			{
 				var updateMeth = new Method("Update", Constant.Types.SystemVoid);
-				Argument argument = this.entity.ToArgument(BindSettings.None);
 
-				updateMeth.Arguments.Add(argument);
+				updateMeth.Arguments.Add(new Argument(this.entity.Name.FirstLetterToLower(), this.entity.Type.FullName,
+					BindSettings.None));
 				updateMeth.AttributesForBodyGeneration.Add(new MethodImpl.SendMeToAttribute(Constant.DefaultDestination, bll.Name));
 				updateMeth.AttributesForBodyGeneration.Add(
 					new MethodImpl.ValidateAttribute(new[] { this.entity.Name.FirstLetterToLower() }));

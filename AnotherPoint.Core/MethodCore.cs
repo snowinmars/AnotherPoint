@@ -212,7 +212,7 @@ namespace AnotherPoint.Core
 				body.Append($" {Constant.Return} ");
 			}
 
-			body.AppendLine($"{Constant.This}.{destination.FirstLetterToUpper()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name.FirstLetterToLower()))});");
+			body.AppendLine($"{Constant.This}.{destination.FirstLetterToUpper()}.{method.Name}({string.Join(",", method.Arguments.Select(arg => arg.Name))});");
 
 			return body.ToString();
 		}
@@ -256,7 +256,7 @@ namespace AnotherPoint.Core
 
 			foreach (var argument in method.Arguments)
 			{
-				Class argumentClass = Bag.ClassPocket[argument.Id];
+				Class argumentClass = Bag.ClassPocket[argument.Type.Name];
 				IList<Property> properties = argumentClass.Properties.Where(prop => prop.AccessModifyer.HasFlag(AccessModifyer.Public)).ToList();
 
 				sb.Append("sqlConnection.Execute(");
@@ -273,7 +273,7 @@ namespace AnotherPoint.Core
 
 				if (properties.Any())
 				{
-					sb.Append(string.Join(",", properties.Select(prop => $"{argument.Name.FirstLetterToLower()}.{prop.Name}")));
+					sb.Append(string.Join(",", properties.Select(prop => $"{argument.Name}.{prop.Name}")));
 				}
 
 				sb.AppendLine("});");
@@ -323,7 +323,7 @@ namespace AnotherPoint.Core
 
 			foreach (var argument in method.Arguments)
 			{
-				Class argumentClass = Bag.ClassPocket[argument.Id];
+				Class argumentClass = Bag.ClassPocket[argument.Type.Name];
 				IList<Property> properties = argumentClass.Properties.Where(prop => prop.AccessModifyer.HasFlag(AccessModifyer.Public)).ToList();
 
 				sb.Append("sqlConnection.Execute(");
@@ -341,7 +341,7 @@ namespace AnotherPoint.Core
 
 				if (properties.Any())
 				{
-					sb.Append(string.Join(",", properties.Select(prop => $"{argument.Name.FirstLetterToLower()}.{prop.Name}")));
+					sb.Append(string.Join(",", properties.Select(prop => $"{argument.Name}.{prop.Name}")));
 				}
 
 				sb.AppendLine("});");

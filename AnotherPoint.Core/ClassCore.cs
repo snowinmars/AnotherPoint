@@ -90,9 +90,8 @@ namespace AnotherPoint.Core
 			this.SetupMethods(type, @class);
 			this.SetupPackages(type, @class);
 
-			Bag.TypePocket.AddOnce(type.FullName, type);
-			Bag.ClassPocket.AddOnce(@class.Id, @class);
-			Bag.MyTypePocket.AddOnce(@class.Type.Name, @class.Type);
+			Bag.TypePocket.Add(type.FullName, type);
+			Bag.ClassPocket.Add(@class.Name, @class);
 
 			sw.Stop();
 
