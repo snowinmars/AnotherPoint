@@ -19,6 +19,16 @@ namespace AnotherPoint.Entities
 			this.IsCollection = null;
 		}
 
+		public static MyType GenericMyType;
+
+		static MyType()
+		{
+			MyType.GenericMyType = new MyType("T")
+			{
+				IsGeneric = true,
+			};
+		}
+
 		public string FullName { get; set; }
 
 		public IList<string> GenericTypes { get; }
